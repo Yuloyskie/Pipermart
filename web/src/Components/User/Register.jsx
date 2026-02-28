@@ -9,13 +9,14 @@ const Register = () => {
     name: '',
     email: '',
     password: '',
-    confirmPasswocrd: '',
+    confirmPassword: '',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   const navigate = useNavigate();
 
@@ -129,8 +130,16 @@ const Register = () => {
     }
   };
 
+  const handleTransition = (e, targetPath) => {
+    e.preventDefault();
+    setIsTransitioning(true);
+    setTimeout(() => {
+      navigate(targetPath);
+    }, 300);
+  };
+
   return (
-    <div style={styles.splitContainer}>
+    <div style={{...styles.splitContainer, opacity: isTransitioning ? 0 : 1, transition: 'opacity 0.3s ease'}}>
       <div style={styles.leftColumn}>
         <div style={styles.geometricOverlay}>
           <svg width="100%" height="100%" viewBox="0 0 400 400" preserveAspectRatio="none">
@@ -143,7 +152,7 @@ const Register = () => {
         <div style={styles.welcomeContent}>
           <h2 style={styles.welcomeTitle}>Welcome to PiperSmart</h2>
           <p style={styles.welcomeSubtitle}>Join our community of growers and spice experts to discover new harvest opportunities!</p>
-          <Link to="/login" style={styles.signinButton}>Sign In</Link>
+          <Link to="/login" style={styles.signinButton} onClick={(e) => handleTransition(e, '/login')}>Sign In</Link>
         </div>
       </div>
 
@@ -187,7 +196,7 @@ const Register = () => {
             </button>
           </form>
           <div style={styles.footer}>
-            <p>Already have an account? <Link to="/login" style={styles.link}>Sign in</Link></p>
+            <p>🌱 Welcome to PiperSmart!</p>
           </div>
         </div>
       </div>
@@ -198,6 +207,7 @@ const Register = () => {
         input:disabled { background-color: #f8f9fa; cursor: not-allowed; }
         a:hover { text-decoration: underline; }
         button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(27, 67, 50, 0.4); }
+        .signinButton:hover { background: rgba(255,255,255,0.15) !important; transform: translateY(-2px) scale(1.02); }
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
       `}</style>
     </div>

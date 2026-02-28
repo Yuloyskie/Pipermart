@@ -146,9 +146,9 @@
 }
 
 .feature-card {
-  background: linear-gradient(135deg, #00c853 0%, #00e676 100%) !important;
+  background: linear-gradient(135deg, #035927 0%, #015f3283 100%) !important;
   backdrop-filter: blur(10px);
-  border: 2px solid #00ff88 !important;
+  border: 2px solid #0a6c3f !important;
   border-radius: 16px;
   padding: 30px 25px;
   text-align: center;

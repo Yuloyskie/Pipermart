@@ -520,8 +520,5 @@ export default function Forum() {
           </div>
         </div>
       )}
-
-      <Chat />
-    </>
-  );
+    </>  );
 }

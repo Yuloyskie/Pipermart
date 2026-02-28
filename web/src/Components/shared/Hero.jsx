@@ -95,7 +95,7 @@ export default function Hero() {
                   loop 
                   playsInline
                 >
-                  <source src="../../../../newbg.mp4" type="video/mp4" />
+                  <source src="../../../../../newbg.mp4" type="video/mp4" />
                 </video>
               </div>
             </div>

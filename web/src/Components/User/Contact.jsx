@@ -1,15 +1,12 @@
-import { useNavigate } from 'react-router-dom';
 import './Contact.css';
 import Header from '../shared/Header';
-import { FaFacebook, FaEnvelope, FaPhone, FaArrowLeft } from 'react-icons/fa';
+import { FaFacebook, FaEnvelope, FaPhone } from 'react-icons/fa';
 import EL from '../../../../EL.jpg';
 import YA from '../../../../YA.jpg';
 import JD from '../../../../JD.jpg';
 import LC from '../../../../LC.jpg';
 
 export default function Contact() {
-  const navigate = useNavigate();
-  
   const teamMembers = [
     { name: "Even Lloyd S. Billoned", role: "Developer", facebookLink: "https://www.facebook.com/lloyd.billoned", initials: "EL", image: EL },
     { name: "Yhanskie Adriel D. Cipriano", role: "Developer", facebookLink: "https://www.facebook.com/yhanskie.cipriano.1", initials: "YA", image: YA },
@@ -23,9 +20,6 @@ export default function Contact() {
       <div className="contact-container">
         {/* Header Section */}
         <div className="contact-header">
-          <button className="back-button" onClick={() => navigate(-1)}>
-            <FaArrowLeft /> Back
-          </button>
           <h1>Contact Us</h1>
           <p>Get in touch with the PiperSmart development team. We're here to support your black pepper farming journey.</p>
         </div>

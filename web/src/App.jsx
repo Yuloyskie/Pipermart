@@ -23,8 +23,6 @@ import About from './Components/User/About.jsx';
 import Contact from './Components/User/Contact.jsx';
 import HowItWorks from './Components/User/HowItWorks.jsx';
 
-
-
 function App() {
   return (
     <Router>
@@ -59,8 +57,6 @@ function App() {
         <Route path="/forum/create" element={<CreateThread />} />
         <Route path="/forum/thread/:threadId" element={<ThreadView />} />
         <Route path="/forum/edit/:threadId" element={<CreateThread />} />
-        
-
       </Routes>
       <Chatbot />
     </Router>

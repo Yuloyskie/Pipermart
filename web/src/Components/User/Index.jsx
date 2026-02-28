@@ -4,39 +4,38 @@ import './Index.css';
 import Header from '../shared/Header';
 import Hero from '../shared/Hero';
 import Footer from '../shared/Footer';
-import Chat from '../Chat/Chat';
 import logo from '../../../../picturesofbp/logowalangbg.png';
 
 export default function Index() {
-  const featuresList = [
+const featuresList = [
     {
       title: 'Leaf Analysis',
       description: 'Upload photos of pepper leaves for disease detection and identification',
-      icon: '',
+      icon: '🍃',
       link: '/leaf-analysis'
     },
     {
       title: 'Bunga Analysis',
       description: 'Analyze pepper flowers and fruits for health assessment and ripeness detection',
-      icon: '',
+      icon: '🌶️',
       link: '/bunga-analysis'
     },
     {
       title: 'Weather Updates',
       description: 'Get real-time weather information for your farming area',
-      icon: '',
+      icon: '🌤️',
       link: '/weather'
     },
     {
       title: 'Community Forum',
       description: 'Connect with other farmers and share experiences',
-      icon: '',
+      icon: '👥',
       link: '/forum'
     },
     {
       title: 'Macromapping',
       description: 'Visualize your plantation with advanced mapping tools',
-      icon: '',
+      icon: '🗺️',
       link: '/macro-mapping'
     }
   ];
@@ -169,9 +168,6 @@ export default function Index() {
 
       {/* Footer */}
       <Footer />
-
-      {/* Floating Chat Widget */}
-      <Chat />
     </div>
   );
 }

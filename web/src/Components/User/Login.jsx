@@ -14,9 +14,9 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isFacebookLoading, setIsFacebookLoading] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   
   const navigate = useNavigate();
 
@@ -176,8 +176,16 @@ const Login = () => {
     }
   };
 
+  const handleTransition = (e, targetPath) => {
+    e.preventDefault();
+    setIsTransitioning(true);
+    setTimeout(() => {
+      navigate(targetPath);
+    }, 300);
+  };
+
   return (
-    <div style={styles.splitContainer}>
+    <div style={{...styles.splitContainer, opacity: isTransitioning ? 0 : 1, transition: 'opacity 0.3s ease'}}>
       <div style={styles.leftColumn}>
         <div style={styles.authCard}>
           <div style={styles.logoTop}>
@@ -231,7 +239,7 @@ const Login = () => {
           </div>
 
           <div style={styles.footer}>
-            <p>Don't have an account? <Link to="/register" style={styles.link}>Sign up</Link></p>
+            <p>🌱 Join PiperSmart today!</p>
           </div>
         </div>
       </div>
@@ -249,7 +257,7 @@ const Login = () => {
         <div style={styles.welcomeContent}>
           <h2 style={styles.welcomeTitle}>New to PiperSmart?</h2>
           <p style={styles.welcomeSubtitle}>Join our community of growers and spice experts to discover new harvest opportunities!</p>
-          <Link to="/register" style={styles.signupButton}>Sign Up</Link>
+          <Link to="/register" style={styles.signupButton} onClick={(e) => handleTransition(e, '/register')}>Sign Up</Link>
         </div>
       </div>
 
@@ -260,6 +268,7 @@ const Login = () => {
         input:disabled { background-color: #f8f9fa; cursor: not-allowed; }
         a:hover { text-decoration: underline; }
         button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(27, 67, 50, 0.4); }
+        .signupButton:hover { background: rgba(255,255,255,0.15) !important; transform: translateY(-2px) scale(1.02); }
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
       `}</style>
     </div>
