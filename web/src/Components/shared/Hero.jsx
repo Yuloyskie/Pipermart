@@ -1,0 +1,117 @@
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import './Hero.css';
+
+export default function Hero() {
+  return (
+    <section className="hero-section">
+      {/* Background */}
+      <div className="hero-background">
+        <div className="hero-gradient-bg"></div>
+        <div className="hero-pattern"></div>
+      </div>
+
+      {/* Floating leaf icons */}
+      <div className="hero-floating-icons">
+        <motion.div 
+          className="floating-icon icon-1"
+          animate={{ y: [0, -15, 0], rotate: [0, 15, -15, 0] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"/>
+          </svg>
+        </motion.div>
+        <motion.div 
+          className="floating-icon icon-2"
+          animate={{ y: [0, 12, 0], rotate: [0, -12, 12, 0] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12c0 1.33.26 2.61.74 3.77l-1.89.66c-.6-1.41-.85-2.93-.85-4.43 0-4.97 4.03-9 9-9s9 4.03 9 9c0 1.5-.25 3.02-.85 4.43l-1.89-.66c.48-1.16.74-2.44.74-3.77 0-5.52-4.48-10-10-10z"/>
+            <path d="M12 6c-3.31 0-6 2.69-6 6 0 1.11.3 2.14.83 3.02l1.89-.66C8.25 13.58 8 12.83 8 12c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .83-.25 1.58-.72 2.36l1.89.66c.53-.88.83-1.91.83-3.02 0-3.31-2.69-6-6-6z"/>
+          </svg>
+        </motion.div>
+        <motion.div 
+          className="floating-icon icon-3"
+          animate={{ y: [0, -10, 0], rotate: [0, 10, -10, 0] }}
+          transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 22c4-4 8-7.5 8-12 0-3.5-2.5-6-6-6s-6 2.5-6 6c0 4.5 4 8 8 12z"/>
+          </svg>
+        </motion.div>
+      </div>
+
+      <div className="hero-container">
+        <div className="hero-content">
+          {/* Left Side - Text Content */}
+          <motion.div 
+            className="hero-text-content"
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <h1 className="hero-main-title">
+              Anything's possible when you have the knowledge
+            </h1>
+            <p className="hero-description">
+              Join our community of pepper farmers and agricultural experts. 
+              Share insights, discover best practices, and grow your harvest with AI-powered tools.
+            </p>
+            
+            <motion.div 
+              className="hero-buttons"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              <Link to="/forum" className="btn-primary-hero">
+                Get Started
+              </Link>
+              <button 
+                onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
+                className="btn-secondary-hero"
+              >
+                Learn More
+              </button>
+            </motion.div>
+          </motion.div>
+
+          {/* Right Side - Video Blob */}
+          <motion.div 
+            className="hero-visual"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <div className="hero-blob-container">
+              <div className="hero-blob"></div>
+              <div className="hero-video-wrapper">
+                <video 
+                  className="hero-video"
+                  autoPlay 
+                  muted 
+                  loop 
+                  playsInline
+                >
+                  <source src="../../../../newbg.mp4" type="video/mp4" />
+                </video>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Scroll Indicator */}
+      <motion.div 
+        className="hero-scroll-indicator"
+        animate={{ y: [0, 8, 0] }}
+        transition={{ duration: 1.5, repeat: Infinity }}
+      >
+        <span>Scroll to explore</span>
+        <div className="scroll-arrow"></div>
+      </motion.div>
+    </section>
+  );
+}

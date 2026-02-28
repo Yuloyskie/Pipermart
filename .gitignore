@@ -1,0 +1,79 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Dependency directories
+node_modules/
+    
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Environment variables
+.env
+.env.local
+.env*.local
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build outputs
+build/
+dist-ssr/
+*.tsbuildinfo
+
+# Datasets (if large, you might want to exclude)
+# BLACK_PEPPER_DATASET/
+# datasets/
+# ml_models/
+# picturesofbp/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+env/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Large dataset folders (use cloud storage or Git LFS instead)
+BLACK_PEPPER_DATASET/
+datasets/
+ml_models/
+picturesofbp/
+segmentation/
+
+# Node modules (already rebuilding)
+node_modules/
+
+# Optional: if you want to keep package-lock.json, remove it from above
+# package-lock.json
