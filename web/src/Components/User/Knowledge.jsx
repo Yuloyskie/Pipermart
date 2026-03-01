@@ -120,7 +120,7 @@ export default function Knowledge() {
                       Black pepper has been used for thousands of years in Asian cuisine and traditional medicine. Known as "black gold" in medieval Europe, it was once so valuable that it was used as currency in trade routes. The spice trade shaped world history and commerce for centuries.
                     </p>
                     <p className="highlight">
-                      💡 Fun Fact: Pepper was so valuable in the Middle Ages that it was literally worth more than gold by weight!
+                       Fun Fact: Pepper was so valuable in the Middle Ages that it was literally worth more than gold by weight!
                     </p>
                   </div>
                 )}
@@ -129,7 +129,7 @@ export default function Knowledge() {
               <div className="content-card expandable">
                 <h3 onClick={() => toggleExpandSection('production')} className="expandable-header">
                   <span className="expand-icon">{expandedSections['production'] ? '▼' : '▶'}</span>
-                  🌍 Global Production
+                   Global Production
                 </h3>
                 {expandedSections['production'] && (
                   <div className="expandable-content">
@@ -157,7 +157,7 @@ export default function Knowledge() {
               <div className="content-card expandable">
                 <h3 onClick={() => toggleExpandSection('economic')} className="expandable-header">
                   <span className="expand-icon">{expandedSections['economic'] ? '▼' : '▶'}</span>
-                  💰 Economic Importance
+                   Economic Importance
                 </h3>
                 {expandedSections['economic'] && (
                   <div className="expandable-content">
@@ -165,10 +165,10 @@ export default function Knowledge() {
                       For many farmers, especially in tropical regions, black pepper cultivation provides a stable income source. High-quality black pepper can command premium prices in international markets.
                     </p>
                     <ul className="info-list">
-                      <li>💵 Global market value: $3-4 billion annually</li>
-                      <li>📈 Growing demand from food & beverage industry</li>
-                      <li>🌱 Premium organic pepper commands 30-50% price premium</li>
-                      <li>🚚 Consistent international demand</li>
+                      <li> Global market value: $3-4 billion annually</li>
+                      <li> Growing demand from food & beverage industry</li>
+                      <li> Premium organic pepper commands 30-50% price premium</li>
+                      <li> Consistent international demand</li>
                     </ul>
                   </div>
                 )}

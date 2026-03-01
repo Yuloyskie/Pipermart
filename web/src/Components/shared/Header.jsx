@@ -139,11 +139,12 @@ export default function Header() {
             onMouseLeave={handleMenuLeave}
           >
             <a href="/#features">Features</a>
-            {activeDropdown === 'features' && (
+{activeDropdown === 'features' && (
               <div className="nav-dropdown">
                 <Link to="/leaf-analysis">Leaf Analysis</Link>
                 <Link to="/bunga-analysis">Bunga Analysis</Link>
                 <Link to="/forum">Community Forum</Link>
+                <Link to="/knowledge">Knowledge</Link>
                 <Link to="/weather">Weather</Link>
                 <Link to="/macro-mapping">Macromapping</Link>
                 <Link to="/how-it-works">How it works</Link>

@@ -1,8 +1,66 @@
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import './Hero.css';
 
+// Carousel media items
+const carouselMedia = [
+  { type: 'video', src: '/newbg.mp4', duration: null }, // Will auto-advance when video ends
+  { type: 'video', src: '/watermarked_preview.mp4', duration: null },
+  { type: 'image', src: '/paminta.webp', duration: 7000 }, // 7 seconds
+  { type: 'image', src: '/plant.jpg', duration: 7000 }, // 7 seconds
+];
+
 export default function Hero() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const videoRef = useRef(null);
+
+  const currentMedia = carouselMedia[currentIndex];
+
+  // Handle video ended event
+  const handleVideoEnded = () => {
+    goToNext();
+  };
+
+  // Go to next slide
+  const goToNext = () => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setCurrentIndex((prev) => (prev + 1) % carouselMedia.length);
+  };
+
+  // Go to previous slide
+  const goToPrev = () => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setCurrentIndex((prev) => (prev - 1 + carouselMedia.length) % carouselMedia.length);
+  };
+
+  // Handle transition complete
+  const handleTransitionComplete = () => {
+    setIsTransitioning(false);
+  };
+
+  // Set up timer for image slides
+  useEffect(() => {
+    if (currentMedia.type === 'image' && currentMedia.duration) {
+      const timer = setTimeout(() => {
+        goToNext();
+      }, currentMedia.duration);
+      return () => clearTimeout(timer);
+    }
+  }, [currentIndex, currentMedia.type, currentMedia.duration]);
+
+  // Handle video events
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video && currentMedia.type === 'video') {
+      video.currentTime = 0;
+      video.play().catch(() => {});
+    }
+  }, [currentIndex]);
+
   return (
     <section className="hero-section">
       {/* Background */}
@@ -123,7 +181,7 @@ export default function Hero() {
             </motion.div>
           </motion.div>
 
-          {/* Right Side - Video Blob */}
+          {/* Right Side - Carousel Blob */}
           <motion.div 
             className="hero-visual"
             initial={{ opacity: 0, scale: 0.8 }}
@@ -133,18 +191,56 @@ export default function Hero() {
             <div className="hero-blob-container">
               <div className="hero-blob"></div>
               <div className="hero-video-wrapper">
-                <video 
-                  className="hero-video"
-                  autoPlay 
-                  muted 
-                  loop 
-                  playsInline
-                >
-<source src="/newbg.mp4" type="video/mp4" />
-                </video>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentIndex}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 1.1 }}
+                    transition={{ duration: 0.5 }}
+                    onAnimationComplete={handleTransitionComplete}
+                    className="carousel-media-container"
+                  >
+                    {currentMedia.type === 'video' ? (
+                      <video 
+                        ref={videoRef}
+                        className="hero-video"
+                        autoPlay 
+                        muted 
+                        playsInline
+                        onEnded={handleVideoEnded}
+                      >
+                        <source src={currentMedia.src} type="video/mp4" />
+                      </video>
+                    ) : (
+                      <img 
+                        src={currentMedia.src} 
+                        alt="Carousel" 
+                        className="hero-image"
+                      />
+                    )}
+                  </motion.div>
+                </AnimatePresence>
               </div>
             </div>
           </motion.div>
+        </div>
+
+        {/* Carousel Navigation Dots */}
+        <div className="carousel-dots">
+          {carouselMedia.map((_, index) => (
+            <button
+              key={index}
+              className={`carousel-dot ${index === currentIndex ? 'active' : ''}`}
+              onClick={() => {
+                if (!isTransitioning) {
+                  setIsTransitioning(true);
+                  setCurrentIndex(index);
+                }
+              }}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
         </div>
       </div>
 
