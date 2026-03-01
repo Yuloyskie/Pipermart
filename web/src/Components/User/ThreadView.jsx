@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { validateContent } from '../utils/contentValidation';
+import Header from '../shared/Header';
 import './Forum.css';
 import Chat from '../Chat/Chat';
 
@@ -142,16 +143,14 @@ export default function ThreadView() {
     }
   };
 
-  const handleSubmitReport = async () => {
+const handleSubmitReport = async () => {
     if (!reportReason.trim()) {
       alert('Please provide a reason for the report');
       return;
     }
-
     try {
       setSubmittingReport(true);
       const token = localStorage.getItem('token');
-      
       if (reportType === 'thread') {
         await axios.post(
           `${import.meta.env.VITE_BACKEND_URL}/api/v1/forum/threads/${reportingId}/report`,

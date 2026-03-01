@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import logo from '/logowalangbg.png';
 
 const Register = () => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
@@ -55,7 +56,7 @@ const Register = () => {
     rightColumn: { flex: '0 0 50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: colors.background, padding: '40px', minHeight: '100vh' },
     authCard: { width: '100%', maxWidth: '440px' },
     logoTop: { display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '40px' },
-    logoIcon: { width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.primaryLight} 100%)`, borderRadius: '10px', fontSize: '20px' },
+    logoImg: { width: '40px', height: '40px', objectFit: 'contain', borderRadius: '10px' },
     logoText: { fontSize: '22px', fontWeight: '700', color: colors.primary, fontFamily: "'Playfair Display', serif" },
     authTitle: { fontSize: '32px', fontWeight: '700', color: colors.text, marginBottom: '8px', fontFamily: "'Playfair Display', serif" },
     authSubtitle: { fontSize: '15px', color: colors.textLight, marginBottom: '32px' },
@@ -159,7 +160,7 @@ const Register = () => {
       <div style={styles.rightColumn}>
         <div style={styles.authCard}>
           <div style={styles.logoTop}>
-            <div style={styles.logoIcon}>🌱</div>
+            <img src={logo} alt="PiperSmart Logo" style={styles.logoImg} />
             <span style={styles.logoText}>PiperSmart</span>
           </div>
           <h1 style={styles.authTitle}>Create Your Account</h1>

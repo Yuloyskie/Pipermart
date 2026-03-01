@@ -480,6 +480,9 @@ export default function Forum() {
         </div>
       </div>
 
+      {/* Floating Chat Widget */}
+      <Chat />
+
       {reportModalOpen && (
         <div className="modal-overlay" onClick={() => setReportModalOpen(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>

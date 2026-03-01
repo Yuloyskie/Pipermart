@@ -83,6 +83,31 @@
   left: 8%;
 }
 
+.icon-4 {
+  top: 8%;
+  right: 15%;
+}
+
+.icon-5 {
+  bottom: 15%;
+  right: 12%;
+}
+
+.icon-6 {
+  top: 35%;
+  left: 3%;
+}
+
+.icon-7 {
+  bottom: 40%;
+  right: 5%;
+}
+
+.icon-8 {
+  top: 25%;
+  right: 25%;
+}
+
 /* Hero Container */
 .hero-container {
   position: relative;
@@ -237,8 +262,8 @@
 /* Scroll Indicator */
 .hero-scroll-indicator {
   position: absolute;
-  bottom: 30px;
-  left: 50%;
+  bottom: 5%;
+  left: 45%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;

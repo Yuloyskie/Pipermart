@@ -174,18 +174,18 @@
   font-size: 3rem;
   margin-bottom: 1rem;
   display: block;
-  color: #181818;
+  color: #ffffff;
 }
 
 .feature-card h3 {
-  color: #0a0a0a;
+  color: #ffffff;
   font-size: 1.25rem;
   margin: 0 0 10px 0;
   font-weight: 600;
 }
 
 .feature-card p {
-  color: #1a1a1a;
+  color: #ffffff;
   font-size: 0.95rem;
   margin: 0;
 }

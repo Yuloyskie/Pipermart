@@ -1,13 +1,12 @@
 /* ============ FORUM CONTAINER - 3 COLUMN LAYOUT ============ */
 .forum-container {
   position: relative;
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
   min-height: calc(100vh - 80px);
   padding: 100px 20px 20px;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
+/* Home screen style background */
 .forum-container::before {
   content: '';
   position: fixed;
@@ -28,8 +27,6 @@
 
 .forum-container.fb-layout {
   position: relative;
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
 }
 
 .forum-container.fb-layout::before {
@@ -44,7 +41,7 @@
     radial-gradient(ellipse at 20% 30%, rgba(0, 40, 20, 0.85) 0%, transparent 50%),
     radial-gradient(ellipse at 80% 70%, rgba(10, 30, 15, 0.75) 0%, transparent 50%),
     linear-gradient(180deg, rgba(10, 10, 10, 0.9) 0%, rgba(13, 26, 18, 0.85) 50%, rgba(10, 10, 10, 0.9) 100%),
-    url('../../../paminta.webp');
+    url('../../../../paminta.webp');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -150,223 +147,120 @@
   gap: 16px;
 }
 
-/* ============ CREATE NEW POST BUTTON ============ */
+/* ============ CREATE POST BUTTON ============ */
 .create-post-btn {
-  width: 100%;
-  padding: 16px 20px;
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  background: white;
   border: none;
   border-radius: 8px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  font-size: 16px;
-  font-weight: 600;
-  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  color: #050505;
   cursor: pointer;
   transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
+  width: 100%;
 }
 
 .create-post-btn:hover {
-  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  background: #f5f5f5;
 }
 
-.create-post-btn:active {
-  transform: scale(0.98);
+/* ============ FILTER SECTION ============ */
+.filter-section {
+  margin-bottom: 20px;
 }
 
-/* ============ COMPOSER BOX ============ */
-.composer-box {
-  background: white;
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.composer-header {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
-.user-avatar-composer {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 16px;
-  flex-shrink: 0;
-}
-
-.composer-input {
-  flex: 1;
-  padding: 10px 16px;
-  background: #f0f2f5;
-  border: none;
-  border-radius: 20px;
-  font-size: 15px;
-  font-family: inherit;
+.filter-section label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
   color: #050505;
-  outline: none;
-  transition: background 0.2s ease;
-  cursor: pointer;
+  margin-bottom: 8px;
 }
 
-.composer-input:focus {
-  background: #e4e6eb;
-}
-
-.composer-input::placeholder {
-  color: #65676b;
-}
-
-/* Composer Images Preview */
-.composer-images-preview {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-  gap: 10px;
-  margin-bottom: 12px;
-  padding: 12px 0;
-  border-top: 1px solid #e5e5e5;
-}
-
-.composer-image-item {
-  position: relative;
-  border-radius: 8px;
-  overflow: hidden;
-  height: 80px;
-  background: #f0f0f0;
-}
-
-.composer-image-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.remove-composer-image {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  width: 24px;
-  height: 24px;
-  background: rgba(0, 0, 0, 0.6);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
-}
-
-.remove-composer-image:hover {
-  background: rgba(0, 0, 0, 0.9);
-}
-
-/* Composer Actions */
-.composer-actions {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  padding: 8px 0;
-  border-top: 1px solid #e5e5e5;
-}
-
-.composer-action-btn {
-  flex: 1;
-  padding: 8px 12px;
-  background: #f0f2f5;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  color: #65676b;
-  transition: all 0.2s ease;
-}
-
-.composer-action-btn:hover {
-  background: #e4e6eb;
-}
-
-.composer-post-btn {
-  padding: 8px 24px;
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 0.2s ease;
-}
-
-.composer-post-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #16a34a 0%, #0d7e4a 100%);
-  transform: translateY(-1px);
-}
-
-.composer-post-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* ============ THREADS FEED ============ */
-.threads-feed {
+.filter-buttons {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 6px;
 }
 
-.loading-spinner {
-  text-align: center;
-  padding: 40px;
-  font-size: 15px;
+.filter-btn {
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
   color: #65676b;
-  background: white;
-  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
 }
 
-.no-threads-message {
-  text-align: center;
-  padding: 60px 20px;
-  background: white;
+.filter-btn:hover {
+  background: #f0f2f5;
+}
+
+.filter-btn.active {
+  background: #e8f5e9;
+  color: #22c55e;
+  font-weight: 600;
+}
+
+/* ============ FORUM TABS ============ */
+.forum-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: none;
+  border: none;
   border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
   color: #65676b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
 }
 
-/* ============ THREAD CARD / FB POST ============ */
+.tab-btn:hover {
+  background: #f0f2f5;
+}
+
+.tab-btn.active {
+  background: #e8f5e9;
+  color: #22c55e;
+  font-weight: 600;
+}
+
+/* ============ THREAD CARD ============ */
 .thread-card {
   background: white;
   border-radius: 8px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.2s ease;
   overflow: hidden;
 }
 
-.thread-card:hover {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-}
-
-.thread-card.fb-post {
+.fb-post {
   padding: 16px;
 }
 
 /* Post Header */
 .post-header {
-  display: flex;
-  align-items: center;
   margin-bottom: 12px;
 }
 
@@ -374,57 +268,50 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  flex: 1;
 }
 
 .author-avatar-fb {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-  color: white;
   border-radius: 50%;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
+  color: white;
+  font-weight: 600;
   font-size: 16px;
-  flex-shrink: 0;
 }
 
 .author-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  flex: 1;
 }
 
 .author-name-fb {
-  margin: 0;
+  font-size: 15px;
   font-weight: 600;
   color: #050505;
-  font-size: 15px;
+  margin: 0;
 }
 
 .post-meta {
-  margin: 0;
-  font-size: 13px;
-  color: #65676b;
   display: flex;
-  gap: 8px;
   align-items: center;
+  gap: 8px;
   margin-top: 2px;
 }
 
 .post-time {
-  margin: 0;
+  font-size: 13px;
+  color: #65676b;
 }
 
 .category-badge-inline {
+  font-size: 12px;
+  padding: 2px 8px;
   background: #e8f5e9;
   color: #22c55e;
-  padding: 2px 8px;
   border-radius: 4px;
-  font-size: 11px;
-  font-weight: 600;
 }
 
 /* Post Content */
@@ -439,10 +326,9 @@
 
 .post-title {
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 600;
   color: #050505;
   margin: 0 0 8px;
-  cursor: pointer;
   line-height: 1.4;
 }
 
@@ -452,28 +338,29 @@
 
 .post-body {
   font-size: 15px;
-  color: #050505;
-  margin: 0 0 12px;
-  line-height: 1.6;
+  color: #1c1e21;
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* Post Images */
 .post-images-fb {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 8px;
-  margin-bottom: 12px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+  margin-top: 12px;
   border-radius: 8px;
   overflow: hidden;
 }
 
 .post-image-wrapper {
   position: relative;
-  border-radius: 8px;
+  aspect-ratio: 1;
   overflow: hidden;
-  cursor: pointer;
-  height: 200px;
-  background: #f0f0f0;
 }
 
 .post-image-wrapper img {
@@ -484,317 +371,138 @@
 }
 
 .post-image-wrapper:hover img {
-  transform: scale(1.02);
+  transform: scale(1.05);
 }
 
 /* Post Stats */
 .post-stats-fb {
   display: flex;
-  gap: 20px;
+  gap: 16px;
   padding: 12px 0;
   border-top: 1px solid #e5e5e5;
   border-bottom: 1px solid #e5e5e5;
-  font-size: 13px;
+  font-size: 14px;
   color: #65676b;
 }
 
 /* Post Actions */
 .post-actions-fb {
   display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 8px 0;
-  font-size: 14px;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
 }
 
 .post-action-link {
-  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
   background: none;
   border: none;
-  cursor: pointer;
-  color: #65676b;
-  font-weight: 600;
-  padding: 8px;
-  text-decoration: none;
-  transition: color 0.2s ease;
+  border-radius: 6px;
   font-size: 14px;
-  text-align: center;
+  font-weight: 500;
+  color: #65676b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
 }
 
 .post-action-link:hover {
+  background: #f0f2f5;
   color: #22c55e;
 }
 
-/* ============ RIGHT SIDEBAR (OPTIONAL) ============ */
+/* ============ NO THREADS MESSAGE ============ */
+.no-threads-message {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.no-threads-message p {
+  font-size: 16px;
+  color: #65676b;
+  margin: 0;
+}
+
+/* ============ LOADING SPINNER ============ */
+.loading-spinner {
+  text-align: center;
+  padding: 40px 20px;
+  color: #65676b;
+  font-size: 15px;
+}
+
+/* ============ LOGIN REQUIRED MESSAGE ============ */
+.login-required-message {
+  text-align: center;
+  padding: 80px 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.login-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.login-required-message h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #050505;
+  margin: 0 0 8px;
+}
+
+.login-required-message p {
+  font-size: 15px;
+  color: #65676b;
+  margin: 0 0 24px;
+}
+
+.login-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+}
+
+/* ============ SCROLL TRIGGER ============ */
+.scroll-trigger {
+  padding: 20px;
+  text-align: center;
+}
+
+/* ============ RIGHT SIDEBAR ============ */
 .fb-sidebar-right {
   position: sticky;
   top: 100px;
   height: fit-content;
 }
 
-/* ============ FLOATING COMPOSE BUTTON ============ */
-.compose-float-btn {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  width: 56px;
-  height: 56px;
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-  text-decoration: none;
-  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
-  transition: all 0.3s ease;
-  z-index: 100;
-}
-
-.compose-float-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.6);
-}
-
-.compose-float-btn:active {
-  transform: scale(0.95);
-}
-
-/* ============ SCROLL TRIGGER ============ */
-.scroll-trigger {
-  padding: 20px 0;
-  text-align: center;
-}
-
-/* ============ RESPONSIVE DESIGN ============ */
-@media (max-width: 1200px) {
-  .fb-main-wrapper {
-    grid-template-columns: 260px 1fr;
-  }
-
-  .fb-sidebar-right {
-    display: none;
-  }
-}
-
-@media (max-width: 980px) {
-  .fb-main-wrapper {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .fb-sidebar-left {
-    position: relative;
-    top: 0;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    padding: 12px;
-  }
-
-  .sidebar-title {
-    grid-column: 1 / -1;
-  }
-
-  .categories-list {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-  }
-
-  .category-item {
-    padding: 8px;
-    font-size: 13px;
-  }
-
-  .drafts-section {
-    grid-column: 1 / -1;
-  }
-}
-
-@media (max-width: 768px) {
-  .fb-main-wrapper {
-    padding: 0;
-    gap: 12px;
-  }
-
-  .fb-sidebar-left {
-    display: none;
-  }
-
-  .fb-feed-center {
-    padding: 0 10px;
-    gap: 12px;
-  }
-
-  .composer-box {
-    padding: 12px;
-    border-radius: 0;
-  }
-
-  .post-title {
-    font-size: 16px;
-  }
-
-  .post-body {
-    font-size: 14px;
-  }
-
-  .post-images-fb {
-    grid-template-columns: 1fr;
-  }
-
-  .compose-float-btn {
-    bottom: 20px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    font-size: 24px;
-  }
-}
-
-@media (max-width: 480px) {
-  .forum-container {
-    padding: 0;
-  }
-
-  .fb-feed-center {
-    padding: 0;
-    gap: 0;
-  }
-
-  .composer-box,
-  .thread-card {
-    border-radius: 0;
-    padding: 12px;
-  }
-
-  .composer-input {
-    font-size: 14px;
-  }
-
-  .post-title {
-    font-size: 15px;
-  }
-
-  .post-body {
-    font-size: 13px;
-  }
-
-  .compose-float-btn {
-    bottom: 16px;
-    right: 16px;
-    width: 48px;
-    height: 48px;
-    font-size: 22px;
-  }
-
-  .post-actions-fb {
-    gap: 0;
-  }
-
-  .post-action-link {
-    padding: 8px 4px;
-    font-size: 12px;
-  }
-
-  .post-stats-fb {
-    gap: 12px;
-    font-size: 12px;
-  }
-}
-
-/* ============ NEW FORUM FEATURES - TABS, FILTERS, REPORT ============ */
-
-/* Filter Section */
-.filter-section {
-  margin-bottom: 16px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.filter-section label {
-  display: block;
-  font-size: 12px;
-  font-weight: 600;
-  color: #666;
-  margin-bottom: 8px;
-  text-transform: uppercase;
-}
-
-.filter-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.filter-btn {
-  padding: 8px 12px;
-  border: 1px solid #e5e7eb;
-  background: #fff;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  color: #666;
-}
-
-.filter-btn:hover {
-  background: #f3f4f6;
-  border-color: #d1d5db;
-}
-
-.filter-btn.active {
-  background: #10b981;
-  color: white;
-  border-color: #10b981;
-}
-
-/* Forum Tabs */
-.forum-tabs {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 16px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.tab-btn {
-  padding: 10px 12px;
-  border: 1px solid #e5e7eb;
-  background: white;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  color: #333;
-  text-align: left;
-}
-
-.tab-btn:hover {
-  background: #f3f4f6;
-  border-color: #d1d5db;
-}
-
-.tab-btn.active {
-  background: #e0f2fe;
-  color: #0369a1;
-  border-color: #0369a1;
-  font-weight: 600;
-}
-
-/* Report Modal */
+/* ============ MODAL STYLES ============ */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
@@ -805,10 +513,9 @@
 .modal-content {
   background: white;
   border-radius: 12px;
+  padding: 24px;
   width: 90%;
   max-width: 500px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
   position: relative;
 }
 
@@ -820,89 +527,63 @@
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: #666;
-  z-index: 10;
-}
-
-.modal-header {
-  padding: 20px;
-  border-bottom: 1px solid #e5e7eb;
+  color: #65676b;
 }
 
 .modal-header h3 {
-  margin: 0;
-  font-size: 18px;
+  margin: 0 0 16px;
+  font-size: 20px;
   font-weight: 600;
   color: #050505;
 }
 
-.modal-body {
-  padding: 20px;
-  max-height: 400px;
-  overflow-y: auto;
-}
-
 .modal-body p {
-  margin: 0 0 12px;
-  color: #666;
-  font-size: 14px;
-  line-height: 1.5;
+  margin: 0 0 16px;
+  color: #65676b;
 }
 
-.report-textarea,
-.modal-textarea {
+.report-textarea {
   width: 100%;
   padding: 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 13px;
-  font-family: inherit;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  font-size: 15px;
   resize: vertical;
-  color: #333;
+  font-family: inherit;
 }
 
-.report-textarea:focus,
-.modal-textarea:focus {
+.report-textarea:focus {
   outline: none;
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  border-color: #22c55e;
 }
 
 .modal-footer {
-  padding: 16px 20px;
-  border-top: 1px solid #e5e7eb;
   display: flex;
   gap: 12px;
   justify-content: flex-end;
-}
-
-.btn-cancel,
-.btn-confirm {
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: none;
+  margin-top: 20px;
 }
 
 .btn-cancel {
-  background: #f3f4f6;
-  color: #333;
-}
-
-.btn-cancel:hover {
-  background: #e5e7eb;
+  padding: 10px 20px;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #65676b;
+  cursor: pointer;
 }
 
 .btn-confirm {
-  background: #10b981;
+  padding: 10px 20px;
+  background: #dc2626;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
   color: white;
-}
-
-.btn-confirm:hover:not(:disabled) {
-  background: #059669;
+  cursor: pointer;
 }
 
 .btn-confirm:disabled {
@@ -910,92 +591,104 @@
   cursor: not-allowed;
 }
 
-/* Modal Safe Space Message */
-.safe-space-notice {
-  background: #fef3c7;
-  border-left: 4px solid #f59e0b;
-  padding: 12px;
-  border-radius: 4px;
-  margin: 12px 0;
+/* ============ RESPONSIVE ============ */
+@media (max-width: 1024px) {
+  .fb-main-wrapper {
+    grid-template-columns: 1fr;
+  }
+
+  .fb-sidebar-left,
+  .fb-sidebar-right {
+    display: none;
+  }
 }
 
-.safe-space-notice p {
-  margin: 8px 0;
-  font-size: 13px;
+@media (max-width: 768px) {
+  .forum-container {
+    padding: 80px 12px 12px;
+  }
+
+  .post-images-fb {
+    grid-template-columns: 1fr;
+  }
+
+  .post-actions-fb {
+    justify-content: space-between;
+  }
 }
 
-.safe-space-notice p:first-child {
-  font-weight: 600;
-  color: #b45309;
-}
-
-.modal-label {
-  display: block;
-  font-size: 13px;
-  font-weight: 600;
-  color: #333;
-  margin: 12px 0 8px;
-}
-
-/* ============ CREATE THREAD PAGE STYLES ============ */
+/* ============ CREATE THREAD PAGE ============ */
 .create-thread-container {
+  position: relative;
   min-height: calc(100vh - 80px);
-  background: #f0f2f5;
-  padding: 40px 20px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  padding: 100px 20px 40px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.create-thread-container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100vh;
+  z-index: -1;
+  background: 
+    radial-gradient(ellipse at 20% 30%, rgba(0, 40, 20, 0.85) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(10, 30, 15, 0.75) 0%, transparent 50%),
+    linear-gradient(180deg, rgba(10, 10, 10, 0.9) 0%, rgba(13, 26, 18, 0.85) 50%, rgba(10, 10, 10, 0.9) 100%),
+    url('../../../paminta.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .create-thread-card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 32px;
-  width: 100%;
   max-width: 700px;
+  margin: 0 auto;
+  padding: 40px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .create-thread-card h1 {
-  font-size: 24px;
+  margin: 0 0 30px;
+  font-size: 28px;
   font-weight: 700;
-  color: #050505;
-  margin: 0 0 24px;
-  text-align: center;
+  color: #1a1a1a;
 }
 
 .draft-badge {
+  display: inline-block;
+  padding: 8px 16px;
   background: #fff3cd;
   color: #856404;
-  padding: 10px 16px;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
   margin-bottom: 20px;
-  text-align: center;
 }
 
 .save-message {
-  background: #d1fae5;
-  color: #065f46;
-  padding: 10px 16px;
+  padding: 12px 16px;
+  background: #d1e7dd;
+  color: #0f5132;
   border-radius: 8px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   margin-bottom: 20px;
-  text-align: center;
 }
 
-/* Form Groups */
 .form-group {
   margin-bottom: 24px;
 }
 
 .form-group label {
   display: block;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
-  color: #050505;
+  color: #1a1a1a;
   margin-bottom: 8px;
 }
 
@@ -1003,14 +696,14 @@
 .form-select,
 .form-textarea {
   width: 100%;
-  padding: 12px 16px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
+  padding: 14px 16px;
   font-size: 15px;
   font-family: inherit;
-  color: #050505;
-  background: white;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  border: 2px solid #e5e5e5;
+  border-radius: 8px;
+  background: #f9fafb;
+  color: #1a1a1a;
+  transition: all 0.2s ease;
   box-sizing: border-box;
 }
 
@@ -1019,7 +712,8 @@
 .form-textarea:focus {
   outline: none;
   border-color: #22c55e;
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+  background: white;
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
 }
 
 .form-input::placeholder,
@@ -1029,24 +723,34 @@
 
 .form-textarea {
   resize: vertical;
-  min-height: 150px;
+  min-height: 200px;
+  line-height: 1.6;
+}
+
+.form-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 20px;
+  padding-right: 40px;
 }
 
 .char-count {
-  font-size: 12px;
+  font-size: 13px;
   color: #6b7280;
-  margin: 6px 0 0;
+  margin-top: 6px;
   text-align: right;
 }
 
-/* Image Upload */
 .image-upload-area {
   border: 2px dashed #d1d5db;
-  border-radius: 8px;
-  padding: 32px;
+  border-radius: 12px;
+  padding: 40px 20px;
   text-align: center;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   background: #f9fafb;
 }
 
@@ -1060,21 +764,20 @@
 }
 
 .image-upload-label {
-  font-size: 14px;
+  font-size: 15px;
   color: #6b7280;
   cursor: pointer;
   display: block;
 }
 
-/* Image Previews */
 .image-previews {
-  margin-top: 16px;
+  margin-top: 20px;
 }
 
 .preview-title {
   font-size: 14px;
   font-weight: 600;
-  color: #050505;
+  color: #1a1a1a;
   margin: 0 0 12px;
 }
 
@@ -1120,7 +823,6 @@
   background: rgba(0, 0, 0, 0.8);
 }
 
-/* Action Buttons */
 .action-buttons {
   display: flex;
   gap: 12px;
@@ -1176,10 +878,9 @@
   color: #374151;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .create-thread-container {
-    padding: 20px 12px;
+    padding: 80px 12px 20px;
   }
 
   .create-thread-card {
@@ -1198,5 +899,3 @@
     width: 100%;
   }
 }
-
-/* Placeholder for other page styles */

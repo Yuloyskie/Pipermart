@@ -41,6 +41,51 @@ export default function Hero() {
             <path d="M12 22c4-4 8-7.5 8-12 0-3.5-2.5-6-6-6s-6 2.5-6 6c0 4.5 4 8 8 12z"/>
           </svg>
         </motion.div>
+        <motion.div 
+          className="floating-icon icon-4"
+          animate={{ y: [0, -18, 0], rotate: [0, 8, -8, 0] }}
+          transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"/>
+          </svg>
+        </motion.div>
+        <motion.div 
+          className="floating-icon icon-5"
+          animate={{ y: [0, 14, 0], rotate: [0, -15, 15, 0] }}
+          transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12c0 1.33.26 2.61.74 3.77l-1.89.66c-.6-1.41-.85-2.93-.85-4.43 0-4.97 4.03-9 9-9s9 4.03 9 9c0 1.5-.25 3.02-.85 4.43l-1.89-.66c.48-1.16.74-2.44.74-3.77 0-5.52-4.48-10-10-10z"/>
+          </svg>
+        </motion.div>
+        <motion.div 
+          className="floating-icon icon-6"
+          animate={{ y: [0, -12, 0], rotate: [0, 12, -12, 0] }}
+          transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut", delay: 1.2 }}
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 22c4-4 8-7.5 8-12 0-3.5-2.5-6-6-6s-6 2.5-6 6c0 4.5 4 8 8 12z"/>
+          </svg>
+        </motion.div>
+        <motion.div 
+          className="floating-icon icon-7"
+          animate={{ y: [0, 16, 0], rotate: [0, -10, 10, 0] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"/>
+          </svg>
+        </motion.div>
+        <motion.div 
+          className="floating-icon icon-8"
+          animate={{ y: [0, -14, 0], rotate: [0, 6, -6, 0] }}
+          transition={{ duration: 4.7, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12c0 1.33.26 2.61.74 3.77l-1.89.66c-.6-1.41-.85-2.93-.85-4.43 0-4.97 4.03-9 9-9s9 4.03 9 9c0 1.5-.25 3.02-.85 4.43l-1.89-.66c.48-1.16.74-2.44.74-3.77 0-5.52-4.48-10-10-10z"/>
+          </svg>
+        </motion.div>
       </div>
 
       <div className="hero-container">
@@ -56,7 +101,7 @@ export default function Hero() {
               Anything's possible when you have the knowledge
             </h1>
             <p className="hero-description">
-              Join our community of pepper farmers and agricultural experts. 
+              Join our community of black pepper farmers and agricultural experts. 
               Share insights, discover best practices, and grow your harvest with AI-powered tools.
             </p>
             
@@ -95,7 +140,7 @@ export default function Hero() {
                   loop 
                   playsInline
                 >
-                  <source src="../../../../../newbg.mp4" type="video/mp4" />
+<source src="/newbg.mp4" type="video/mp4" />
                 </video>
               </div>
             </div>
