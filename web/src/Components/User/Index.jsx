@@ -11,31 +11,26 @@ const featuresList = [
     {
       title: 'Leaf Analysis',
       description: 'Upload photos of pepper leaves for disease detection and identification',
-      icon: '🍃',
       link: '/leaf-analysis'
     },
     {
       title: 'Bunga Analysis',
       description: 'Analyze pepper flowers and fruits for health assessment and ripeness detection',
-      icon: '🌶️',
       link: '/bunga-analysis'
     },
     {
       title: 'Weather Updates',
       description: 'Get real-time weather information for your farming area',
-      icon: '🌤️',
       link: '/weather'
     },
     {
       title: 'Community Forum',
       description: 'Connect with other farmers and share experiences',
-      icon: '👥',
       link: '/forum'
     },
     {
       title: 'Macromapping',
       description: 'Visualize your plantation with advanced mapping tools',
-      icon: '🗺️',
       link: '/macro-mapping'
     }
   ];

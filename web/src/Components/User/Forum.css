@@ -494,6 +494,9 @@
   position: sticky;
   top: 100px;
   height: fit-content;
+  min-height: calc(100vh - 140px);
+  display: flex;
+  flex-direction: column;
 }
 
 /* ============ MODAL STYLES ============ */

@@ -86,12 +86,12 @@ export default function Knowledge() {
   };
 
   const tabs = [
-    { id: 'overview', label: '📚 Overview', icon: '📚' },
-    { id: 'botanical', label: '🌱 Botanical Information', icon: '🌱' },
-    { id: 'cultivation', label: '🌾 Cultivation Guide', icon: '🌾' },
-    { id: 'diseases', label: '🔍 Disease Management', icon: '🔍' },
-    { id: 'benefits', label: '💪 Health Benefits', icon: '💪' },
-    { id: 'news', label: '📰 News & Resources', icon: '📰' },
+    { id: 'overview', label: ' Overview' },
+    { id: 'botanical', label: 'Botanical Information' },
+    { id: 'cultivation', label: 'Cultivation Guide' },
+    { id: 'diseases', label: ' Disease Management'},
+    { id: 'benefits', label: ' Health Benefits'},
+    { id: 'news', label: ' News & Resources'  },
   ];
 
   const renderContent = () => {
@@ -99,7 +99,7 @@ export default function Knowledge() {
       case 'overview':
         return (
           <div className="content-section">
-            <h2 className="section-title">🌿 What is Black Pepper?</h2>
+            <h2 className="section-title"> What is Black Pepper?</h2>
             <div className="overview-hero">
               <div className="overview-text">
                 <p className="large-intro">
@@ -112,7 +112,7 @@ export default function Knowledge() {
               <div className="content-card expandable">
                 <h3 onClick={() => toggleExpandSection('history')} className="expandable-header">
                   <span className="expand-icon">{expandedSections['history'] ? '▼' : '▶'}</span>
-                  🏛️ Historical Significance
+                   Historical Significance
                 </h3>
                 {expandedSections['history'] && (
                   <div className="expandable-content">
@@ -179,7 +179,7 @@ export default function Knowledge() {
               <h3>Ready to Start Growing?</h3>
               <p>Explore our cultivation guide to learn everything about farming black pepper.</p>
               <button onClick={() => setActiveTab('cultivation')} className="btn-primary">
-                📚 View Cultivation Guide
+                 View Cultivation Guide
               </button>
             </div>
           </div>
@@ -188,7 +188,7 @@ export default function Knowledge() {
       case 'botanical':
         return (
           <div className="content-section">
-            <h2 className="section-title">🌱 Botanical Information</h2>
+            <h2 className="section-title"> Botanical Information</h2>
             
             <div className="botanical-intro">
               <div className="intro-card">
@@ -220,7 +220,7 @@ export default function Knowledge() {
               <div className="content-card expandable">
                 <h3 onClick={() => toggleExpandSection('structure')} className="expandable-header">
                   <span className="expand-icon">{expandedSections['structure'] ? '▼' : '▶'}</span>
-                  🌿 Plant Structure
+                   Plant Structure
                 </h3>
                 {expandedSections['structure'] && (
                   <div className="expandable-content">
@@ -240,7 +240,7 @@ export default function Knowledge() {
               <div className="content-card expandable">
                 <h3 onClick={() => toggleExpandSection('lifecycle')} className="expandable-header">
                   <span className="expand-icon">{expandedSections['lifecycle'] ? '▼' : '▶'}</span>
-                  📅 Growth Cycle
+                   Growth Cycle
                 </h3>
                 {expandedSections['lifecycle'] && (
                   <div className="expandable-content">
@@ -268,25 +268,25 @@ export default function Knowledge() {
               <div className="content-card expandable">
                 <h3 onClick={() => toggleExpandSection('climate')} className="expandable-header">
                   <span className="expand-icon">{expandedSections['climate'] ? '▼' : '▶'}</span>
-                  🌡️ Climate Requirements
+                   Climate Requirements
                 </h3>
                 {expandedSections['climate'] && (
                   <div className="expandable-content">
                     <div className="requirements-grid">
                       <div className="req-box">
-                        <h4>🌡️ Temperature</h4>
+                        <h4> Temperature</h4>
                         <p className="highlight">20-30°C (optimal)</p>
                       </div>
                       <div className="req-box">
-                        <h4>💧 Rainfall</h4>
+                        <h4> Rainfall</h4>
                         <p className="highlight">200-250 cm annually</p>
                       </div>
                       <div className="req-box">
-                        <h4>💨 Humidity</h4>
+                        <h4> Humidity</h4>
                         <p className="highlight">70-80%</p>
                       </div>
                       <div className="req-box">
-                        <h4>⛰️ Elevation</h4>
+                        <h4> Elevation</h4>
                         <p className="highlight">Up to 1,500 meters</p>
                       </div>
                     </div>
@@ -297,7 +297,7 @@ export default function Knowledge() {
               <div className="content-card expandable">
                 <h3 onClick={() => toggleExpandSection('soil')} className="expandable-header">
                   <span className="expand-icon">{expandedSections['soil'] ? '▼' : '▶'}</span>
-                  🌍 Soil Conditions
+                   Soil Conditions
                 </h3>
                 {expandedSections['soil'] && (
                   <div className="expandable-content">
@@ -333,7 +333,7 @@ export default function Knowledge() {
       case 'cultivation':
         return (
           <div className="content-section">
-            <h2 className="section-title">🌾 Cultivation Guide</h2>
+            <h2 className="section-title"> Cultivation Guide</h2>
 
             <div className="cultivation-steps">
               <div className="step-card">
@@ -377,7 +377,7 @@ export default function Knowledge() {
               <div className="content-card expandable">
                 <h3 onClick={() => toggleExpandSection('fertilizer')} className="expandable-header">
                   <span className="expand-icon">{expandedSections['fertilizer'] ? '▼' : '▶'}</span>
-                  🌱 Fertilizer Schedule
+                   Fertilizer Schedule
                 </h3>
                 {expandedSections['fertilizer'] && (
                   <div className="expandable-content">
@@ -407,7 +407,7 @@ export default function Knowledge() {
                         </tr>
                       </tbody>
                     </table>
-                    <p className="note">💡 Apply in two splits: May and August</p>
+                    <p className="note"> Apply in two splits: May and August</p>
                   </div>
                 )}
               </div>
@@ -423,7 +423,7 @@ export default function Knowledge() {
                       <li><strong>Rainy Season:</strong> Minimal watering; ensure good drainage</li>
                       <li><strong>Dry Season:</strong> Regular watering every 7-10 days</li>
                       <li><strong>Mature Plants:</strong> 1,000-1,500 liters per plant annually</li>
-                      <li><strong>⚠️ Warning:</strong> Avoid waterlogging at all costs</li>
+                      <li><strong> Warning:</strong> Avoid waterlogging at all costs</li>
                     </ul>
                   </div>
                 )}
@@ -452,7 +452,7 @@ export default function Knowledge() {
             </div>
 
             <div className="yield-info">
-              <h3>🎯 Expected Yield</h3>
+              <h3> Expected Yield</h3>
               <div className="yield-stat">
                 <h4>3-5 tons</h4>
                 <p>dry pepper per hectare (mature plantation)</p>

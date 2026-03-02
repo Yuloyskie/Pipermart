@@ -20,55 +20,56 @@ const Login = () => {
   
   const navigate = useNavigate();
 
-  const colors = {
-    primary: '#04461f',
-    primaryLight: '#6e5734',
+const colors = {
+    primary: '#000000',
+    primaryLight: '#1B4332',
     secondary: '#FFFFFF',
-    background: '#F8F9FA',
-    text: '#1B4332',
-    textLight: '#6C757D',
-    border: '#DEE2E6',
-    borderFocus: '#1B4332',
+    background: '#050505',
+    text: '#FFFFFF',
+    textLight: '#ADB5BD',
+    border: '#1B4332',
+    borderFocus: '#52B788',
     error: '#DC3545',
-    gradientEnd: '#40916C',
+    gradientEnd: '#1B4332',
+    accent: '#52B788',
   };
 
-  const styles = {
-    splitContainer: { minHeight: '100vh', display: 'flex', width: '100%' },
-    leftColumn: { flex: '0 0 50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: colors.background, padding: '40px', minHeight: '100vh' },
+const styles = {
+    splitContainer: { minHeight: '100vh', display: 'flex', width: '100%', background: '#050505' },
+leftColumn: { flex: '0 0 40%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f0eeee', padding: '40px', minHeight: '100vh' },
     authCard: { width: '100%', maxWidth: '440px' },
     logoTop: { display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '40px' },
-    logoIcon: { width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.primaryLight} 100%)`, borderRadius: '10px', fontSize: '20px' },
-    logoText: { fontSize: '22px', fontWeight: '700', color: colors.primary, fontFamily: "'Playfair Display', serif" },
-    authTitle: { fontSize: '32px', fontWeight: '700', color: colors.text, marginBottom: '8px', fontFamily: "'Playfair Display', serif" },
-    authSubtitle: { fontSize: '15px', color: colors.textLight, marginBottom: '32px' },
+    logoIcon: { width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #52B788 0%, #1B4332 100%)', borderRadius: '10px', fontSize: '20px' },
+    logoText: { fontSize: '22px', fontWeight: '700', color: '#52B788', fontFamily: "'Playfair Display', serif", textShadow: '0 0 20px rgba(82, 183, 136, 0.3)' },
+    authTitle: { fontSize: '32px', fontWeight: '700', color: '#15684c', marginBottom: '8px', fontFamily: "'Playfair Display', serif" },
+    authSubtitle: { fontSize: '15px', color: '#636464', marginBottom: '32px' },
     alert: { padding: '14px 16px', borderRadius: '10px', marginBottom: '24px', display: 'flex', alignItems: 'center', fontSize: '14px' },
     alertError: { backgroundColor: 'rgba(220, 53, 69, 0.1)', border: `1px solid ${colors.error}`, color: colors.error },
     formGroup: { marginBottom: '20px' },
-    label: { display: 'block', color: colors.text, fontWeight: '600', marginBottom: '8px', fontSize: '14px', fontFamily: "'Inter', sans-serif" },
-    input: { width: '100%', padding: '14px 16px', border: `2px solid ${colors.border}`, borderRadius: '12px', fontSize: '15px', transition: 'all 0.3s ease', background: colors.secondary, boxSizing: 'border-box', color: colors.text, fontFamily: "'Inter', sans-serif" },
+    label: { display: 'block', color: '#5f5f5f', fontWeight: '600', marginBottom: '8px', fontSize: '14px', fontFamily: "'Inter', sans-serif" },
+    input: { width: '100%', padding: '14px 16px', border: '2px solid #1B4332', borderRadius: '12px', fontSize: '15px', transition: 'all 0.3s ease', background: 'rgba(0, 0, 0, 0.5)', boxSizing: 'border-box', color: '#5c5b5b', fontFamily: "'Inter', sans-serif" },
     passwordContainer: { position: 'relative' },
-    passwordToggle: { position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', padding: '4px', color: colors.textLight, zIndex: '2' },
+    passwordToggle: { position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', padding: '4px', color: '#ADB5BD', zIndex: '2' },
     formOptions: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '24px 0' },
-    checkboxLabel: { display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '14px', color: colors.textLight, fontFamily: "'Inter', sans-serif" },
-    forgotPassword: { color: colors.primary, textDecoration: 'none', fontSize: '14px', fontWeight: '600', fontFamily: "'Inter', sans-serif" },
-    submitButton: { width: '100%', padding: '16px', background: colors.primary, color: colors.secondary, border: 'none', borderRadius: '50px', fontSize: '16px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '28px', fontFamily: "'Inter', sans-serif", boxShadow: `0 4px 15px rgba(27, 67, 50, 0.3)` },
+    checkboxLabel: { display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '14px', color: '#626364', fontFamily: "'Inter', sans-serif" },
+    forgotPassword: { color: '#52B788', textDecoration: 'none', fontSize: '14px', fontWeight: '600', fontFamily: "'Inter', sans-serif" },
+    submitButton: { width: '100%', padding: '16px', background: 'linear-gradient(135deg, #52B788 0%, #1B4332 50%, #000000 100%)', color: '#FFFFFF', border: '1px solid rgba(82, 183, 136, 0.3)', borderRadius: '50px', fontSize: '16px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '28px', fontFamily: "'Inter', sans-serif", boxShadow: '0 4px 15px rgba(82, 183, 136, 0.3)' },
     spinner: { width: '18px', height: '18px', border: '2px solid rgba(255, 255, 255, 0.3)', borderRadius: '50%', borderTopColor: 'white', animation: 'spin 1s ease-in-out infinite' },
-    orDivider: { display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '24px 0', color: colors.textLight, fontSize: '14px', fontFamily: "'Inter', sans-serif" },
-    orLine: { flex: 1, height: '1px', background: colors.border },
+    orDivider: { display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '24px 0', color: '#ADB5BD', fontSize: '14px', fontFamily: "'Inter', sans-serif" },
+    orLine: { flex: 1, height: '1px', background: 'rgba(82, 183, 136, 0.3)' },
     orText: { padding: '0 16px' },
     socialContainer: { display: 'flex', justifyContent: 'center', gap: '16px' },
-    socialButton: { width: '56px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0', border: `2px solid ${colors.border}`, borderRadius: '50%', background: colors.secondary, cursor: 'pointer', transition: 'all 0.3s ease' },
+    socialButton: { width: '56px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0', border: '2px solid rgba(82, 183, 136, 0.3)', borderRadius: '50%', background: 'rgba(0, 0, 0, 0.3)', cursor: 'pointer', transition: 'all 0.3s ease' },
     socialIcon: { width: '24px', height: '24px' },
-    socialSpinner: { width: '20px', height: '20px', border: `2px solid rgba(27, 67, 50, 0.3)`, borderRadius: '50%', borderTopColor: colors.primary, animation: 'spin 1s ease-in-out infinite' },
-    footer: { textAlign: 'center', marginTop: '32px', color: colors.textLight, fontSize: '15px', fontFamily: "'Inter', sans-serif" },
-    link: { color: colors.primary, textDecoration: 'none', fontWeight: '600' },
-    rightColumn: { flex: '0 0 50%', background: `linear-gradient(180deg, ${colors.primary} 0%, ${colors.gradientEnd} 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px', position: 'relative', overflow: 'hidden', minHeight: '100vh' },
+    socialSpinner: { width: '20px', height: '20px', border: '2px solid rgba(82, 183, 136, 0.3)', borderRadius: '50%', borderTopColor: '#52B788', animation: 'spin 1s ease-in-out infinite' },
+    footer: { textAlign: 'center', marginTop: '32px', color: '#ADB5BD', fontSize: '15px', fontFamily: "'Inter', sans-serif" },
+    link: { color: '#52B788', textDecoration: 'none', fontWeight: '600' },
+rightColumn: { flex: '0 0 60%', background: 'linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.7) 100%), url(/LoginBG.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px', position: 'relative', overflow: 'hidden', minHeight: '100vh' },
     geometricOverlay: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' },
     welcomeContent: { textAlign: 'center', maxWidth: '420px', position: 'relative', zIndex: 1 },
-    welcomeTitle: { fontSize: '42px', fontWeight: '700', color: colors.secondary, marginBottom: '20px', fontFamily: "'Playfair Display', serif", lineHeight: '1.2' },
-    welcomeSubtitle: { fontSize: '17px', color: 'rgba(255, 255, 255, 0.9)', marginBottom: '36px', lineHeight: '1.6', fontFamily: "'Inter', sans-serif" },
-    signupButton: { display: 'inline-block', padding: '16px 40px', background: 'transparent', color: colors.secondary, border: '2px solid rgba(255, 255, 255, 0.6)', borderRadius: '50px', fontSize: '16px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s ease', textDecoration: 'none', fontFamily: "'Inter', sans-serif" },
+    welcomeTitle: { fontSize: '42px', fontWeight: '700', color: '#FFFFFF', marginBottom: '20px', fontFamily: "'Playfair Display', serif", lineHeight: '1.2', textShadow: '0 0 30px rgba(82, 183, 136, 0.3)' },
+welcomeSubtitle: { fontSize: '17px', color: 'rgba(255, 255, 255, 0.95)', marginBottom: '36px', lineHeight: '1.6', fontFamily: "'Inter', sans-serif" },
+    signupButton: { display: 'inline-block', padding: '16px 40px', background: 'transparent', color: '#52B788', border: '2px solid #52B788', borderRadius: '50px', fontSize: '16px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s ease', textDecoration: 'none', fontFamily: "'Inter', sans-serif" },
   };
 
   const handleChange = (e) => {
@@ -246,11 +247,11 @@ const Login = () => {
 
       <div style={styles.rightColumn}>
         <div style={styles.geometricOverlay}>
-          <svg width="100%" height="100%" viewBox="0 0 400 400" preserveAspectRatio="none">
-            <circle cx="350" cy="50" r="200" fill="rgba(255,255,255,0.05)" />
-            <circle cx="0" cy="400" r="150" fill="rgba(255,255,255,0.03)" />
-            <polygon points="400,0 500,0 400,200" fill="rgba(255,255,255,0.04)" />
-            <circle cx="100" cy="100" r="80" fill="rgba(255,255,255,0.03)" />
+<svg width="100%" height="100%" viewBox="0 0 400 400" preserveAspectRatio="none">
+            <circle cx="350" cy="50" r="200" fill="rgba(82,183,136,0.1)" />
+            <circle cx="0" cy="400" r="150" fill="rgba(82,183,136,0.08)" />
+            <polygon points="400,0 500,0 400,200" fill="rgba(82,183,136,0.1)" />
+            <circle cx="100" cy="100" r="80" fill="rgba(82,183,136,0.08)" />
           </svg>
         </div>
 

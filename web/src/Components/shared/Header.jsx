@@ -156,8 +156,6 @@ export default function Header() {
 
         {/* Right Section - Conditional Rendering */}
         <div className="header-actions">
-          <input type="text" placeholder="Search..." className="header-search" />
-
           {!isLoggedIn ? (
             /* Non-Logged-In User */
             <div className="header-auth-buttons">

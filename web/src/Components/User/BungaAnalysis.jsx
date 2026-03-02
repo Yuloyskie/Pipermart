@@ -9,7 +9,6 @@ const BungaAnalysis = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
-  const [processingTime, setProcessingTime] = useState(null);
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
@@ -18,13 +17,19 @@ const BungaAnalysis = () => {
   useEffect(() => {
     const style = document.createElement('style');
     style.textContent = `
-      @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
+      @keyframes scan {
+        0% { top: 0%; }
+        100% { top: 100%; }
       }
-      @keyframes slideUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
+      .scanning-bar {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: rgba(39, 174, 96, 0.8);
+        box-shadow: 0 0 15px 5px rgba(39, 174, 96, 0.5);
+        z-index: 10;
+        animation: scan 2s linear infinite;
       }
     `;
     document.head.appendChild(style);
@@ -32,17 +37,14 @@ const BungaAnalysis = () => {
 
   const colors = {
     primary: '#1B4D3E',
-    primaryDark: '#0D2818',
     primaryLight: '#27AE60',
-    secondary: '#FFFFFF',
-    background: '#F8FAF7',
+    secondary: '#ffffffbb',
+    background: '#f8faf798',
     text: '#1B4D3E',
-    textLight: '#5A7A73',
+    textLight: '#3c4d49f6',
     border: '#D4E5DD',
     accent: '#D4AF37',
-    warning: '#F39C12',
     danger: '#E74C3C',
-    success: '#27AE60',
   };
 
   const ripenessRecommendations = {
@@ -51,14 +53,14 @@ const BungaAnalysis = () => {
       title: 'Bunga is Ripe',
       description: 'Your black pepper bunga has reached optimal ripeness for harvesting.',
       actions: ['Harvest immediately for best flavor', 'Use sharp pruning shears to avoid damage', 'Store in cool, dry place', 'Process or dry within 24 hours'],
-      color: colors.success
+      color: colors.primaryLight
     },
     'Unripe': {
       icon: '🟡',
       title: 'Bunga Not Yet Ripe',
       description: 'The bunga requires more time to reach full ripeness.',
       actions: ['Wait 5-7 more days before harvesting', 'Ensure adequate water and nutrients', 'Protect from birds and pests', 'Check daily for color change'],
-      color: colors.warning
+      color: '#F39C12'
     },
     'Rotten': {
       icon: '🔴',
@@ -109,7 +111,6 @@ const BungaAnalysis = () => {
     setLoading(true);
     setError(null);
     setResult(null);
-    const startTime = Date.now();
 
     try {
       const token = localStorage.getItem('token');
@@ -123,12 +124,8 @@ const BungaAnalysis = () => {
         timeout: 180000
       });
 
-      const endTime = Date.now();
-      const duration = endTime - startTime;
-
       if (response.data) {
-        setResult({ ...response.data, processingTime: duration });
-        setProcessingTime(duration);
+        setResult(response.data);
       } else {
         setError('No result received from server');
       }
@@ -147,94 +144,146 @@ const BungaAnalysis = () => {
   const marketGrade = result && result.class ? getMarketGrade(result.class) : null;
 
   return (
-    <div style={{ minHeight: '100vh', position: 'relative' }}>
+    <div style={{ minHeight: '100vh', position: 'relative', fontFamily: 'Inter, sans-serif' }}>
       <Header />
+      {/* Background stays as requested */}
       <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        minHeight: '100vh',
-        zIndex: -1,
-        background: `
-          radial-gradient(ellipse at 20% 30%, rgba(0, 40, 20, 0.85) 0%, transparent 50%),
-          radial-gradient(ellipse at 80% 70%, rgba(10, 30, 15, 0.75) 0%, transparent 50%),
-          linear-gradient(180deg, rgba(10, 10, 10, 0.9) 0%, rgba(13, 26, 18, 0.85) 50%, rgba(10, 10, 10, 0.9) 100%),
-          url('../../../paminta.webp')
-        `,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        position: 'fixed', top: 0, left: 0, width: '100%', minHeight: '100vh', zIndex: -1,
+        background: `radial-gradient(ellipse at 20% 30%, rgba(0, 40, 20, 0.85) 0%, transparent 50%), linear-gradient(180deg, rgba(10, 10, 10, 0.9) 0%, rgba(13, 26, 18, 0.85) 50%, rgba(10, 10, 10, 0.9) 100%)`,
       }} />
-      <div style={{ minHeight: '100vh', padding: '80px 20px 20px' }}>
-        <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'grid', gridTemplateColumns: result ? '1fr 1fr' : '1fr', gap: '24px' }}>
-          {/* Upload Section */}
-          <div style={{ background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(10px)', borderRadius: '16px', padding: '40px', boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)' }}>
-            <h2 style={{ color: colors.text, fontSize: '24px', fontWeight: '800', margin: '0 0 24px 0' }}>🫒 Bunga Ripeness Analyzer</h2>
-            <p style={{ color: colors.textLight, fontSize: '14px', margin: '0 0 24px 0' }}>Upload a clear image of your black pepper bunga. Our AI model will analyze ripeness, health grade, and market classification.</p>
 
-            {preview ? (
-              <div style={{ marginBottom: '24px', position: 'relative' }}>
-                <img src={preview} alt="Preview" style={{ width: '100%', height: 'auto', borderRadius: '12px', border: `2px solid ${colors.border}`, maxHeight: '300px', objectFit: 'cover' }} />
-                <button onClick={() => { setImage(null); setPreview(null); setResult(null); setError(null); }} style={{ position: 'absolute', top: '8px', right: '8px', background: colors.danger, color: colors.secondary, border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', fontSize: '18px' }}>✕</button>
+      <div style={{ padding: '100px 20px' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+          
+          {/* Dual Card Layout - Two separate cards */}
+          <div style={{ display: 'grid', gridTemplateColumns: result ? '1fr 1fr' : '1fr', gap: '24px' }}>
+            
+            {/* Card 1: Image/Input Area */}
+            <div style={{ 
+              background: 'white', borderRadius: '24px', 
+              overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.61)'
+            }}>
+              {/* Top Header Bar */}
+              <div style={{ padding: '20px 30px', borderBottom: `1px solid ${colors.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '24px' }}>🫒</span>
+                  <h2 style={{ margin: 0, color: colors.primary, fontSize: '20px', fontWeight: '800' }}>Bunga Ripeness Analyzer</h2>
+                </div>
               </div>
-            ) : (
-              <div style={{ border: `2px dashed ${colors.border}`, borderRadius: '12px', padding: '40px', textAlign: 'center', marginBottom: '24px', backgroundColor: colors.background }}>
-                <div style={{ fontSize: '48px', marginBottom: '12px' }}>🫒</div>
-                <div style={{ color: colors.text, fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>No image selected</div>
-                <div style={{ color: colors.textLight, fontSize: '13px' }}>Upload a bunga image to analyze</div>
+
+              <div style={{ padding: '30px' }}>
+                <p style={{ color: colors.textLight, fontSize: '14px', marginBottom: '20px' }}>
+                  Upload a clear image of your black pepper bunga. Our AI model will analyze ripeness, health grade, and market classification.
+                </p>
+                
+                <div style={{ position: 'relative', width: '100%', height: result ? '500px' : '350px', backgroundColor: '#f1f5f9', borderRadius: '16px', overflow: 'hidden', border: `1px solid ${colors.border}`, transition: 'height 0.3s ease' }}>
+                  {preview ? (
+                    <>
+                      <img src={preview} alt="Bunga" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      {loading && <div className="scanning-bar" />}
+                      {loading && (
+                        <div style={{ position: 'absolute', bottom: '20px', left: '0', width: '100%', textAlign: 'center', color: 'white', textShadow: '0 2px 4px black' }}>
+                          Detecting Ripeness...<br/>Calculating Health...
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: colors.textLight }}>
+                      <span style={{ fontSize: '48px' }}>📸</span>
+                      <p>Waiting for image...</p>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Button Arrangement: Change and Camera side-by-side above Analyze */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '20px' }}>
+                  <button onClick={() => fileInputRef.current?.click()} disabled={loading} style={{ padding: '12px 16px', borderRadius: '12px', border: 'none', background: '#04752a', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: '600', fontSize: '14px' }}>📁 Change</button>
+                  <button onClick={() => fileInputRef.current?.click()} disabled={loading} style={{ padding: '12px 16px', borderRadius: '12px', border: 'none', background: '#050505f5', color: 'white', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: '600', fontSize: '14px' }}>📷 Camera</button>
+                </div>
+
+                <input ref={fileInputRef} type="file" accept="image/*" capture="environment" onChange={handleImageSelect} style={{ display: 'none' }} />
+
+                {error && <div style={{ background: '#FDF2F2', border: '2px solid #E74C3C', borderRadius: '12px', padding: '16px', marginTop: '20px', color: '#E74C3C', fontSize: '14px' }}>⚠️ {error}</div>}
+
+                {!result && (
+                  <button 
+                    onClick={handleAnalyze} 
+                    disabled={!image || loading}
+                    style={{ width: '100%', marginTop: '20px', padding: '15px', borderRadius: '12px', border: 'none', background: image ? colors.primaryLight : '#B8D4C8', color: 'white', fontWeight: '700', cursor: image && !loading ? 'pointer' : 'not-allowed' }}
+                  >
+                    {loading ? 'Processing...' : 'Analyze Bunga'}
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Card 2: Results Area */}
+            {result && (
+              <div style={{ 
+                background: 'white', borderRadius: '24px', 
+                overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+              }}>
+                {/* Results Header */}
+                <div style={{ padding: '20px 30px', borderBottom: `1px solid ${colors.border}` }}>
+                  <h2 style={{ margin: 0, color: colors.primary, fontSize: '20px', fontWeight: '800' }}>Analysis Results</h2>
+                </div>
+
+                <div style={{ padding: '30px' }}>
+                  {/* Icon/Title - Large icon at top center */}
+                  <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                    <div style={{ fontSize: '64px', marginBottom: '10px' }}>{resultInfo?.icon || '📊'}</div>
+                    <h3 style={{ margin: 0, color: resultInfo?.color || colors.primary, fontSize: '22px', fontWeight: '800' }}>{resultInfo?.title || 'Analysis Complete'}</h3>
+                  </div>
+
+                  {/* Class Box - Light grey full-width box */}
+                  <div style={{ background: '#F1F5F9', padding: '16px', borderRadius: '12px', textAlign: 'center', marginBottom: '20px' }}>
+                    <div style={{ fontSize: '13px', color: colors.textLight, marginBottom: '5px' }}>Class</div>
+                    <div style={{ fontSize: '20px', fontWeight: '700', color: colors.primary }}>{result.class || 'Class A-a'}</div>
+                  </div>
+
+                  {/* Description - Centered text */}
+                  <p style={{ textAlign: 'center', color: colors.textLight, fontSize: '14px', marginBottom: '20px', lineHeight: '1.6' }}>
+                    {resultInfo?.description || 'Your bunga has been analyzed successfully.'}
+                  </p>
+
+                  {/* Recommended Actions - Inside bordered box with checkmark list */}
+                  <div style={{ border: `1px solid ${colors.border}`, borderRadius: '12px', padding: '16px', marginBottom: '20px' }}>
+                    <h4 style={{ margin: '0 0 12px 0', color: colors.primary, fontSize: '14px', fontWeight: '700' }}>Recommended Actions</h4>
+                    <ul style={{ margin: 0, paddingLeft: '20px', color: colors.text, fontSize: '13px' }}>
+                      {resultInfo?.actions?.map((action, idx) => (
+                        <li key={idx} style={{ marginBottom: '8px' }}>{action}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Market Grade Info */}
+                  {marketGrade && (
+                    <div style={{ border: `1px solid ${colors.border}`, borderRadius: '12px', padding: '16px', marginBottom: '20px' }}>
+                      <h4 style={{ margin: '0 0 8px 0', color: colors.primary, fontSize: '14px', fontWeight: '700' }}>{marketGrade.title}</h4>
+                      <p style={{ margin: '0 0 10px 0', fontSize: '12px', color: colors.textLight }}>{marketGrade.description}</p>
+                      <ul style={{ margin: 0, paddingLeft: '20px', color: colors.text, fontSize: '12px' }}>
+                        {marketGrade.actions?.map((action, idx) => (
+                          <li key={idx} style={{ marginBottom: '5px' }}>{action}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Bottom Action Button - Full-width green button */}
+                  <button 
+                    onClick={() => {setResult(null); setPreview(null); setImage(null);}}
+                    style={{ width: '100%', padding: '15px', borderRadius: '12px', border: 'none', background: colors.primaryLight, color: 'white', fontWeight: '700', cursor: 'pointer' }}
+                  >
+                    Analyze Another Bunga
+                  </button>
+                </div>
               </div>
             )}
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
-              <button onClick={() => fileInputRef.current?.click()} disabled={loading} style={{ padding: '12px 16px', background: colors.primary, color: colors.secondary, border: 'none', borderRadius: '12px', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: '600', fontSize: '14px' }}>📁 {preview ? 'Change' : 'Upload'}</button>
-              <button onClick={() => fileInputRef.current?.click()} disabled={loading} style={{ padding: '12px 16px', background: colors.primaryLight, color: colors.secondary, border: 'none', borderRadius: '12px', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: '600', fontSize: '14px' }}>📷 Camera</button>
-            </div>
-
-            <input ref={fileInputRef} type="file" accept="image/*" capture="environment" onChange={handleImageSelect} style={{ display: 'none' }} />
-
-            {error && <div style={{ background: '#FDF2F2', border: '2px solid #E74C3C', borderRadius: '12px', padding: '16px', marginBottom: '24px', color: '#E74C3C', fontSize: '14px' }}>⚠️ {error}</div>}
-
-            <button onClick={handleAnalyze} disabled={!image || loading} style={{ width: '100%', padding: '16px', background: image ? colors.primary : '#B8D4C8', color: colors.secondary, border: 'none', borderRadius: '12px', cursor: image && !loading ? 'pointer' : 'not-allowed', fontWeight: '700', fontSize: '16px' }}>{loading ? '🔄 Analyzing...' : '🔍 Analyze Bunga'}</button>
           </div>
 
-          {/* Results Section */}
-          {result && resultInfo && (
-            <div style={{ background: colors.secondary, borderRadius: '16px', padding: '40px', boxShadow: `0 20px 60px rgba(27, 77, 62, 0.15)`, borderLeft: `4px solid ${resultInfo.color}` }}>
-              <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-                <div style={{ fontSize: '64px', marginBottom: '16px' }}>{resultInfo.icon}</div>
-                <h2 style={{ color: resultInfo.color, fontSize: '24px', fontWeight: '800', margin: '0 0 12px 0' }}>{resultInfo.title}</h2>
-                <div style={{ fontSize: '18px', fontWeight: '700', color: colors.primary }}>{result.ripeness || 'Unknown'}</div>
-              </div>
-
-              {result.class && (
-                <div style={{ background: colors.background, borderRadius: '12px', padding: '16px', marginBottom: '24px' }}>
-                  <div style={{ fontSize: '13px', fontWeight: '600', color: colors.textLight, marginBottom: '8px' }}>Class</div>
-                  <div style={{ fontSize: '16px', fontWeight: '700', color: colors.primary }}>{result.class}</div>
-                </div>
-              )}
-
-              <p style={{ color: colors.textLight, fontSize: '14px', lineHeight: '1.6', marginBottom: '24px', textAlign: 'center' }}>{resultInfo.description}</p>
-
-              <div style={{ background: colors.background, borderRadius: '12px', padding: '20px', borderLeft: `4px solid ${resultInfo.color}` }}>
-                <h4 style={{ color: colors.text, fontSize: '14px', fontWeight: '700', margin: '0 0 16px 0' }}>📋 Recommended Actions</h4>
-                <ul style={{ margin: 0, paddingLeft: '0', listStyle: 'none' }}>
-                  {resultInfo.actions.map((action, idx) => (
-                    <li key={idx} style={{ color: colors.text, fontSize: '13px', marginBottom: '12px', paddingLeft: '28px', position: 'relative' }}>
-                      <span style={{ position: 'absolute', left: '0', color: resultInfo.color }}>✓</span>
-                      {action}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <button onClick={() => { setImage(null); setPreview(null); setResult(null); setError(null); }} style={{ width: '100%', padding: '14px', marginTop: '24px', background: colors.primaryLight, color: colors.secondary, border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: '600', fontSize: '14px' }}>🔄 Analyze Another Bunga</button>
-            </div>
-          )}
-        </div>
-
-        <div style={{ maxWidth: '1000px', margin: '40px auto 0', textAlign: 'center', color: colors.secondary, opacity: '0.8' }}>
-          <p style={{ fontSize: '12px', margin: '0' }}>Model Accuracy: 98.5% | Bunga Classification with Health Grading</p>
+          <div style={{ textAlign: 'center', marginTop: '20px', color: 'white', opacity: 0.7, fontSize: '12px' }}>
+            Model Accuracy: 98.5% | Bunga Classification with Health Grading
+          </div>
         </div>
       </div>
     </div>

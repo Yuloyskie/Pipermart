@@ -6,6 +6,7 @@ import { auth, googleProvider, facebookProvider } from '../../config/firebase';
 import logo from '/logowalangbg.png';
 import './Auth.css';
 
+
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -29,19 +30,20 @@ const Auth = () => {
 
   const navigate = useNavigate();
 
-  const colors = {
-    primary: '#1B4332',
-    primaryLight: '#2D6A4F',
+const colors = {
+    primary: '#000000',
+    primaryLight: '#1B4332',
     secondary: '#FFFFFF',
-    background: '#F8F9FA',
-    text: '#1B4332',
-    textLight: '#6C757D',
-    border: '#DEE2E6',
-    borderFocus: '#1B4332',
+    background: '#050505',
+    text: '#FFFFFF',
+    textLight: '#ADB5BD',
+    border: '#1B4332',
+    borderFocus: '#52B788',
     error: '#DC3545',
-    success: '#1B4332',
-    gradientEnd: '#40916C',
+    success: '#52B788',
+    gradientEnd: '#1B4332',
     pepperRed: '#A4161A',
+    accent: '#52B788',
   };
 
   const handleSwitch = (toLogin) => {
