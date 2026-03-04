@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Index from './Components/User/Index.jsx';
-import Login from './Components/user/Login';
-import Register from './Components/user/Register';
+import Login from './Components/User/Login.jsx';
+import Register from './Components/user/Register.jsx';
 import Dashboard from './Components/Admin/Dashboard.jsx';
 import Profile from './Components/User/Profile.jsx';
 import AdminProfile from './Components/Admin/AdminProfile.jsx';
@@ -22,6 +22,7 @@ import ThreadView from './Components/User/ThreadView.jsx';
 import About from './Components/User/About.jsx';
 import Contact from './Components/User/Contact.jsx';
 import HowItWorks from './Components/User/HowItWorks.jsx';
+import FriendRequests from './Components/User/FriendRequests.jsx';
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
         <Route path="/admin/dashboard" element={<Dashboard />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/edit" element={<EditProfile />} />
+        <Route path="/profile/:userId" element={<Profile />} />
         <Route path="/admin/profile" element={<AdminProfile />} />
         <Route path="/admin/profile/edit" element={<AdminEditProfile />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -54,9 +56,13 @@ function App() {
 
         {/* Forum routes */}
         <Route path="/forum" element={<Forum />} />
+        <Route path="/forum/Forum" element={<Navigate to="/forum" replace />} />
         <Route path="/forum/create" element={<CreateThread />} />
         <Route path="/forum/thread/:threadId" element={<ThreadView />} />
         <Route path="/forum/edit/:threadId" element={<CreateThread />} />
+        
+        {/* Friend routes */}
+        <Route path="/friend-requests" element={<FriendRequests />} />
       </Routes>
       <Chatbot />
     </Router>

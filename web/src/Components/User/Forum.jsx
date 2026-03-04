@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { motion } from 'framer-motion';
 import './Forum.css';
 import Header from '../shared/Header';
 import Chat from '../Chat/Chat';
+import UserProfileCard from './UserProfileCard';
 
 const CATEGORIES = [
   { name: 'All', icon: '💬' },
@@ -30,9 +32,42 @@ export default function Forum() {
   const [reportingThreadId, setReportingThreadId] = useState(null);
   const [submittingReport, setSubmittingReport] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [friends, setFriends] = useState([]);
+  const [loadingFriends, setLoadingFriends] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const [pendingRequests, setPendingRequests] = useState([]); // Track sent friend requests
+
+  // suggestion modal state
+  const [showSuggestionModal, setShowSuggestionModal] = useState(false);
+  const [selectedSuggestion, setSelectedSuggestion] = useState(null);
+  const [previewUser, setPreviewUser] = useState(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [modalScale, setModalScale] = useState(1);
+  const modalRef = useRef(null);
+
+  // when modal is open prevent background scrolling
+  useEffect(() => {
+    if (showSuggestionModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [showSuggestionModal]);
+
+  const closeSuggestionModal = () => {
+    setShowSuggestionModal(false);
+    setSelectedSuggestion(null);
+    setPreviewUser(null);
+    setModalScale(1);
+  };
+
   const observerTarget = useRef(null);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
+  const chatRef = useRef(null);
+  const currentUser = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -49,7 +84,161 @@ export default function Forum() {
     setPage(1);
     fetchThreads(1, true);
     fetchDraftCount();
+    fetchFriends();
+    fetchSuggestions();
+    fetchSentFriendRequests();
   }, [activeCategory, activeTab, filterType, isLoggedIn]);
+
+  const fetchFriends = async () => {
+    try {
+      setLoadingFriends(true);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/users/friends`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setFriends(response.data?.data || []);
+    } catch (error) {
+      console.error('Error fetching friends:', error);
+      setFriends([]);
+    } finally {
+      setLoadingFriends(false);
+    }
+  };
+
+  const fetchSuggestions = async () => {
+    try {
+      setLoadingSuggestions(true);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/users/suggestions`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      let list = response.data?.data || [];
+      // just in case backend returned the current user, filter locally too
+      if (currentUser) {
+        list = list.filter(u => u._id !== currentUser._id);
+      }
+      setSuggestions(list);
+    } catch (error) {
+      console.error('Error fetching suggestions:', error);
+      setSuggestions([]);
+    } finally {
+      setLoadingSuggestions(false);
+    }
+  };
+
+  const fetchSentFriendRequests = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/users/sent-friend-requests`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setPendingRequests(response.data?.data || []);
+      console.log('✅ Loaded sent friend requests:', response.data?.data);
+    } catch (error) {
+      console.error('Error fetching sent friend requests:', error);
+      setPendingRequests([]);
+    }
+  };
+
+  const handleAddFriend = async (userId) => {
+    try {
+      // Debug: ensure userId is a clean string
+      const cleanUserId = typeof userId === 'string' ? userId : userId?.toString?.();
+      console.log('Adding friend, userId:', cleanUserId, 'type:', typeof cleanUserId);
+      
+      const token = localStorage.getItem('token');
+      await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/users/friend-request/${cleanUserId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      alert('Friend request sent!');
+      // Add to pending requests (dedupe) and keep suggestion visible
+      setPendingRequests(prev => (prev.includes(cleanUserId) ? prev : [...prev, cleanUserId]));
+      if (previewUser && previewUser._id === cleanUserId) {
+        setPreviewUser(prev => ({ ...prev })); // trigger rerender if needed
+      }
+    } catch (error) {
+      console.error('❌ Error adding friend:', error);
+      console.error('Error response:', error.response?.data);
+      alert(error.response?.data?.message || error.message || 'Failed to send friend request');
+    }
+  };
+
+  const handleCancelFriendRequest = async (userId) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/users/friend-request/${userId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      alert('Friend request cancelled');
+      setPendingRequests(prev => prev.filter(id => id !== userId));
+    } catch (error) {
+      console.error('Error cancelling friend request:', error);
+      alert(error.response?.data?.message || 'Failed to cancel friend request');
+    }
+  };
+
+  const handleFriendClick = (friend) => {
+    // Open chat with this friend
+    if (chatRef.current) {
+      chatRef.current.openChatWithFriend(friend);
+    }
+  };
+
+  const fetchPreviewUser = async (userId) => {
+    if (!userId) return;
+    setPreviewLoading(true);
+    setPreviewUser(null);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/users/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.data && res.data.user) {
+        setPreviewUser(res.data.user);
+      }
+    } catch (err) {
+      console.error('Error fetching preview user', err);
+      setPreviewUser(null);
+    } finally {
+      setPreviewLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!showSuggestionModal || !modalRef.current) return;
+    // compute scale based on actual content height (scrollHeight) so the
+    // popup can shrink to avoid producing a scrollbar
+    const adjustScale = () => {
+        if (!modalRef.current) return;
+        // use scrollHeight in case we previously had a max-height/overflow
+        // constraint; this ensures we measure the full natural height.
+        const el = modalRef.current;
+        const height = Math.max(el.offsetHeight, el.scrollHeight);
+        const max = window.innerHeight * 0.9;
+        let scale = 1;
+        if (height > max) {
+          scale = max / height;
+        }
+        setModalScale(scale);
+      };
+    adjustScale();
+    window.addEventListener('resize', adjustScale);
+    let resizeObserver;
+    if (window.ResizeObserver) {
+      resizeObserver = new ResizeObserver(() => adjustScale());
+      resizeObserver.observe(modalRef.current);
+    }
+    return () => {
+      window.removeEventListener('resize', adjustScale);
+      if (resizeObserver && modalRef.current) resizeObserver.unobserve(modalRef.current);
+    };
+  }, [showSuggestionModal, previewUser]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -255,11 +444,69 @@ export default function Forum() {
   };
 
   if (!isLoggedIn) {
-    return (
-      <>
-        <Header />
-        <div className="forum-container fb-layout">
-          <div className="fb-main-wrapper">
+  return (
+    <>
+      <Header />
+      <div className="forum-container fb-layout">
+        {/* Floating leaf icons background */}
+        <div className="forum-floating-icons">
+          <motion.div 
+            className="forum-floating-icon icon-1"
+            animate={{ y: [0, -15, 0], rotate: [0, 15, -15, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"/>
+            </svg>
+          </motion.div>
+          <motion.div 
+            className="forum-floating-icon icon-2"
+            animate={{ y: [0, 12, 0], rotate: [0, -12, 12, 0] }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12c0 1.33.26 2.61.74 3.77l-1.89.66c-.6-1.41-.85-2.93-.85-4.43 0-4.97 4.03-9 9-9s9 4.03 9 9c0 1.5-.25 3.02-.85 4.43l-1.89-.66c.48-1.16.74-2.44.74-3.77 0-5.52-4.48-10-10-10z"/>
+            </svg>
+          </motion.div>
+          <motion.div 
+            className="forum-floating-icon icon-3"
+            animate={{ y: [0, -10, 0], rotate: [0, 10, -10, 0] }}
+            transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 22c4-4 8-7.5 8-12 0-3.5-2.5-6-6-6s-6 2.5-6 6c0 4.5 4 8 8 12z"/>
+            </svg>
+          </motion.div>
+          <motion.div 
+            className="forum-floating-icon icon-4"
+            animate={{ y: [0, -18, 0], rotate: [0, 8, -8, 0] }}
+            transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"/>
+            </svg>
+          </motion.div>
+          <motion.div 
+            className="forum-floating-icon icon-5"
+            animate={{ y: [0, 14, 0], rotate: [0, -15, 15, 0] }}
+            transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12c0 1.33.26 2.61.74 3.77l-1.89.66c-.6-1.41-.85-2.93-.85-4.43 0-4.97 4.03-9 9-9s9 4.03 9 9c0 1.5-.25 3.02-.85 4.43l-1.89-.66c.48-1.16.74-2.44.74-3.77 0-5.52-4.48-10-10-10z"/>
+            </svg>
+          </motion.div>
+          <motion.div 
+            className="forum-floating-icon icon-6"
+            animate={{ y: [0, -12, 0], rotate: [0, 12, -12, 0] }}
+            transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut", delay: 1.2 }}
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 22c4-4 8-7.5 8-12 0-3.5-2.5-6-6-6s-6 2.5-6 6c0 4.5 4 8 8 12z"/>
+            </svg>
+          </motion.div>
+        </div>
+
+        <div className="fb-main-wrapper">
             <div className="fb-feed-center">
               <div className="login-required-message">
                 <div className="login-icon">🔐</div>
@@ -374,11 +621,19 @@ export default function Forum() {
                     <div className="post-header">
                       <div className="author-section">
                         <div className="author-avatar-fb">
-                          {thread.createdBy?.firstName?.charAt(0).toUpperCase() || 'U'}
+                          {thread.createdBy?.avatar?.url ? (
+                            <img 
+                              src={thread.createdBy.avatar.url} 
+                              alt={`${thread.createdBy.name}'s profile`}
+                              className="author-profile-img"
+                            />
+                          ) : (
+                            thread.createdBy?.name?.charAt(0).toUpperCase() || 'U'
+                          )}
                         </div>
                         <div className="author-info">
                           <p className="author-name-fb">
-                            {thread.createdBy?.firstName} {thread.createdBy?.lastName}
+                            {thread.createdBy?.name || 'Unknown'}
                           </p>
                           <div className="post-meta">
                             <span className="post-time">
@@ -476,12 +731,112 @@ export default function Forum() {
             </div>
           </div>
 
-          <div className="fb-sidebar-right"></div>
+          <div className="fb-sidebar-right">
+            {/* Friends Section */}
+            <div className="friends-section">
+              <h3 className="sidebar-title">👥 Friends</h3>
+              {loadingFriends ? (
+                <div className="friends-loading">Loading friends...</div>
+              ) : friends.length > 0 ? (
+                <div className="friends-list">
+                  {friends.map((friend) => (
+                    <div
+                      key={friend._id}
+                      className="friend-item"
+                      onClick={() => handleFriendClick(friend)}
+                      style={{ cursor: 'pointer' }}
+                      title="Click to open chat"
+                    >
+                      <div className="friend-avatar">
+                        {friend.avatar?.url ? (
+                          <img src={friend.avatar.url} alt={friend.name} />
+                        ) : (
+                          <span>{friend.name?.charAt(0).toUpperCase() || 'U'}</span>
+                        )}
+                      </div>
+                      <div className="friend-info">
+                        <p className="friend-name">{friend.name}</p>
+                        <p className="friend-status">{friend.status || 'Online'}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="no-friends-message">
+                  <p>No friends yet</p>
+                  <span>Add friends to see them here!</span>
+                </div>
+              )}
+            </div>
+
+            {/* Suggestions Section */}
+            <div className="suggestions-section">
+              <h3 className="sidebar-title">💡 Suggestions</h3>
+              {loadingSuggestions ? (
+                <div className="friends-loading">Loading suggestions...</div>
+              ) : suggestions.length > 0 ? (
+                <div className="friends-list">
+                  {suggestions.map((user) => (
+                    <div key={user._id} className="suggestion-item">
+                      <div
+                        className="friend-item"
+                        onClick={() => {
+                          // don't preview yourself; go to profile page instead
+                          if (currentUser && user._id === currentUser._id) {
+                            navigate('/profile');
+                            return;
+                          }
+                          setSelectedSuggestion(user);
+                          setShowSuggestionModal(true);
+                          fetchPreviewUser(user._id);
+                        }}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <div className="friend-avatar">
+                          {user.avatar?.url ? (
+                            <img src={user.avatar.url} alt={user.name} />
+                          ) : (
+                            <span>{user.name?.charAt(0).toUpperCase() || 'U'}</span>
+                          )}
+                        </div>
+                        <div className="friend-info">
+                          <p className="friend-name">{user.name}</p>
+                          <p className="friend-status">{user.mutualFriends || 0} mutual friends</p>
+                        </div>
+                      </div>
+                      {pendingRequests.includes(user._id) ? (
+                        <button
+                          className="cancel-friend-btn"
+                          onClick={() => handleCancelFriendRequest(user._id)}
+                          title="Cancel friend request"
+                        >
+                          ✕
+                        </button>
+                      ) : (
+                        <button
+                          className="add-friend-btn"
+                          onClick={() => handleAddFriend(user._id)}
+                          title="Add friend"
+                        >
+                          ➕
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="no-friends-message">
+                  <p>No suggestions</p>
+                  <span>Check back later!</span>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Floating Chat Widget */}
-      <Chat />
+      <Chat ref={chatRef} />
 
       {reportModalOpen && (
         <div className="modal-overlay" onClick={() => setReportModalOpen(false)}>
@@ -520,6 +875,45 @@ export default function Forum() {
                 {submittingReport ? 'Submitting...' : 'Submit Report'}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Suggestion profile modal */}
+      {showSuggestionModal && (
+        <div className="modal-overlay" onClick={closeSuggestionModal}>
+          <div
+            className="modal-content profile-preview-modal"
+            onClick={(e) => e.stopPropagation()}
+            ref={modalRef}
+            style={{ transform: `scale(${modalScale})` }}
+          >
+            {/* close button inside modal - always on top */}
+            <button
+              className="modal-close"
+              onClick={(e) => {
+                e.stopPropagation();
+                closeSuggestionModal();
+              }}
+              title="Close"
+              type="button"
+            >
+              ✕
+            </button>
+
+            {previewLoading ? (
+              <div style={{ padding: '16px' }}>Loading profile...</div>
+            ) : (
+              previewUser && (
+                <UserProfileCard
+                  user={previewUser}
+                  currentUser={currentUser}
+                  pendingRequests={pendingRequests}
+                  onAddFriend={handleAddFriend}
+                  onCancelFriend={handleCancelFriendRequest}
+                />
+              )
+            )}
           </div>
         </div>
       )}

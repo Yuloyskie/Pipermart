@@ -192,7 +192,7 @@ exports.createThread = async (req, res) => {
             type: 'friend_post',
             title: 'New Post from Friend',
             message: `${user.name} posted: "${title.substring(0, 30)}${title.length > 30 ? '...' : ''}"`,
-            actionUrl: 'Forum',
+            actionUrl: `/forum/thread/${newThread._id}`,
             data: { threadId: newThread._id },
             severity: 'info'
           }));
@@ -436,7 +436,7 @@ exports.toggleLikeThread = async (req, res) => {
             type: 'post_like',
             title: 'New Like on your Thread',
             message: `${liker ? liker.name : 'Someone'} liked your post "${thread.title.substring(0, 20)}${thread.title.length > 20 ? '...' : ''}"`,
-            actionUrl: 'Forum',
+            actionUrl: `/forum/thread/${thread._id}`,
             data: { threadId: thread._id },
             severity: 'info'
           });
@@ -555,7 +555,7 @@ exports.createPost = async (req, res) => {
           type: 'forum_reply',
           title: 'New Reply to your Thread',
           message: `${replier ? replier.name : 'Someone'} replied to your post "${thread.title.substring(0, 20)}${thread.title.length > 20 ? '...' : ''}"`,
-          actionUrl: 'Forum',
+          actionUrl: `/forum/thread/${thread._id}`,
           data: { threadId: thread._id },
           severity: 'info'
         });
@@ -692,7 +692,7 @@ exports.toggleLikePost = async (req, res) => {
             type: 'post_like',
             title: 'New Like on your Comment',
             message: `${liker ? liker.name : 'Someone'} liked your comment`,
-            actionUrl: 'Forum',
+            actionUrl: `/forum/thread/${post.threadId}`,
             data: { threadId: post.threadId },
             severity: 'info'
           });

@@ -17,7 +17,8 @@ const {
   cancelFriendRequest,
   getFriends,
   getFriendRequests,
-  removeFriend
+  removeFriend,
+  getSentFriendRequests
 } = require('../controllers/User');
 
 const { isAuthenticatedUser } = require('../middlewares/auth');
@@ -67,6 +68,16 @@ router.put('/friend-request/decline/:senderId', isAuthenticatedUser, declineFrie
 router.put('/friend-request/cancel/:receiverId', isAuthenticatedUser, cancelFriendRequest);
 router.get('/friends', isAuthenticatedUser, getFriends);
 router.get('/friend-requests', isAuthenticatedUser, getFriendRequests);
+router.get('/sent-friend-requests', isAuthenticatedUser, getSentFriendRequests);
 router.delete('/friend/:friendId', isAuthenticatedUser, removeFriend);
+
+// view another user's profile by ID (must be last to prevent path conflicts)
+router.get('/:userId', isAuthenticatedUser, async (req, res, next) => {
+  try {
+    await require('../controllers/User').getUserById(req, res);
+  } catch (err) {
+    next(err);
+  }
+});
 
 module.exports = router;

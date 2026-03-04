@@ -31,6 +31,20 @@ const BungaAnalysis = () => {
         z-index: 10;
         animation: scan 2s linear infinite;
       }
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes scaleIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+      }
+      .glass-card {
+        animation: fadeInUp 0.6s ease forwards;
+      }
+      .result-card {
+        animation: scaleIn 0.5s ease forwards;
+      }
     `;
     document.head.appendChild(style);
   }, []);
@@ -159,59 +173,160 @@ const BungaAnalysis = () => {
           <div style={{ display: 'grid', gridTemplateColumns: result ? '1fr 1fr' : '1fr', gap: '24px' }}>
             
             {/* Card 1: Image/Input Area */}
-            <div style={{ 
-              background: 'white', borderRadius: '24px', 
-              overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.61)'
+            <div className="glass-card" style={{ 
+              background: 'rgba(255, 255, 255, 0.25)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              borderRadius: '24px',
+              padding: '32px',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)'
             }}>
               {/* Top Header Bar */}
-              <div style={{ padding: '20px 30px', borderBottom: `1px solid ${colors.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ fontSize: '24px' }}>🫒</span>
-                  <h2 style={{ margin: 0, color: colors.primary, fontSize: '20px', fontWeight: '800' }}>Bunga Ripeness Analyzer</h2>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+                <div style={{ 
+                  width: '48px', height: '48px', 
+                  borderRadius: '12px', 
+                  background: 'linear-gradient(135deg, #1B4D3E 0%, #27AE60 100%)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '24px'
+                }}>
+                  🫒
+                </div>
+                <div>
+                  <h2 style={{ margin: 0, color: 'white', fontSize: '20px', fontWeight: '700' }}>Bunga Ripeness Analyzer</h2>
+                  <p style={{ margin: '4px 0 0 0', color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>Upload from gallery or take a photo</p>
                 </div>
               </div>
 
-              <div style={{ padding: '30px' }}>
-                <p style={{ color: colors.textLight, fontSize: '14px', marginBottom: '20px' }}>
+              <div style={{ marginBottom: '24px' }}>
+                <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '14px', marginBottom: '20px' }}>
                   Upload a clear image of your black pepper bunga. Our AI model will analyze ripeness, health grade, and market classification.
                 </p>
                 
-                <div style={{ position: 'relative', width: '100%', height: result ? '500px' : '350px', backgroundColor: '#f1f5f9', borderRadius: '16px', overflow: 'hidden', border: `1px solid ${colors.border}`, transition: 'height 0.3s ease' }}>
-                  {preview ? (
-                    <>
-                      <img src={preview} alt="Bunga" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      {loading && <div className="scanning-bar" />}
-                      {loading && (
-                        <div style={{ position: 'absolute', bottom: '20px', left: '0', width: '100%', textAlign: 'center', color: 'white', textShadow: '0 2px 4px black' }}>
-                          Detecting Ripeness...<br/>Calculating Health...
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: colors.textLight }}>
-                      <span style={{ fontSize: '48px' }}>📸</span>
-                      <p>Waiting for image...</p>
-                    </div>
-                  )}
+                <div style={{ position: 'relative', marginBottom: '24px' }}>
+                  <div style={{ 
+                    borderRadius: '16px', 
+                    overflow: 'hidden',
+                    border: '2px dashed rgba(255,255,255,0.3)',
+                    background: preview ? 'transparent' : 'rgba(0,0,0,0.2)',
+                    transition: 'height 0.3s ease'
+                  }}>
+                    {preview ? (
+                      <div style={{ position: 'relative' }}>
+                        <img src={preview} alt="Bunga" style={{ width: '100%', height: result ? '400px' : '280px', objectFit: 'cover', display: 'block' }} />
+                        {loading && <div className="scanning-bar" />}
+                        {loading && (
+                          <div style={{ position: 'absolute', bottom: '20px', left: '0', width: '100%', textAlign: 'center', color: 'white', textShadow: '0 2px 4px black', fontWeight: '600' }}>
+                            Detecting Ripeness...<br/>Calculating Health...
+                          </div>
+                        )}
+                        <button 
+                          onClick={() => { setImage(null); setPreview(null); setResult(null); setError(null); }}
+                          style={{
+                            position: 'absolute', top: '12px', right: '12px',
+                            width: '36px', height: '36px',
+                            borderRadius: '50%',
+                            background: 'rgba(231, 76, 60, 0.9)',
+                            border: 'none', color: 'white',
+                            cursor: 'pointer', fontSize: '18px',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center'
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ) : (
+                      <div style={{ 
+                        padding: '60px 20px', 
+                        textAlign: 'center',
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px'
+                      }}>
+                        <div style={{ fontSize: '56px', opacity: 0.5 }}>🖼️</div>
+                        <div style={{ color: 'rgba(255,255,255,0.7)', fontWeight: '500' }}>No image selected</div>
+                        <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px' }}>Click buttons below to upload</div>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 
                 {/* Button Arrangement: Change and Camera side-by-side above Analyze */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '20px' }}>
-                  <button onClick={() => fileInputRef.current?.click()} disabled={loading} style={{ padding: '12px 16px', borderRadius: '12px', border: 'none', background: '#04752a', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: '600', fontSize: '14px' }}>📁 Change</button>
-                  <button onClick={() => fileInputRef.current?.click()} disabled={loading} style={{ padding: '12px 16px', borderRadius: '12px', border: 'none', background: '#050505f5', color: 'white', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: '600', fontSize: '14px' }}>📷 Camera</button>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
+                  <button 
+                    onClick={() => fileInputRef.current?.click()} 
+                    disabled={loading}
+                    style={{
+                      padding: '14px 20px',
+                      borderRadius: '12px',
+                      border: 'none',
+                      background: loading ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.15)',
+                      color: 'white',
+                      cursor: loading ? 'not-allowed' : 'pointer',
+                      fontWeight: '600',
+                      fontSize: '14px',
+                      transition: 'all 0.3s ease'
+                    }}
+                  >
+                    📁 {preview ? 'Change' : 'Upload'}
+                  </button>
+                  <button 
+                    onClick={() => fileInputRef.current?.click()} 
+                    disabled={loading}
+                    style={{
+                      padding: '14px 20px',
+                      borderRadius: '12px',
+                      border: 'none',
+                      background: loading ? 'rgba(255,255,255,0.1)' : 'linear-gradient(135deg, #27AE60 0%, #1B4D3E 100%)',
+                      color: 'white',
+                      cursor: loading ? 'not-allowed' : 'pointer',
+                      fontWeight: '600',
+                      fontSize: '14px',
+                      boxShadow: loading ? 'none' : '0 4px 15px rgba(39, 174, 96, 0.3)',
+                      transition: 'all 0.3s ease'
+                    }}
+                  >
+                    📷 Camera
+                  </button>
                 </div>
 
                 <input ref={fileInputRef} type="file" accept="image/*" capture="environment" onChange={handleImageSelect} style={{ display: 'none' }} />
 
-                {error && <div style={{ background: '#FDF2F2', border: '2px solid #E74C3C', borderRadius: '12px', padding: '16px', marginTop: '20px', color: '#E74C3C', fontSize: '14px' }}>⚠️ {error}</div>}
+                {error && (
+                  <div style={{ 
+                    background: 'rgba(231, 76, 60, 0.15)', 
+                    border: '1px solid rgba(231, 76, 60, 0.3)',
+                    borderRadius: '12px', 
+                    padding: '14px', 
+                    marginBottom: '20px', 
+                    color: '#E74C3C', 
+                    fontSize: '14px',
+                    display: 'flex', alignItems: 'center', gap: '8px'
+                  }}>
+                    <span>⚠️</span> {error}
+                  </div>
+                )}
 
                 {!result && (
                   <button 
                     onClick={handleAnalyze} 
                     disabled={!image || loading}
-                    style={{ width: '100%', marginTop: '20px', padding: '15px', borderRadius: '12px', border: 'none', background: image ? colors.primaryLight : '#B8D4C8', color: 'white', fontWeight: '700', cursor: image && !loading ? 'pointer' : 'not-allowed' }}
+                    style={{
+                      width: '100%',
+                      padding: '16px',
+                      borderRadius: '12px',
+                      border: 'none',
+                      background: image && !loading 
+                        ? 'linear-gradient(135deg, #27AE60 0%, #1B4D3E 100%)' 
+                        : 'rgba(255,255,255,0.1)',
+                      color: image && !loading ? 'white' : 'rgba(255,255,255,0.4)',
+                      cursor: image && !loading ? 'pointer' : 'not-allowed',
+                      fontWeight: '700',
+                      fontSize: '16px',
+                      boxShadow: image && !loading ? '0 8px 25px rgba(39, 174, 96, 0.4)' : 'none',
+                      transition: 'all 0.3s ease'
+                    }}
                   >
-                    {loading ? 'Processing...' : 'Analyze Bunga'}
+                    {loading ? '🔄 Processing...' : '🔍 Analyze Bunga'}
                   </button>
                 )}
               </div>
@@ -219,64 +334,95 @@ const BungaAnalysis = () => {
 
             {/* Card 2: Results Area */}
             {result && (
-              <div style={{ 
-                background: 'white', borderRadius: '24px', 
-                overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+              <div className="result-card" style={{
+                background: 'rgba(255, 255, 255, 0.25)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                borderRadius: '24px',
+                padding: '32px',
+                border: `1px solid ${resultInfo?.color}40`,
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
+                borderLeft: `4px solid ${resultInfo?.color}`
               }}>
                 {/* Results Header */}
-                <div style={{ padding: '20px 30px', borderBottom: `1px solid ${colors.border}` }}>
-                  <h2 style={{ margin: 0, color: colors.primary, fontSize: '20px', fontWeight: '800' }}>Analysis Results</h2>
+                <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+                  <div style={{ 
+                    width: '80px', height: '80px', 
+                    borderRadius: '50%', 
+                    background: `linear-gradient(135deg, ${resultInfo?.color} 0%, ${resultInfo?.color}CC 100%)`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '40px',
+                    margin: '0 auto 16px',
+                    boxShadow: `0 8px 30px ${resultInfo?.color}40`
+                  }}>
+                    {resultInfo?.icon || '📊'}
+                  </div>
+                  <h2 style={{ margin: 0, color: 'white', fontSize: '24px', fontWeight: '800' }}>
+                    {resultInfo?.title || 'Analysis Complete'}
+                  </h2>
                 </div>
 
-                <div style={{ padding: '30px' }}>
-                  {/* Icon/Title - Large icon at top center */}
-                  <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                    <div style={{ fontSize: '64px', marginBottom: '10px' }}>{resultInfo?.icon || '📊'}</div>
-                    <h3 style={{ margin: 0, color: resultInfo?.color || colors.primary, fontSize: '22px', fontWeight: '800' }}>{resultInfo?.title || 'Analysis Complete'}</h3>
-                  </div>
+                {/* Class Box */}
+                <div style={{ background: 'rgba(0,0,0,0.2)', padding: '16px', borderRadius: '12px', textAlign: 'center', marginBottom: '20px' }}>
+                  <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', marginBottom: '5px' }}>Class</div>
+                  <div style={{ fontSize: '20px', fontWeight: '700', color: 'white' }}>{result.class || 'Class A-a'}</div>
+                </div>
 
-                  {/* Class Box - Light grey full-width box */}
-                  <div style={{ background: '#F1F5F9', padding: '16px', borderRadius: '12px', textAlign: 'center', marginBottom: '20px' }}>
-                    <div style={{ fontSize: '13px', color: colors.textLight, marginBottom: '5px' }}>Class</div>
-                    <div style={{ fontSize: '20px', fontWeight: '700', color: colors.primary }}>{result.class || 'Class A-a'}</div>
-                  </div>
+                {/* Description - Centered text */}
+                <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.8)', fontSize: '14px', marginBottom: '20px', lineHeight: '1.6' }}>
+                  {resultInfo?.description || 'Your bunga has been analyzed successfully.'}
+                </p>
 
-                  {/* Description - Centered text */}
-                  <p style={{ textAlign: 'center', color: colors.textLight, fontSize: '14px', marginBottom: '20px', lineHeight: '1.6' }}>
-                    {resultInfo?.description || 'Your bunga has been analyzed successfully.'}
-                  </p>
+                {/* Recommended Actions */}
+                <div style={{ background: 'rgba(0,0,0,0.2)', borderRadius: '12px', padding: '20px', marginBottom: '20px' }}>
+                  <h4 style={{ margin: '0 0 16px 0', color: 'white', fontSize: '14px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    📋 Recommended Actions
+                  </h4>
+                  <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+                    {resultInfo?.actions?.map((action, idx) => (
+                      <li key={idx} style={{ color: 'rgba(255,255,255,0.8)', fontSize: '13px', marginBottom: '12px', paddingLeft: '24px', position: 'relative' }}>
+                        <span style={{ position: 'absolute', left: '0', color: resultInfo?.color }}>✓</span>
+                        {action}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
-                  {/* Recommended Actions - Inside bordered box with checkmark list */}
-                  <div style={{ border: `1px solid ${colors.border}`, borderRadius: '12px', padding: '16px', marginBottom: '20px' }}>
-                    <h4 style={{ margin: '0 0 12px 0', color: colors.primary, fontSize: '14px', fontWeight: '700' }}>Recommended Actions</h4>
-                    <ul style={{ margin: 0, paddingLeft: '20px', color: colors.text, fontSize: '13px' }}>
-                      {resultInfo?.actions?.map((action, idx) => (
-                        <li key={idx} style={{ marginBottom: '8px' }}>{action}</li>
+                {/* Market Grade Info */}
+                {marketGrade && (
+                  <div style={{ background: 'rgba(0,0,0,0.2)', borderRadius: '12px', padding: '20px', marginBottom: '20px' }}>
+                    <h4 style={{ margin: '0 0 8px 0', color: 'white', fontSize: '14px', fontWeight: '700' }}>{marketGrade.title}</h4>
+                    <p style={{ margin: '0 0 10px 0', fontSize: '12px', color: 'rgba(255,255,255,0.6)' }}>{marketGrade.description}</p>
+                    <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+                      {marketGrade.actions?.map((action, idx) => (
+                        <li key={idx} style={{ color: 'rgba(255,255,255,0.8)', fontSize: '12px', marginBottom: '8px', paddingLeft: '24px', position: 'relative' }}>
+                          <span style={{ position: 'absolute', left: '0', color: marketGrade.color }}>✓</span>
+                          {action}
+                        </li>
                       ))}
                     </ul>
                   </div>
+                )}
 
-                  {/* Market Grade Info */}
-                  {marketGrade && (
-                    <div style={{ border: `1px solid ${colors.border}`, borderRadius: '12px', padding: '16px', marginBottom: '20px' }}>
-                      <h4 style={{ margin: '0 0 8px 0', color: colors.primary, fontSize: '14px', fontWeight: '700' }}>{marketGrade.title}</h4>
-                      <p style={{ margin: '0 0 10px 0', fontSize: '12px', color: colors.textLight }}>{marketGrade.description}</p>
-                      <ul style={{ margin: 0, paddingLeft: '20px', color: colors.text, fontSize: '12px' }}>
-                        {marketGrade.actions?.map((action, idx) => (
-                          <li key={idx} style={{ marginBottom: '5px' }}>{action}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {/* Bottom Action Button - Full-width green button */}
-                  <button 
-                    onClick={() => {setResult(null); setPreview(null); setImage(null);}}
-                    style={{ width: '100%', padding: '15px', borderRadius: '12px', border: 'none', background: colors.primaryLight, color: 'white', fontWeight: '700', cursor: 'pointer' }}
-                  >
-                    Analyze Another Bunga
-                  </button>
-                </div>
+                {/* Bottom Action Button */}
+                <button 
+                  onClick={() => {setResult(null); setPreview(null); setImage(null);}}
+                  style={{
+                    width: '100%',
+                    padding: '14px',
+                    borderRadius: '12px',
+                    border: 'none',
+                    background: `linear-gradient(135deg, ${resultInfo?.color} 0%, ${resultInfo?.color}CC 100%)`,
+                    color: 'white',
+                    fontWeight: '600',
+                    fontSize: '14px',
+                    boxShadow: `0 4px 15px ${resultInfo?.color}40`,
+                    transition: 'all 0.3s ease',
+                    cursor: 'pointer'
+                  }}
+                >
+                  🔄 Analyze Another Bunga
+                </button>
               </div>
             )}
           </div>

@@ -12,6 +12,7 @@ export default function Header() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [notifLoading, setNotifLoading] = useState({}); // map id->true when performing action
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
 
@@ -52,7 +53,11 @@ export default function Header() {
 
   const fetchNotifications = async () => {
     try {
-      const response = await axios.get('/api/v1/notifications');
+      const token = localStorage.getItem('token');
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/notifications`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       setNotifications(response.data.data.notifications);
       setUnreadCount(response.data.data.unreadCount);
     } catch (error) {
@@ -62,16 +67,97 @@ export default function Header() {
 
   const markAsRead = async (notificationId) => {
     try {
-      await axios.put(`/api/v1/notifications/${notificationId}/read`);
+      const token = localStorage.getItem('token');
+      await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/notifications/${notificationId}/read`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       fetchNotifications();
     } catch (error) {
       console.error('Error marking notification as read:', error);
     }
   };
 
+  const acceptFriendRequest = async (senderId, notificationId) => {
+    try {
+      // show loader
+      setNotifLoading(prev => ({ ...prev, [notificationId]: true }));
+      const token = localStorage.getItem('token');
+      await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/users/friend-request/${senderId}/accept`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      // Update notification message to show acceptance
+      setNotifications(prev => 
+        prev.map(notif => 
+          notif._id === notificationId 
+            ? { ...notif, message: '✅ Request Accepted' } 
+            : notif
+        )
+      );
+      // Wait a moment, then delete
+      setTimeout(async () => {
+        if (notificationId) await deleteNotification(notificationId);
+        fetchNotifications();
+        checkAuthStatus();
+      }, 800);
+      alert('Friend request accepted');
+    } catch (error) {
+      console.error('Error accepting friend request:', error);
+      alert(error.response?.data?.message || 'Failed to accept friend request');
+    } finally {
+      setNotifLoading(prev => {
+        const copy = { ...prev };
+        delete copy[notificationId];
+        return copy;
+      });
+    }
+  };
+
+  const declineFriendRequest = async (senderId, notificationId) => {
+    try {
+      setNotifLoading(prev => ({ ...prev, [notificationId]: true }));
+      const token = localStorage.getItem('token');
+      await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/users/friend-request/${senderId}/decline`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      // Update notification message to show rejection
+      setNotifications(prev => 
+        prev.map(notif => 
+          notif._id === notificationId 
+            ? { ...notif, message: '❌ Request Declined' } 
+            : notif
+        )
+      );
+      // Wait a moment, then delete
+      setTimeout(async () => {
+        if (notificationId) await deleteNotification(notificationId);
+        fetchNotifications();
+      }, 800);
+      alert('Friend request declined');
+    } catch (error) {
+      console.error('Error declining friend request:', error);
+      alert(error.response?.data?.message || 'Failed to decline friend request');
+    } finally {
+      setNotifLoading(prev => {
+        const copy = { ...prev };
+        delete copy[notificationId];
+        return copy;
+      });
+    }
+  };
+
   const deleteNotification = async (notificationId) => {
     try {
-      await axios.delete(`/api/v1/notifications/${notificationId}`);
+      const token = localStorage.getItem('token');
+      await axios.delete(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/notifications/${notificationId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       fetchNotifications();
     } catch (error) {
       console.error('Error deleting notification:', error);
@@ -133,19 +219,18 @@ export default function Header() {
         <ul className="header-menu">
           <li><a href="/">Home</a></li>
           <li><Link to="/about">About Us</Link></li>
-          <li 
+<li 
             className="menu-item-with-dropdown" 
             onMouseEnter={() => handleMenuHover('features')} 
             onMouseLeave={handleMenuLeave}
           >
             <a href="/#features">Features</a>
-{activeDropdown === 'features' && (
+            {activeDropdown === 'features' && (
               <div className="nav-dropdown">
+                <Link to="/knowledge">Knowledge</Link>
                 <Link to="/leaf-analysis">Leaf Analysis</Link>
                 <Link to="/bunga-analysis">Bunga Analysis</Link>
                 <Link to="/forum">Community Forum</Link>
-                <Link to="/knowledge">Knowledge</Link>
-                <Link to="/weather">Weather</Link>
                 <Link to="/macro-mapping">Macromapping</Link>
                 <Link to="/how-it-works">How it works</Link>
               </div>
@@ -213,12 +298,32 @@ export default function Header() {
                                 {new Date(notification.createdAt).toLocaleDateString()}
                               </span>
                             </div>
-                            <button
-                              className="delete-notification"
-                              onClick={() => deleteNotification(notification._id)}
-                            >
-                              🗑️
-                            </button>
+                              {/* If this notification is a friend request, show accept/decline */}
+                              {notification.type === 'friend_request' && notification.data?.senderId ? (
+                                <div className="notification-actions">
+                                  <button
+                                    className="btn-accept"
+                                    disabled={notifLoading[notification._id]}
+                                    onClick={(e) => { e.stopPropagation(); acceptFriendRequest(notification.data.senderId, notification._id); }}
+                                  >
+                                    {notifLoading[notification._id] ? '…' : 'Accept'}
+                                  </button>
+                                  <button
+                                    className="btn-decline"
+                                    disabled={notifLoading[notification._id]}
+                                    onClick={(e) => { e.stopPropagation(); declineFriendRequest(notification.data.senderId, notification._id); }}
+                                  >
+                                    {notifLoading[notification._id] ? '…' : 'Reject'}
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  className="delete-notification"
+                                  onClick={() => deleteNotification(notification._id)}
+                                >
+                                  🗑️
+                                </button>
+                              )}
                           </div>
                         ))}
                       </div>
@@ -229,11 +334,15 @@ export default function Header() {
 
               <div className="user-profile">
                 <div className="user-info">
-                  <p className="user-name">{user?.firstName} {user?.lastName}</p>
+                  <p className="user-name">{user?.name}</p>
                   <p className="user-email">{user?.email}</p>
                 </div>
                 <div className="user-avatar" onClick={toggleDropdown}>
-                  {user?.firstName?.charAt(0).toUpperCase() || 'U'}
+                  {user?.avatar?.url ? (
+                    <img src={user.avatar.url} alt="Profile" className="user-avatar-img" />
+                  ) : (
+                    user?.name?.charAt(0).toUpperCase() || 'U'
+                  )}
                 </div>
               </div>
 

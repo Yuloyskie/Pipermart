@@ -521,7 +521,8 @@ exports.getAllUsers = async (req, res) => {
     let query = { 
       _id: { $ne: currentUserId },
       isDeleted: false,
-      isActive: true
+      isActive: true,
+      role: { $ne: 'admin' }
     };
 
     if (search) {
@@ -579,6 +580,11 @@ exports.sendFriendRequest = async (req, res) => {
     const { userId: receiverId } = req.params;
     const senderId = req.user._id;
 
+    // Validate MongoDB ObjectId format
+    if (!receiverId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ success: false, message: 'Invalid user ID format' });
+    }
+
     if (senderId.toString() === receiverId) {
       return res.status(400).json({ success: false, message: 'Cannot send friend request to yourself' });
     }
@@ -604,6 +610,11 @@ exports.sendFriendRequest = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Friend request already sent' });
     }
 
+    // Ensure friendRequests array exists
+    if (!receiver.friendRequests) {
+      receiver.friendRequests = [];
+    }
+
     // Add friend request to receiver
     receiver.friendRequests.push({
       from: senderId,
@@ -619,6 +630,7 @@ exports.sendFriendRequest = async (req, res) => {
       title: 'Friend Request',
       message: `${sender.name} sent you a friend request`,
       severity: 'info',
+      actionUrl: '/friend-requests',
       data: { senderId, senderName: sender.name, senderAvatar: sender.avatar?.url }
     });
 
@@ -632,8 +644,9 @@ exports.sendFriendRequest = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('❌ Error sending friend request:', error);
-    res.status(500).json({ success: false, message: error.message });
+    console.error('❌ Error sending friend request:', error.message);
+    console.error('Stack:', error.stack);
+    res.status(500).json({ success: false, message: 'Failed to send friend request: ' + error.message });
   }
 };
 
@@ -686,6 +699,7 @@ exports.acceptFriendRequest = async (req, res) => {
       title: 'Friend Request Accepted',
       message: `${receiver.name} accepted your friend request`,
       severity: 'info',
+      actionUrl: `/profile/${receiverId}`,
       data: { acceptedById: receiverId, acceptedByName: receiver.name }
     });
 
@@ -834,6 +848,28 @@ exports.getFriendRequests = async (req, res) => {
   }
 };
 
+// ========== GET USER BY ID (PROFILE VIEW) ==========
+const { Types } = require('mongoose');
+
+exports.getUserById = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ success: false, message: 'Invalid user id' });
+    }
+
+    const user = await User.findById(userId).select('-password');
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    res.status(200).json({ success: true, user });
+  } catch (error) {
+    console.error('❌ [getUserById] Error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // Remove friend
 exports.removeFriend = async (req, res) => {
   try {
@@ -869,6 +905,35 @@ exports.removeFriend = async (req, res) => {
   }
 };
 
+// Get sent friend requests (for frontend state initialization)
+exports.getSentFriendRequests = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: 'User not authenticated' });
+    }
+
+    const currentUserId = req.user._id;
+    
+    // Find all users who have pending requests FROM current user
+    const allUsers = await User.find(
+      { 'friendRequests.from': currentUserId, 'friendRequests.status': 'pending' },
+      '_id'
+    );
+
+    const sentRequestUserIds = allUsers.map(user => user._id.toString());
+
+    console.log(`✅ Found ${sentRequestUserIds.length} sent friend requests`);
+    res.status(200).json({
+      success: true,
+      data: sentRequestUserIds,
+      count: sentRequestUserIds.length
+    });
+  } catch (error) {
+    console.error('❌ Error fetching sent friend requests:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // Get all users with friend status
 exports.getAllUsers = async (req, res) => {
   try {
@@ -889,10 +954,11 @@ exports.getAllUsers = async (req, res) => {
       };
     }
 
-    // Exclude current user from results
+    // Exclude current user and admins from results
     if (currentUserId) {
       query._id = { $ne: currentUserId };
     }
+    query.role = { $ne: 'admin' };
 
     // Fetch all users except current
     const users = await User.find(query)

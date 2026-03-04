@@ -13,9 +13,12 @@ const {
   sendFriendRequest,
   acceptFriendRequest,
   declineFriendRequest,
+  cancelFriendRequest,
   getFriends,
   getFriendRequests,
-  removeFriend
+  removeFriend,
+  getSuggestions,
+  getSentFriendRequests
 } = require('../controllers/User');
 
 const { isAuthenticatedUser } = require('../middlewares/auth');
@@ -56,6 +59,17 @@ router.post('/friend-request/:senderId/accept', isAuthenticatedUser, acceptFrien
 router.post('/friend-request/:senderId/decline', isAuthenticatedUser, declineFriendRequest);
 router.get('/friends', isAuthenticatedUser, getFriends);
 router.get('/friend-requests', isAuthenticatedUser, getFriendRequests);
+router.get('/sent-friend-requests', isAuthenticatedUser, getSentFriendRequests);
 router.delete('/friends/:friendId', isAuthenticatedUser, removeFriend);
+router.get('/suggestions', isAuthenticatedUser, getSuggestions);
+router.delete('/friend-request/:userId', isAuthenticatedUser, cancelFriendRequest);
+// view another user's profile (must come after other routes to avoid wildcard capture)
+router.get('/:userId', isAuthenticatedUser, async (req, res, next) => {
+  try {
+    await require('../controllers/User').getUserById(req, res);
+  } catch (err) {
+    next(err);
+  }
+});
 
 module.exports = router;

@@ -59,7 +59,7 @@ leftColumn: {
 rightColumn: { flex: '0 0 40%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#eee6e6ce', padding: '40px', minHeight: '100vh' },
     authCard: { width: '100%', maxWidth: '440px' },
     logoTop: { display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '40px' },
-    logoImg: { width: '40px', height: '40px', objectFit: 'contain', borderRadius: '10px' },
+    logoImg: { width: '90px', height: '90px', objectFit: 'contain', borderRadius: '16px' },
     logoText: { fontSize: '22px', fontWeight: '700', color: '#52B788', fontFamily: "'Playfair Display', serif", textShadow: '0 0 20px rgba(82, 183, 136, 0.3)' },
     authTitle: { fontSize: '32px', fontWeight: '700', color: '#0f7048', marginBottom: '8px', fontFamily: "'Playfair Display', serif" },
     authSubtitle: { fontSize: '15px', color: '#4e4e4e', marginBottom: '32px' },

@@ -237,13 +237,18 @@ export default function CreateThread() {
         userId: userId
       };
 
+      const token = localStorage.getItem('token');
+
       if (isDraft && threadId) {
         // Update draft to published
         await axios.put(
           `${import.meta.env.VITE_BACKEND_URL}/api/v1/forum/threads/${threadId}`,
           postData,
           {
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`
+            }
           }
         );
       } else {
@@ -252,7 +257,10 @@ export default function CreateThread() {
           `${import.meta.env.VITE_BACKEND_URL}/api/v1/forum/threads`,
           postData,
           {
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`
+            }
           }
         );
       }

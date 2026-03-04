@@ -36,7 +36,7 @@ const colors = {
 
 const styles = {
     splitContainer: { minHeight: '100vh', display: 'flex', width: '100%', background: '#050505' },
-leftColumn: { flex: '0 0 40%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f0eeee', padding: '40px', minHeight: '100vh' },
+leftColumn: { flex: '0 0 40%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f0eeeece', padding: '40px', minHeight: '100vh' },
     authCard: { width: '100%', maxWidth: '440px' },
     logoTop: { display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '40px' },
     logoIcon: { width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #52B788 0%, #1B4332 100%)', borderRadius: '10px', fontSize: '20px' },
@@ -190,7 +190,7 @@ welcomeSubtitle: { fontSize: '17px', color: 'rgba(255, 255, 255, 0.95)', marginB
       <div style={styles.leftColumn}>
         <div style={styles.authCard}>
           <div style={styles.logoTop}>
-            <div style={styles.logoIcon}>🌱</div>
+            <img src="/logowalangbg.png" alt="PiperSmart Logo" style={{ width: '90px', height: '90px', borderRadius: '16px' }} />
             <span style={styles.logoText}>PiperSmart</span>
           </div>
 

@@ -59,6 +59,10 @@ app.use('/api/v1/users', userRoutes);
 const predictRoutes = require('./routes/Predict');
 app.use('/api/v1/predict', predictRoutes);
 
+// ========== MACROMAP ROUTES ==========
+const macromapRoutes = require('./routes/Macromap');
+app.use('/api/v1/macromap', macromapRoutes);
+
 // ========== FORUM ROUTES ==========
 const forumRoutes = require('./routes/Forum');
 app.use('/api/v1/forum', forumRoutes);
