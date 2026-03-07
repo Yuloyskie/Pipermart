@@ -12,31 +12,31 @@ const featuresList = [
       title: 'Leaf Analysis',
       description: 'Upload photos of pepper leaves for disease detection and identification',
       link: '/leaf-analysis',
-      icon: '🍃'
+      icon: <span style={{color: '#27AE60', fontSize: '2.5rem'}}></span>
     },
     {
       title: 'Bunga Analysis',
       description: 'Analyze pepper flowers and fruits for health assessment and ripeness detection',
       link: '/bunga-analysis',
-      icon: '🌸'
+      icon: <span style={{color: '#8B4513', fontSize: '2.5rem'}}></span>
     },
     {
       title: 'Weather Updates',
       description: 'Get real-time weather information for your farming area',
       link: '/weather',
-      icon: '🌤️'
+      icon: <span style={{color: '#27AE60', fontSize: '2.5rem'}}></span>
     },
     {
       title: 'Community Forum',
       description: 'Connect with other farmers and share experiences',
       link: '/forum',
-      icon: '💬'
+      icon: <span style={{color: '#27AE60', fontSize: '2.5rem'}}></span>
     },
     {
       title: 'Macromapping',
       description: 'Visualize your plantation with advanced mapping tools',
       link: '/macro-mapping',
-      icon: '🗺️'
+      icon: <span style={{color: '#8B4513', fontSize: '2.5rem'}}></span>
     }
   ];
 

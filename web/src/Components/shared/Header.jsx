@@ -93,7 +93,7 @@ export default function Header() {
       setNotifications(prev => 
         prev.map(notif => 
           notif._id === notificationId 
-            ? { ...notif, message: '✅ Request Accepted' } 
+            ? { ...notif, message: <span style={{color: '#27AE60'}}>✓ Request Accepted</span> }
             : notif
         )
       );
@@ -129,7 +129,7 @@ export default function Header() {
       setNotifications(prev => 
         prev.map(notif => 
           notif._id === notificationId 
-            ? { ...notif, message: '❌ Request Declined' } 
+            ? { ...notif, message: <span style={{color: '#E74C3C'}}>✕ Request Declined</span> }
             : notif
         )
       );
@@ -258,9 +258,9 @@ export default function Header() {
               <div className="notification-bell-container">
                 <button
                   className="notification-bell"
-                  onClick={() => setShowNotifications(!showNotifications)}
+                onClick={() => setShowNotifications(!showNotifications)}
                 >
-                  🔔
+                  <span style={{color: '#27AE60', fontSize: '18px'}}>🔔</span>
                   {unreadCount > 0 && (
                     <span className="notification-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
                   )}
@@ -321,7 +321,7 @@ export default function Header() {
                                   className="delete-notification"
                                   onClick={() => deleteNotification(notification._id)}
                                 >
-                                  🗑️
+                                  <span style={{color: '#E74C3C'}}>🗑</span>
                                 </button>
                               )}
                           </div>

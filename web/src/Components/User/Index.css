@@ -519,7 +519,7 @@
 .feature-item:hover {
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(0, 255, 136, 0.3);
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3), 0 0 30px rgba(0, 255, 136, 0.1);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3), 0 0 30px rgba(223, 228, 225, 0.1);
   transform: translateY(-12px);
 }
 
@@ -722,14 +722,14 @@
 }
 
 .feature-card h3 {
-  color: #0B1A14;
+  color: #e7ebea;
   font-size: 1.25rem;
   margin-bottom: 0.75rem;
   font-weight: 600;
 }
 
 .feature-card p {
-  color: rgba(11, 26, 20, 0.7);
+  color: #d2dad7;
   font-size: 0.95rem;
   line-height: 1.6;
 }

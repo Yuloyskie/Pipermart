@@ -292,7 +292,7 @@ const Chat = forwardRef((props, ref) => {
           onClick={async () => { setIsOpen(true); await markAllRead(); }}
           title="Open Chat"
         >
-          💬
+          <span style={{color: '#27AE60', fontSize: '20px', fontWeight: 'bold'}}>💬</span>
           {unreadCount > 0 && (
             <span className="chat-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
           )}
@@ -302,7 +302,7 @@ const Chat = forwardRef((props, ref) => {
       {isOpen && (
         <div className={`chat-window ${isMinimized ? 'minimized' : ''}`}>
           <div className="chat-header">
-            <h3>💬 Messages</h3>
+            <h3><span style={{color: '#27AE60'}}>P</span> Messages</h3>
             <div className="chat-controls">
               <button
                 className="chat-minimize-btn"
@@ -374,7 +374,7 @@ const Chat = forwardRef((props, ref) => {
                         placeholder="Type a message..."
                       />
                       <button className="send-btn" onClick={handleSendMessage}>
-                        📤
+                        <span style={{color: '#27AE60', fontSize: '16px'}}>➤</span>
                       </button>
                     </div>
                   </div>
