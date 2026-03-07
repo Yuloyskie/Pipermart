@@ -82,7 +82,40 @@ const BungaAnalysis = () => {
       description: 'The bunga has deteriorated and is no longer usable.',
       actions: ['Remove immediately to prevent disease spread', 'Do not attempt to process or dry', 'Inspect nearby bunches for signs of rot', 'Improve ventilation to prevent future rot'],
       color: colors.danger
+    },
+    // Handle lowercase versions
+    'ripe': {
+      icon: '🟢',
+      title: 'Bunga is Ripe',
+      description: 'Your black pepper bunga has reached optimal ripeness for harvesting.',
+      actions: ['Harvest immediately for best flavor', 'Use sharp pruning shears to avoid damage', 'Store in cool, dry place', 'Process or dry within 24 hours'],
+      color: colors.primaryLight
+    },
+    'unripe': {
+      icon: '🟡',
+      title: 'Bunga Not Yet Ripe',
+      description: 'The bunga requires more time to reach full ripeness.',
+      actions: ['Wait 5-7 more days before harvesting', 'Ensure adequate water and nutrients', 'Protect from birds and pests', 'Check daily for color change'],
+      color: '#F39C12'
+    },
+    'rotten': {
+      icon: '🔴',
+      title: 'Bunga is Rotten',
+      description: 'The bunga has deteriorated and is no longer usable.',
+      actions: ['Remove immediately to prevent disease spread', 'Do not attempt to process or dry', 'Inspect nearby bunches for signs of rot', 'Improve ventilation to prevent future rot'],
+      color: colors.danger
     }
+  };
+
+  const getResultInfo = (result) => {
+    if (!result) return null;
+    // Try different possible field names
+    const ripenessValue = result.ripeness || result.class || result.prediction || result.label;
+    if (!ripenessValue) return null;
+    
+    // Try to find matching recommendation (case insensitive)
+    const normalizedRipeness = ripenessValue.toString().toLowerCase();
+    return ripenessRecommendations[normalizedRipeness] || null;
   };
 
   const getMarketGrade = (classStr) => {
@@ -133,13 +166,33 @@ const BungaAnalysis = () => {
       const formData = new FormData();
       formData.append('image', image);
 
-      const response = await axios.post(`${API_BASE_URL}/api/v1/predict/bunga-with-objects`, formData, {
+      const response = await axios.post(`${API_BASE_URL}/api/v1/predict/ripeness`, formData, {
         headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${token}` },
         timeout: 180000
       });
 
+      // Backend returns: { success, message, data: { ripeness, confidence, class }, processingTime }
+      const responseData = response.data.data || response.data;
+
+      console.log('Bunga response data:', responseData);
+
       if (response.data) {
-        setResult(response.data);
+        if (response.data.success === false) {
+          setError(response.data.error || 'Prediction failed');
+        } else if (responseData.ripeness || responseData.class) {
+          // Normalize the ripeness value
+          let ripenessValue = responseData.ripeness;
+          if (ripenessValue) {
+            ripenessValue = ripenessValue.charAt(0).toUpperCase() + ripenessValue.slice(1).toLowerCase();
+          }
+          // Set result with normalized ripeness
+          setResult({ 
+            ...responseData, 
+            ripeness: ripenessValue || responseData.ripeness
+          });
+        } else {
+          setError('No result received from server');
+        }
       } else {
         setError('No result received from server');
       }
@@ -154,16 +207,24 @@ const BungaAnalysis = () => {
     }
   };
 
-  const resultInfo = result && result.ripeness ? ripenessRecommendations[result.ripeness] : null;
+  const resultInfo = getResultInfo(result);
   const marketGrade = result && result.class ? getMarketGrade(result.class) : null;
 
   return (
     <div style={{ minHeight: '100vh', position: 'relative', fontFamily: 'Inter, sans-serif' }}>
       <Header />
-      {/* Background stays as requested */}
+      {/* Background with registerBG.webp and opacity overlay */}
       <div style={{
         position: 'fixed', top: 0, left: 0, width: '100%', minHeight: '100vh', zIndex: -1,
-        background: `radial-gradient(ellipse at 20% 30%, rgba(0, 40, 20, 0.85) 0%, transparent 50%), linear-gradient(180deg, rgba(10, 10, 10, 0.9) 0%, rgba(13, 26, 18, 0.85) 50%, rgba(10, 10, 10, 0.9) 100%)`,
+        background: `
+          radial-gradient(ellipse at 20% 30%, rgba(0, 40, 20, 0.85) 0%, transparent 50%),
+          radial-gradient(ellipse at 80% 70%, rgba(10, 30, 15, 0.75) 0%, transparent 50%),
+          linear-gradient(180deg, rgba(10, 10, 10, 0.9) 0%, rgba(13, 26, 18, 0.85) 50%, rgba(10, 10, 10, 0.9) 100%),
+          url('/registerBG.webp')
+        `,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
       }} />
 
       <div style={{ padding: '100px 20px' }}>
@@ -349,16 +410,18 @@ const BungaAnalysis = () => {
                   <div style={{ 
                     width: '80px', height: '80px', 
                     borderRadius: '50%', 
-                    background: `linear-gradient(135deg, ${resultInfo?.color} 0%, ${resultInfo?.color}CC 100%)`,
+                    background: resultInfo 
+                      ? `linear-gradient(135deg, ${resultInfo.color} 0%, ${resultInfo.color}CC 100%)`
+                      : 'linear-gradient(135deg, #27AE60 0%, #1B4D3E 100%)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: '40px',
                     margin: '0 auto 16px',
-                    boxShadow: `0 8px 30px ${resultInfo?.color}40`
+                    boxShadow: resultInfo ? `0 8px 30px ${resultInfo.color}40` : '0 8px 30px rgba(39, 174, 96, 0.4)'
                   }}>
                     {resultInfo?.icon || '📊'}
                   </div>
                   <h2 style={{ margin: 0, color: 'white', fontSize: '24px', fontWeight: '800' }}>
-                    {resultInfo?.title || 'Analysis Complete'}
+                    {resultInfo?.title || result?.ripeness || result?.class || 'Analysis Complete'}
                   </h2>
                 </div>
 

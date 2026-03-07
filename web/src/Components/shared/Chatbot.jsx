@@ -182,7 +182,7 @@ const Chatbot = () => {
             disabled={isLoading || !input.trim()}
             aria-label="Send message"
           >
-            <span style={{color: '#27AE60', fontSize: '18px'}}>➤</span>
+            <span style={{color: '#e8f3ec', fontSize: '18px'}}>➤</span>
           </button>
         </form>
       </div>

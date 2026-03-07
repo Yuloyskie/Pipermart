@@ -267,12 +267,15 @@ useEffect(() => {
       const endTime = Date.now();
       const duration = endTime - startTime;
 
+      // Backend returns: { success, message, data: { disease, confidence }, processingTime }
+      const responseData = response.data.data || response.data;
+
       if (response.data) {
         if (response.data.success === false) {
           setError(response.data.error || 'Prediction failed');
-        } else if (response.data.disease) {
-          const normalizedDisease = normalizeDiseaseeName(response.data.disease);
-          setResult({ ...response.data, disease: normalizedDisease, processingTime: duration });
+        } else if (responseData.disease) {
+          const normalizedDisease = normalizeDiseaseeName(responseData.disease);
+          setResult({ ...responseData, disease: normalizedDisease, processingTime: duration });
           setProcessingTime(duration);
         } else {
           setError('No disease detected in response');
@@ -324,7 +327,7 @@ useEffect(() => {
       {/* Floating Leaves Background */}
       <FloatingLeaves />
 
-      {/* Background */}
+      {/* Background with bpplant.jpg and opacity overlay */}
       <div style={{
         position: 'fixed',
         top: 0,
@@ -336,7 +339,7 @@ useEffect(() => {
           radial-gradient(ellipse at 20% 30%, rgba(0, 40, 20, 0.85) 0%, transparent 50%),
           radial-gradient(ellipse at 80% 70%, rgba(10, 30, 15, 0.75) 0%, transparent 50%),
           linear-gradient(180deg, rgba(10, 10, 10, 0.9) 0%, rgba(13, 26, 18, 0.85) 50%, rgba(10, 10, 10, 0.9) 100%),
-          url('../../../paminta.webp')
+          url('/plant.jpg')
         `,
         backgroundSize: 'cover',
         backgroundPosition: 'center',

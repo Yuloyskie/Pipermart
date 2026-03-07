@@ -374,7 +374,7 @@ const Chat = forwardRef((props, ref) => {
                         placeholder="Type a message..."
                       />
                       <button className="send-btn" onClick={handleSendMessage}>
-                        <span style={{color: '#27AE60', fontSize: '16px'}}>➤</span>
+                        <span style={{color: '#f7fcf9', fontSize: '16px'}}>➤</span>
                       </button>
                     </div>
                   </div>

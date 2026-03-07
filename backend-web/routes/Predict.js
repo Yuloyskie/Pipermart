@@ -1,335 +1,349 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
+const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
-const { spawn } = require('child_process');
-const { isAuthenticatedUser } = require('../middlewares/auth');
 
-// Configure multer for image uploads
+// Configure multer for file uploads
 const storage = multer.memoryStorage();
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
-  fileFilter: (req, file, cb) => {
-    const allowed = ['image/jpeg', 'image/png', 'image/jpg'];
-    if (allowed.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Only JPEG and PNG images are allowed'));
-    }
-  }
-});
+const upload = multer({ storage: storage, limits: { fileSize: 10 * 1024 * 1024 } });
 
-/**
- * POST /api/v1/predict/disease
- * Predict pepper leaf disease from image
- */
-router.post('/disease', isAuthenticatedUser, upload.single('image'), async (req, res) => {
-  const startTime = Date.now();
-  const requestId = req.query.requestId || req.body.requestId || `leaf_${Date.now()}`;
-
-  console.log(`\n🟢 [${requestId}] NEW LEAF DISEASE PREDICTION REQUEST RECEIVED`);
-
-  try {
-    if (!req.file) {
-      console.error(`❌ [${requestId}] No image file provided`);
-      return res.status(400).json({
-        success: false,
-        error: 'No image provided. Please upload an image.',
-        requestId
-      });
-    }
-
-    console.log(`📸 [${requestId}] Image received: ${req.file.originalname} (${req.file.size} bytes)`);
-
-    // Create temp directory if it doesn't exist
-    const tempDir = path.join(__dirname, '../temp');
-    if (!fs.existsSync(tempDir)) {
-      fs.mkdirSync(tempDir, { recursive: true });
-    }
-
-    // Save image temporarily - use requestId for unique filename
-    const tempImagePath = path.join(tempDir, `${requestId}.jpg`);
-    fs.writeFileSync(tempImagePath, req.file.buffer);
-    
-    console.log(`💾 [${requestId}] Temp file saved: ${tempImagePath}`);
-
-    // Call Python prediction script
-    const result = await new Promise((resolve, reject) => {
-      // Python script path - Use NEW CPU-Optimized Web Script
-      const pythonScriptPath = path.join(__dirname, '../utils/predict_disease_yolov8.py');
-      const modelPath = path.join(__dirname, '../ml_models/leaf/train/weights/best.pt');
-      const pythonExe = process.env.PYTHON_EXE || 'python';
-      
-      console.log(`🐍 [${requestId}] Spawning Python (CPU-Optimized)...`);
-      console.log(`🐍 [${requestId}] Script: ${pythonScriptPath}`);
-      console.log(`🐍 [${requestId}] Model: leaf/train/weights/best.pt`);
-      
-      // Use shell: true to bypass Windows App Execution Alias issues
-      // Quote paths to handle spaces in directory names
-      const python = spawn(pythonExe, [`"${pythonScriptPath}"`, `"${tempImagePath}"`, `"${modelPath}"`], {
-        shell: true,
-        stdio: ['ignore', 'pipe', 'pipe']
-      });
-
-      let output = '';
-      let errorOutput = '';
-
-      python.stdout.on('data', (data) => {
-        output += data.toString();
-      });
-
-      python.stderr.on('data', (data) => {
-        errorOutput += data.toString();
-        console.error(`⚠️ [${requestId}] Python stderr: ${data}`);
-      });
-
-      python.on('close', (code) => {
-        // Clean up temp file
-        try {
-          fs.unlinkSync(tempImagePath);
-        } catch (e) {
-          console.error(`[${requestId}] Error deleting temp file:`, e);
-        }
-
-        if (code === 0) {
-          try {
-            const parsedOutput = JSON.parse(output.trim());
-            resolve(parsedOutput);
-          } catch (e) {
-            console.error(`[${requestId}] Error parsing Python output:`, e);
-            reject(new Error('Invalid prediction output'));
-          }
-        } else {
-          console.error(`[${requestId}] Python process exited with code ${code}`);
-          console.error(`[${requestId}] Error: ${errorOutput}`);
-          reject(new Error(`Prediction failed: ${errorOutput || 'Unknown error'}`));
-        }
-      });
-
-      python.on('error', (err) => {
-        console.error(`[${requestId}] Failed to start Python process:`, err);
-        try {
-          fs.unlinkSync(tempImagePath);
-        } catch (e) {}
-        reject(new Error('Failed to start prediction service'));
-      });
-    });
-
-    if (result.error) {
-      const duration = Date.now() - startTime;
-      console.log(`⚠️ [${requestId}] Leaf prediction failed (took ${duration}ms):`, result.error);
-      return res.status(200).json({
-        success: false,
-        error: result.error,
-        processingTime: duration,
-        requestId
-      });
-    }
-
-    const duration = Date.now() - startTime;
-    console.log(`✅ [${requestId}] Leaf prediction completed in ${duration}ms`);
-    console.log(`📊 [${requestId}] Result: ${result.disease} (${result.confidence}%)`);
-    
-    res.status(200).json({
-      success: true,
-      processingTime: duration,
-      requestId,
-      ...result
-    });
-
-  } catch (error) {
-    const duration = Date.now() - startTime;
-    console.error(`❌ [${requestId}] Prediction error (${duration}ms):`, error.message);
-
-    // Try to clean up temp file if it exists
+// ========== LEAF DISEASE PREDICTION ==========
+router.post('/disease', upload.single('image'), async (req, res) => {
     try {
-        const tempDir = path.join(__dirname, '../temp');
-        const tempImagePath = path.join(tempDir, `${requestId}.jpg`);
-        if (fs.existsSync(tempImagePath)) {
-          fs.unlinkSync(tempImagePath);
-        }
-    } catch (e) {}
+        console.log('🟢 [leaf] NEW LEAF DISEASE PREDICTION REQUEST RECEIVED');
 
-    res.status(500).json({
-      success: false,
-      error: error.message || 'Failed to analyze image. Please try again.',
-      requestId,
-      processingTime: duration
-    });
-  }
+        // Get image - check multiple sources
+        let image = null;
+        
+        // 1. Check if file was uploaded (multipart/form-data)
+        if (req.file) {
+            console.log(`📎 [leaf] File received: ${req.file.originalname} ${req.file.size} bytes`);
+            image = req.file.buffer.toString('base64');
+        }
+        // 2. Check if image is in body (JSON)
+        else if (req.body && req.body.image) {
+            console.log('📸 [leaf] Image received in body.image');
+            image = req.body.image;
+        }
+        // 3. Handle if image is sent as direct base64 string
+        else if (req.body && typeof req.body === 'string' && req.body.length > 100) {
+            image = req.body;
+        }
+        
+        if (!image) {
+            console.log('⚠️ [leaf] No image found');
+            console.log('⚠️ [leaf] Body keys:', Object.keys(req.body || {}));
+            console.log('⚠️ [leaf] File:', req.file ? 'yes' : 'no');
+            return res.status(400).json({
+                success: false,
+                message: 'Image is required'
+            });
+        }
+
+        console.log(`🟢 [leaf] Processing image, size: ${image.length} chars`);
+
+        // Create temp directory
+        const tempDir = path.join(__dirname, '..', 'temp');
+        if (!fs.existsSync(tempDir)) {
+            fs.mkdirSync(tempDir, { recursive: true });
+        }
+
+        // Save image to temp file
+        const timestamp = Date.now();
+        const filename = `leaf_${timestamp}.jpg`;
+        const filepath = path.join(tempDir, filename);
+        
+        // Handle base64 - extract if data URL
+        let base64Data = image;
+        if (image.includes('data:image')) {
+            const matches = image.match(/^data:image\/(\w+);base64,(.+)$/);
+            if (matches) {
+                base64Data = matches[2];
+            } else {
+                base64Data = image.replace(/^data:image\/\w+;base64,/, '');
+            }
+        }
+        
+        try {
+            fs.writeFileSync(filepath, Buffer.from(base64Data, 'base64'));
+            const stats = fs.statSync(filepath);
+            console.log(`💾 [leaf] Temp file saved: ${filename} (${stats.size} bytes)`);
+        } catch (writeErr) {
+            console.error('❌ [leaf] Error writing image:', writeErr);
+            return res.status(500).json({ success: false, message: 'Failed to save image' });
+        }
+
+        // Get paths
+        const pythonScript = path.join(__dirname, '..', 'utils', 'predict_disease_yolov8.py');
+        const modelPath = path.join(__dirname, '..', 'ml_models', 'leaf', 'train', 'weights', 'best.pt');
+        
+        console.log(`🐍 [leaf] Spawning Python (CPU-Optimized)...`);
+        console.log(`🐍 [leaf] Script: ${pythonScript}`);
+        console.log(`🐍 [leaf] Model: ${modelPath}`);
+        
+        const startTime = Date.now();
+
+        const pythonProcess = spawn('python', [
+            pythonScript,
+            filepath,
+            modelPath
+        ], {
+            shell: false,
+            windowsHide: true
+        });
+
+        let resultData = '';
+        let errorData = '';
+
+        pythonProcess.stdout.on('data', (data) => {
+            resultData += data.toString();
+        });
+
+        pythonProcess.stderr.on('data', (data) => {
+            const str = data.toString();
+            errorData += str;
+            if (str.includes('Processing') || str.includes('Loading') || str.includes('Model') || 
+                str.includes('Detected') || str.includes('Disease')) {
+                console.log(`⚠️ [leaf] Python: ${str.trim()}`);
+            }
+        });
+
+        pythonProcess.on('error', (err) => {
+            console.error('❌ [leaf] Process error:', err);
+        });
+
+        pythonProcess.on('close', (code) => {
+            const processingTime = Date.now() - startTime;
+            console.log(`✅ [leaf] Prediction completed in ${processingTime}ms, code: ${code}`);
+
+            // Clean up temp file
+            try {
+                fs.unlinkSync(filepath);
+            } catch (err) {}
+
+            if (code !== 0) {
+                console.error('❌ [leaf] Python failed with code:', code);
+                console.error('❌ [leaf] Error:', errorData);
+                return res.status(200).json({
+                    success: true,
+                    data: { disease: 'Unknown', confidence: 0 },
+                    processingTime
+                });
+            }
+
+            try {
+                // Parse result - find JSON in output
+                const lines = resultData.trim().split('\n');
+                let result = null;
+                
+                for (let i = lines.length - 1; i >= 0; i--) {
+                    const line = lines[i].trim();
+                    if (line.startsWith('{') && line.endsWith('}')) {
+                        try {
+                            const parsed = JSON.parse(line);
+                            if (parsed.disease) {
+                                result = parsed;
+                                break;
+                            }
+                        } catch (e) {}
+                    }
+                }
+
+                if (!result) {
+                    result = { disease: 'Unknown', confidence: 0 };
+                }
+
+                console.log(`📊 [leaf] Result: ${result.disease} (${result.confidence}%)`);
+
+                res.status(200).json({
+                    success: true,
+                    message: 'Leaf disease prediction completed',
+                    data: {
+                        disease: result.disease,
+                        confidence: result.confidence,
+                        detections: result.detections || []
+                    },
+                    processingTime
+                });
+
+            } catch (parseError) {
+                console.error('❌ [leaf] Parse error:', parseError.message);
+                res.status(200).json({
+                    success: true,
+                    message: 'Prediction completed',
+                    data: { disease: 'Unknown', confidence: 0 },
+                    processingTime
+                });
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ [leaf] Error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to process prediction',
+            error: error.message
+        });
+    }
 });
 
-/**
- * POST /api/v1/predict/bunga-with-objects
- * Predict bunga ripeness with health grading and object detection
- */
-router.post('/bunga-with-objects', isAuthenticatedUser, upload.single('image'), async (req, res) => {
-  const startTime = Date.now();
-  const requestId = req.query.requestId || req.body.requestId || `bunga_${Date.now()}`;
-  
-  console.log(`\n🔵 [${requestId}] NEW BUNGA PREDICTION REQUEST RECEIVED`);
-  
-  try {
-    if (!req.file) {
-      console.error(`❌ [${requestId}] No image file provided`);
-      return res.status(400).json({
-        success: false,
-        error: 'No image provided. Please upload an image.',
-        requestId
-      });
-    }
-
-    console.log(`📸 [${requestId}] Image received: ${req.file.originalname} (${req.file.size} bytes)`);
-
-    // Create temp directory if it doesn't exist
-    const tempDir = path.join(__dirname, '../temp');
-    if (!fs.existsSync(tempDir)) {
-      fs.mkdirSync(tempDir, { recursive: true });
-    }
-
-    // Save image temporarily - use requestId for unique filename
-    const tempImagePath = path.join(tempDir, `${requestId}.jpg`);
-    fs.writeFileSync(tempImagePath, req.file.buffer);
-
-    console.log(`💾 [${requestId}] Temp file saved: ${tempImagePath}`);
-
-    // Call Python prediction script
-    const result = await new Promise((resolve, reject) => {
-      // Python script path - Use NEW CPU-Optimized Web Script
-      const pythonScriptPath = path.join(__dirname, '../utils/predict_bunga_web_cpu.py');
-      const bungaModelPath = path.join(__dirname, '../ml_models/bunga/train/weights/best.pt');
-      const pythonExe = process.env.PYTHON_EXE || 'python';
-      
-      console.log(`🐍 [${requestId}] Spawning Python (CPU-Optimized)...`);
-      console.log(`🐍 [${requestId}] Script: ${pythonScriptPath}`);
-      console.log(`🐍 [${requestId}] Model: bunga/train/weights/best.pt`);
-      
-      // Use shell: true to properly handle paths with spaces (e.g., "6.1 Reporting")
-      // Quote paths to handle spaces in directory names
-      const python = spawn(pythonExe, [`"${pythonScriptPath}"`, `"${tempImagePath}"`, `"${bungaModelPath}"`], {
-        shell: true,
-        stdio: ['ignore', 'pipe', 'pipe']
-      });
-
-      let output = '';
-      let errorOutput = '';
-
-      python.stdout.on('data', (data) => {
-        output += data.toString();
-      });
-
-      python.stderr.on('data', (data) => {
-        errorOutput += data.toString();
-        console.error(`⚠️ [${requestId}] Python stderr: ${data}`);
-      });
-
-      python.on('close', (code) => {
-        // Clean up temp file
-        try {
-          fs.unlinkSync(tempImagePath);
-        } catch (e) {
-          console.error(`[${requestId}] Error deleting temp file:`, e);
-        }
-
-        if (code === 0) {
-          try {
-            const parsedOutput = JSON.parse(output.trim());
-            resolve(parsedOutput);
-          } catch (e) {
-            console.error(`[${requestId}] Error parsing Python output:`, e);
-            reject(new Error('Invalid prediction output'));
-          }
-        } else {
-          console.error(`[${requestId}] Python process exited with code ${code}`);
-          console.error(`[${requestId}] Error: ${errorOutput}`);
-          reject(new Error(`Prediction failed: ${errorOutput || 'Unknown error'}`));
-        }
-      });
-
-      python.on('error', (err) => {
-        console.error(`[${requestId}] Failed to start Python process:`, err);
-        try {
-          fs.unlinkSync(tempImagePath);
-        } catch (e) {}
-        reject(new Error('Failed to start prediction service'));
-      });
-    });
-
-    if (result.error) {
-      const duration = Date.now() - startTime;
-      console.log(`⚠️ [${requestId}] Bunga prediction failed (took ${duration}ms):`, result.error);
-      return res.status(200).json({
-        success: false,
-        error: result.error,
-        processingTime: duration,
-        requestId
-      });
-    }
-
-    const duration = Date.now() - startTime;
-    console.log(`✅ [${requestId}] Bunga prediction completed in ${duration}ms`);
-    console.log(`📊 [${requestId}] Result:`, JSON.stringify(result, null, 2));
-    res.status(200).json({
-      success: result.success || true,
-      processingTime: duration,
-      requestId,
-      ...result
-    });
-
-  } catch (error) {
-    const duration = Date.now() - startTime;
-    console.error(`❌ [${requestId}] Prediction error (${duration}ms):`, error.message);
-
-    // Try to clean up temp file - use requestId-based filename
+// ========== BUNGA RIPENESS PREDICTION ==========
+router.post('/ripeness', upload.single('image'), async (req, res) => {
     try {
-      const tempDir = path.join(__dirname, '../temp');
-      const tempFile = path.join(tempDir, `${requestId}.jpg`);
-      if (fs.existsSync(tempFile)) {
-        fs.unlinkSync(tempFile);
-      }
-    } catch (e) {
-      console.error(`[${requestId}] Error cleaning temp file:`, e.message);
+        let image = null;
+        
+        // Check file upload
+        if (req.file) {
+            console.log(`📎 [bunga] File received: ${req.file.originalname} ${req.file.size} bytes`);
+            image = req.file.buffer.toString('base64');
+        } else if (req.body?.image) {
+            console.log('📸 [bunga] Image received in body.image');
+            image = req.body.image;
+        }
+        
+        if (!image) {
+            console.log('⚠️ [bunga] No image found');
+            return res.status(400).json({ success: false, message: 'Image required' });
+        }
+
+        console.log('🟢 [bunga] Processing ripeness prediction...');
+
+        const tempDir = path.join(__dirname, '..', 'temp');
+        if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
+        
+        const timestamp = Date.now();
+        const filename = `bunga_${timestamp}.jpg`;
+        const filepath = path.join(tempDir, filename);
+        
+        // Handle base64 - extract if data URL
+        let base64Data = image;
+        if (image.includes('data:image')) {
+            const matches = image.match(/^data:image\/(\w+);base64,(.+)$/);
+            if (matches) {
+                base64Data = matches[2];
+            } else {
+                base64Data = image.replace(/^data:image\/\w+;base64,/, '');
+            }
+        }
+        
+        try {
+            fs.writeFileSync(filepath, Buffer.from(base64Data, 'base64'));
+            const stats = fs.statSync(filepath);
+            console.log(`💾 [bunga] Temp file saved: ${filename} (${stats.size} bytes)`);
+        } catch (writeErr) {
+            console.error('❌ [bunga] Error writing image:', writeErr);
+            return res.status(500).json({ success: false, message: 'Failed to save image' });
+        }
+
+        // Use the existing working script
+        const pythonScript = path.join(__dirname, '..', 'utils', 'predict_bunga_web_cpu.py');
+        const modelPath = path.join(__dirname, '..', 'ml_models', 'bunga', 'train', 'weights', 'best.pt');
+        
+        console.log(`🐍 [bunga] Script: ${pythonScript}`);
+        console.log(`🐍 [bunga] Model: ${modelPath}`);
+        
+        const startTime = Date.now();
+
+        const pythonProcess = spawn('python', [pythonScript, filepath, modelPath], { 
+            shell: false,
+            windowsHide: true 
+        });
+        
+        let resultData = '';
+        let errorData = '';
+
+        pythonProcess.stdout.on('data', (data) => {
+            resultData += data.toString();
+        });
+        
+        pythonProcess.stderr.on('data', (data) => {
+            const str = data.toString();
+            errorData += str;
+            if (str.includes('Processing') || str.includes('Loading') || str.includes('Detected')) {
+                console.log(`⚠️ [bunga] Python: ${str.trim()}`);
+            }
+        });
+
+        pythonProcess.on('error', (err) => {
+            console.error('❌ [bunga] Process error:', err);
+        });
+
+        pythonProcess.on('close', (code) => {
+            const time = Date.now() - startTime;
+            console.log(`✅ [bunga] Prediction completed in ${time}ms, code: ${code}`);
+            
+            // Clean up temp file
+            try {
+                fs.unlinkSync(filepath);
+            } catch (err) {}
+            
+            if (code !== 0) {
+                console.error('❌ [bunga] Python failed with code:', code);
+                console.error('❌ [bunga] Error:', errorData);
+                return res.status(200).json({ 
+                    success: true, 
+                    data: { ripeness: 'Unknown', confidence: 0, class: 'Unknown' }, 
+                    processingTime: time 
+                });
+            }
+            
+            try {
+                // Parse JSON from stdout
+                const lines = resultData.trim().split('\n');
+                let result = null;
+                
+                // Find JSON in output
+                for (let i = lines.length - 1; i >= 0; i--) {
+                    const line = lines[i].trim();
+                    if (line.startsWith('{') && line.endsWith('}')) {
+                        try {
+                            const parsed = JSON.parse(line);
+                            if (parsed.ripeness || parsed.class) {
+                                result = parsed;
+                                break;
+                            }
+                        } catch (e) {}
+                    }
+                }
+
+                if (!result) {
+                    result = { ripeness: 'Unknown', confidence: 0, class: 'Unknown' };
+                }
+
+                console.log(`📊 [bunga] Result: ${result.ripeness || 'Unknown'} (${result.ripeness_confidence || 0}%)`);
+                
+                // Return in format frontend expects
+                res.status(200).json({ 
+                    success: true, 
+                    message: 'Bunga ripeness prediction completed',
+                    data: {
+                        ripeness: result.ripeness || 'Unknown',
+                        confidence: result.ripeness_confidence || result.confidence || 0,
+                        class: result.class || 'Unknown',
+                        health_class: result.health_class,
+                        health_percentage: result.health_percentage,
+                        health_range: result.health_range,
+                        bunga_detections: result.bunga_detections || []
+                    },
+                    processingTime: time 
+                });
+            } catch (e) {
+                console.error('❌ [bunga] Parse error:', e.message);
+                console.error('❌ [bunga] Raw output:', resultData);
+                res.status(200).json({ 
+                    success: true, 
+                    data: { ripeness: 'Unknown', confidence: 0, class: 'Unknown' }, 
+                    processingTime: time 
+                });
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ [bunga] Error:', error);
+        res.status(500).json({ success: false, message: error.message });
     }
-
-    res.status(200).json({
-      success: false,
-      error: error.message || 'Failed to analyze image. Please try again.',
-      requestId,
-      processingTime: duration
-    });
-  }
-});
-
-/**
- * GET /api/v1/predict/health
- * Check if prediction service is available
- */
-router.get('/health', (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: '✅ Prediction service is running',
-    models: {
-      leaf_disease: 'YOLOv8 (Leaf Disease Detection - leaf/train/weights/best.pt)',
-      bunga_ripeness: 'YOLOv8 Unified (Bunga Ripeness & Health - bunga/train/weights/best.pt)',
-      object_detection: 'YOLOv8 COCO (General objects)'
-    },
-    accuracy: '99%+',
-    diseases: [
-      'Healthy',
-      'Footrot',
-      'Pollu_Disease',
-      'Slow-Decline',
-      'Leaf_Blight',
-      'Yellow_Mottle_Virus'
-    ],
-    bunga_classes: [
-      'Ripe (A-a to B-d)',
-      'Unripe (C-a to D-d)',
-      'Rotten'
-    ]
-  });
 });
 
 module.exports = router;
