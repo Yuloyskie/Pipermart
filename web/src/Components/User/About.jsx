@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import './About.css';
 import Header from '../shared/Header';
-import logo from '../../../../picturesofbp/logowalangbg.png';
+import Footer from '../shared/Footer';
 import EL from '../../../media/EL.jpg';
 import YA from '../../../media/YA.jpg';
 import JD from '../../../media/JD.jpg';
@@ -53,11 +53,8 @@ export default function About() {
       <Header />
 
       <div className="about-container">
-        {/* Hero Section with Logo */}
+        {/* Hero Section */}
         <div className="about-header">
-          <div className="header-logo-section">
-            <img src={logo} alt="PiperSmart Logo" className="prime-logo" />
-          </div>
           <h1>About PiperSmart</h1>
           <p className="tagline">Revolutionizing Black Pepper Agriculture Through Intelligent Technology</p>
           <div className="vision-badge">
@@ -67,23 +64,25 @@ export default function About() {
 
         {/* Main Content */}
         <div className="about-content">
-          {/* Mission Section */}
-          <section className="about-section">
-            <h2>Our Mission</h2>
-            <p>
-              PiperSmart serves as a revolutionary bridge between agricultural wisdom and cutting-edge technology, 
-              democratizing access to sophisticated crop management methodologies for farmers worldwide.
-            </p>
-          </section>
+          <div className="about-row">
+            {/* Mission Section */}
+            <section className="about-section about-compact">
+              <h2>Our Mission</h2>
+              <p>
+                PiperSmart serves as a revolutionary bridge between agricultural wisdom and cutting-edge technology, 
+                democratizing access to sophisticated crop management methodologies for farmers worldwide.
+              </p>
+            </section>
 
-          {/* Vision Section */}
-          <section className="about-section">
-            <h2>Our Vision</h2>
-            <p>
-              To transform black pepper cultivation by creating an interconnected ecosystem where 
-              data-driven insights and technology converge for agricultural excellence and farmer prosperity.
-            </p>
-          </section>
+            {/* Vision Section */}
+            <section className="about-section about-compact">
+              <h2>Our Vision</h2>
+              <p>
+                To transform black pepper cultivation by creating an interconnected ecosystem where 
+                data-driven insights and technology converge for agricultural excellence and farmer prosperity.
+              </p>
+            </section>
+          </div>
 
           {/* Features Section */}
           <section className="about-section">
@@ -116,16 +115,20 @@ export default function About() {
           </section>
 
           {/* CTA Section */}
-          <section className="about-section cta-section">
-            <h2>Ready to Get Started?</h2>
-            <p>Join progressive farmers revolutionizing black pepper cultivation</p>
-            <div className="cta-buttons">
-              <Link to="/register" className="btn-primary">Create Account</Link>
-              <Link to="/leaf-analysis" className="btn-secondary">Try Leaf Analysis</Link>
+          <section className="cta-section">
+            <div className="cta-content">
+              <h2>Ready to Get Started?</h2>
+              <p>Join progressive farmers revolutionizing black pepper cultivation</p>
+              <div className="cta-buttons">
+                <Link to="/register" className="btn-primary">Create Account</Link>
+                <Link to="/leaf-analysis" className="btn-secondary">Try Leaf Analysis</Link>
+              </div>
             </div>
           </section>
         </div>
       </div>
+      
+      <Footer />
     </>
   );
 }

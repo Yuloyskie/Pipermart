@@ -643,7 +643,7 @@ export default function Knowledge() {
 
         {/* Related Links */}
         <div className="related-links">
-          <h3>🚀 Quick Access to Features</h3>
+          <h3>Quick Access to Features</h3>
           <div className="links-grid">
             <Link to="/leaf-analysis" className="link-card">
               <span className="card-icon">🍃</span>

@@ -18,7 +18,7 @@
 
 .knowledge-container {
   min-height: 100vh;
-  background: #0a0a0a;
+  background: transparent;
   color: var(--text-primary);
   display: flex;
   flex-direction: column;
@@ -34,11 +34,14 @@
   width: 100%;
   height: 100%;
   z-index: 0;
-  background: 
-    linear-gradient(135deg, rgba(10, 10, 10, 0.97) 0%, rgba(20, 20, 20, 0.95) 100%),
-    url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYwMCIgaGVpZ2h0PSI4MDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idHJhbnNwYXJlbnQiLz48cGF0aCBkPSJNMCAwIEwxNjAwIEwwIDgwMCBaIiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMCwgMjU1LCAxMzYsIDAuMDMpIiBzdHJva2Utd2lkdGg9IjEiLz48L3N2Zz4=');
+  background:
+    radial-gradient(ellipse at 18% 25%, rgba(28, 74, 50, 0.78) 0%, transparent 54%),
+    radial-gradient(ellipse at 82% 76%, rgba(95, 60, 30, 0.52) 0%, transparent 56%),
+    linear-gradient(180deg, rgba(8, 18, 12, 0.74) 0%, rgba(18, 38, 27, 0.68) 50%, rgba(20, 18, 12, 0.74) 100%),
+    url('../../media/Main BG.jpg');
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
   pointer-events: none;
 }
 
@@ -46,7 +49,7 @@
 .knowledge-hero {
   position: relative;
   z-index: 1;
-  background: linear-gradient(135deg, rgba(0, 255, 136, 0.08) 0%, rgba(0, 204, 106, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(18, 74, 49, 0.62) 0%, rgba(24, 98, 64, 0.58) 100%);
   padding: 100px 20px 60px;
   text-align: center;
   color: white;
@@ -87,13 +90,20 @@
 .knowledge-tabs {
   position: relative;
   z-index: 1;
-  background: rgba(20, 20, 20, 0.9);
+  background: rgba(8, 28, 18, 0.4);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(0, 255, 136, 0.1);
   position: sticky;
   top: 70px;
   z-index: 100;
+}
+
+/* Area below the menu: blackish-green @ 40% */
+.knowledge-tabs ~ .breadcrumb,
+.knowledge-tabs ~ .knowledge-content,
+.knowledge-tabs ~ .related-links {
+  background: rgba(8, 28, 18, 0.4);
 }
 
 .tabs-wrapper {
@@ -136,7 +146,10 @@
   z-index: 1;
   max-width: 1400px;
   margin: 25px auto;
-  padding: 0 20px;
+  padding: 10px 20px;
+  background: rgba(8, 28, 18, 0.4);
+  border: 1px solid rgba(0, 255, 136, 0.08);
+  border-radius: 10px;
   font-size: 14px;
   color: var(--text-muted);
 }
@@ -850,12 +863,17 @@
 }
 
 .links-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
   gap: 25px;
+  overflow-x: auto;
+  padding-bottom: 8px;
 }
 
 .link-card {
+  min-width: 280px;
+  flex: 1 1 0;
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -945,7 +963,7 @@
   .content-grid { grid-template-columns: 1fr; }
   .section-title { font-size: 26px; }
   .news-grid { grid-template-columns: 1fr; }
-  .links-grid { grid-template-columns: 1fr; }
+  .links-grid { gap: 14px; }
   .cultivation-steps { grid-template-columns: 1fr; }
   .disease-cards { grid-template-columns: 1fr; }
   .back-to-top { bottom: 20px; right: 20px; width: 50px; height: 50px; font-size: 24px; }
@@ -960,4 +978,19 @@
   .section-title { font-size: 22px; }
   .carousel-container { height: 180px; }
   .search-box input { font-size: 14px; }
+  .link-card { min-width: 240px; }
+}
+
+/* Keep footer readable on Knowledge page */
+.knowledge-container + .footer {
+  background-color: #1a1a1a;
+  border-top: 3px solid #22c55e;
+}
+
+.knowledge-container + .footer .footer-section h4,
+.knowledge-container + .footer .footer-section p,
+.knowledge-container + .footer .footer-section a,
+.knowledge-container + .footer .footer-bottom p,
+.knowledge-container + .footer .footer-links a {
+  color: #ffffff !important;
 }

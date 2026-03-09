@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { FaHome, FaInfoCircle, FaClipboardCheck, FaAddressBook } from 'react-icons/fa';
 import './Header.css';
 import logo from '../../../../picturesofbp/logowalangbg.png';
 import axios from 'axios';
@@ -217,14 +218,27 @@ export default function Header() {
 
         {/* Navigation Menu */}
         <ul className="header-menu">
-          <li><a href="/">Home</a></li>
-          <li><Link to="/about">About Us</Link></li>
+          <li>
+            <a href="/">
+              <FaHome className="nav-menu-icon" />
+              <span>Home</span>
+            </a>
+          </li>
+          <li>
+            <Link to="/about">
+              <FaInfoCircle className="nav-menu-icon" />
+              <span>About Us</span>
+            </Link>
+          </li>
 <li 
             className="menu-item-with-dropdown" 
             onMouseEnter={() => handleMenuHover('features')} 
             onMouseLeave={handleMenuLeave}
           >
-            <a href="/#features">Features</a>
+            <a href="/#features">
+              <FaClipboardCheck className="nav-menu-icon" />
+              <span>Features</span>
+            </a>
             {activeDropdown === 'features' && (
               <div className="nav-dropdown">
                 <Link to="/knowledge">Knowledge</Link>
@@ -236,7 +250,12 @@ export default function Header() {
               </div>
             )}
           </li>
-          <li><Link to="/contact">Contact Us</Link></li>
+          <li>
+            <Link to="/contact">
+              <FaAddressBook className="nav-menu-icon" />
+              <span>Contact Us</span>
+            </Link>
+          </li>
         </ul>
 
         {/* Right Section - Conditional Rendering */}
@@ -260,7 +279,13 @@ export default function Header() {
                   className="notification-bell"
                 onClick={() => setShowNotifications(!showNotifications)}
                 >
-                  <span style={{color: '#27AE60', fontSize: '18px'}}>🔔</span>
+                  <span className="notification-theme-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M12 3a5 5 0 0 0-5 5v3.4c0 .7-.24 1.38-.69 1.92L4.7 15.2A1 1 0 0 0 5.47 17h13.06a1 1 0 0 0 .77-1.8l-1.61-1.88a3 3 0 0 1-.69-1.92V8a5 5 0 0 0-5-5Z" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M9.5 18a2.5 2.5 0 0 0 5 0" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
+                      <path d="M16.4 4.3c1.35.12 2.4.84 3.1 2.1-.92-.04-1.7.26-2.28.91-.58.64-.8 1.43-.68 2.36-1.16-.7-1.8-1.75-1.87-3.06-.06-.96.24-1.74.9-2.31.25 0 .52 0 .83 0Z" fill="currentColor" opacity="0.92"/>
+                    </svg>
+                  </span>
                   {unreadCount > 0 && (
                     <span className="notification-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
                   )}

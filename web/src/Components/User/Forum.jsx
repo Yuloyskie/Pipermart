@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { motion } from 'framer-motion';
+import { validateContent } from '../utils/contentValidation';
 import './Forum.css';
 import Header from '../shared/Header';
 import Chat from '../Chat/Chat';
@@ -36,7 +37,18 @@ export default function Forum() {
   const [loadingFriends, setLoadingFriends] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
-  const [pendingRequests, setPendingRequests] = useState([]); // Track sent friend requests
+  const [pendingRequests, setPendingRequests] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeSearch, setActiveSearch] = useState(false);
+  const [isDarkTheme, setIsDarkTheme] = useState(false);
+
+  // Create Post popup state
+  const [showCreatePostModal, setShowCreatePostModal] = useState(false);
+  const [newPostTitle, setNewPostTitle] = useState('');
+  const [newPostDescription, setNewPostDescription] = useState('');
+  const [newPostCategory, setNewPostCategory] = useState('Disease Identification');
+  const [newPostImages, setNewPostImages] = useState([]);
+  const [submittingPost, setSubmittingPost] = useState(false);
 
   // suggestion modal state
   const [showSuggestionModal, setShowSuggestionModal] = useState(false);
@@ -95,7 +107,7 @@ export default function Forum() {
       const token = localStorage.getItem('token');
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/users/friends`,
-        { headers: { Authorization: `Bearer ${token}` } }
+         { headers: { Authorization: `Bearer ${token}` } }
       );
       setFriends(response.data?.data || []);
     } catch (error) {
@@ -422,6 +434,110 @@ export default function Forum() {
     setPage(1);
   };
 
+  // Filter threads based on search query (name and title) - only when search is active
+  const filteredThreads = activeSearch ? threads.filter(thread => {
+    const searchLower = searchQuery.toLowerCase();
+    const titleMatch = thread.title?.toLowerCase().includes(searchLower) || false;
+    const nameMatch = thread.createdBy?.name?.toLowerCase().includes(searchLower) || false;
+    return titleMatch || nameMatch;
+  }) : threads;
+
+  // Handle create post from popup
+  const handleCreatePostSubmit = async () => {
+    if (!newPostTitle.trim() || !newPostDescription.trim()) {
+      alert('Please fill in title and description');
+      return;
+    }
+
+    // Validate content - must be related to black pepper
+    const combinedContent = `${newPostTitle} ${newPostDescription}`;
+    const validationResult = validateContent(combinedContent);
+    
+    if (!validationResult.isValid) {
+      if (validationResult.severity === 'BLOCK') {
+        alert(`❌ ${validationResult.message}`);
+        return;
+      } else if (validationResult.severity === 'WARNING') {
+        const confirm = window.confirm(
+          `${validationResult.message}\n\nDo you want to continue anyway?`
+        );
+        if (!confirm) return;
+      }
+    }
+
+    try {
+      setSubmittingPost(true);
+      const token = localStorage.getItem('token');
+      
+      // Upload images to Cloudinary first
+      let uploadedImages = [];
+      if (newPostImages.length > 0) {
+        try {
+          for (const image of newPostImages) {
+            const formDataImg = new FormData();
+            formDataImg.append('file', image);
+            formDataImg.append('upload_preset', 'pipersmart');
+
+            const uploadRes = await axios.post(
+              `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
+              formDataImg
+            );
+
+            if (uploadRes.data?.secure_url) {
+              uploadedImages.push({ 
+                url: uploadRes.data.secure_url,
+                publicId: uploadRes.data.public_id
+              });
+            }
+          }
+        } catch (uploadError) {
+          console.log('Image upload failed, continuing without images:', uploadError.message);
+        }
+      }
+
+      // Get user ID
+      const userStr = localStorage.getItem('user');
+      const user = userStr ? JSON.parse(userStr) : null;
+      const userId = user?.id || user?._id;
+
+      // Create the thread with uploaded images
+      await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/forum/threads`,
+        {
+          title: newPostTitle,
+          description: newPostDescription,
+          category: newPostCategory,
+          images: uploadedImages,
+          status: 'published',
+          userId: userId
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      alert('✅ Post created successfully!');
+      setShowCreatePostModal(false);
+      setNewPostTitle('');
+      setNewPostDescription('');
+      setNewPostCategory('Disease Identification');
+      setNewPostImages([]);
+      fetchThreads(1, true);
+    } catch (error) {
+      console.error('Error creating post:', error);
+      alert(error.response?.data?.message || 'Failed to create post');
+    } finally {
+      setSubmittingPost(false);
+    }
+  };
+
+  const handleNewPostImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    setNewPostImages(prev => [...prev, ...files]);
+  };
+
+  const removeNewPostImage = (index) => {
+    setNewPostImages(prev => prev.filter((_, i) => i !== index));
+  };
+
   const handleComposerImageUpload = (e) => {
     const files = Array.from(e.target.files);
     const newImages = files.map(file => ({
@@ -455,9 +571,7 @@ export default function Forum() {
             animate={{ y: [0, -15, 0], rotate: [0, 15, -15, 0] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           >
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"/>
-            </svg>
+            <img src="/search-icon.svg" alt="Search" />
           </motion.div>
           <motion.div 
             className="forum-floating-icon icon-2"
@@ -529,7 +643,7 @@ export default function Forum() {
   return (
     <>
       <Header />
-      <div className="forum-container fb-layout">
+      <div className={`forum-container fb-layout ${isDarkTheme ? 'dark-theme' : ''}`}>
         <div className="fb-main-wrapper">
           <div className="fb-sidebar-left">
             <div className="filter-section">
@@ -601,12 +715,33 @@ export default function Forum() {
           </div>
 
           <div className="fb-feed-center">
-            <button
-              className="create-post-btn"
-              onClick={() => navigate('/forum/create')}
-            >
-              ✏️ Create New Post
-            </button>
+            <div className="feed-top-bar">
+              <button
+                className="create-post-btn-circular"
+                onClick={() => setShowCreatePostModal(true)}
+                title="Create New Post"
+                aria-label="Create New Post"
+              >
+                <span className="create-post-plus-icon" aria-hidden="true">+</span>
+              </button>
+              <div className="feed-search-wrapper">
+                <input
+                  type="text"
+                  className="search-input feed-search-input"
+                  placeholder="Search by name or title..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && setActiveSearch(true)}
+                />
+                <button
+                  className="search-button"
+                  onClick={() => setActiveSearch(!activeSearch)}
+                  title={activeSearch ? "Clear search" : "Search"}
+                >
+                  🔍
+                </button>
+              </div>
+            </div>
 
             <div className="threads-feed">
               {loading && page === 1 ? (
@@ -615,8 +750,12 @@ export default function Forum() {
                 <div className="no-threads-message">
                   <p>No discussions yet. Be the first to start one!</p>
                 </div>
+              ) : filteredThreads.length === 0 && activeSearch && searchQuery ? (
+                <div className="no-threads-message">
+                  <p>No discussions match your search.</p>
+                </div>
               ) : (
-                threads.map((thread) => (
+                filteredThreads.map((thread) => (
                   <div key={thread._id} className="thread-card fb-post">
                     <div className="post-header">
                       <div className="author-section">
@@ -781,7 +920,6 @@ export default function Forum() {
                       <div
                         className="friend-item"
                         onClick={() => {
-                          // don't preview yourself; go to profile page instead
                           if (currentUser && user._id === currentUser._id) {
                             navigate('/profile');
                             return;
@@ -830,6 +968,17 @@ export default function Forum() {
                   <span>Check back later!</span>
                 </div>
               )}
+            </div>
+
+            {/* Settings Section */}
+            <div className="settings-section">
+              <button
+                className="theme-toggle-btn"
+                onClick={() => setIsDarkTheme(!isDarkTheme)}
+                title={isDarkTheme ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              >
+                {isDarkTheme ? '☀️ Light Mode' : '🌙 Dark Mode'}
+              </button>
             </div>
           </div>
         </div>
@@ -917,5 +1066,124 @@ export default function Forum() {
           </div>
         </div>
       )}
+
+      {/* Create Post Modal */}
+      {showCreatePostModal && (
+        <motion.div 
+          className="modal-overlay" 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          onClick={() => setShowCreatePostModal(false)}
+        >
+          <motion.div 
+            className="modal-content create-post-modal" 
+            onClick={(e) => e.stopPropagation()}
+            initial={{ opacity: 0, scale: 0.8, y: -20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: -20 }}
+            transition={{ 
+              type: "spring",
+              stiffness: 300,
+              damping: 25,
+              duration: 0.3
+            }}
+          >
+            <button
+              className="modal-close"
+              onClick={() => setShowCreatePostModal(false)}
+            >
+              ✕
+            </button>
+            <div className="modal-header">
+              <h3>+ Create New Post</h3>
+            </div>
+            <div className="modal-body">
+              <div className="form-group">
+                <label>Title</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={newPostTitle}
+                  onChange={(e) => setNewPostTitle(e.target.value)}
+                  placeholder="Enter post title..."
+                />
+              </div>
+              <div className="form-group">
+                <label>Category</label>
+                <select
+                  className="form-select"
+                  value={newPostCategory}
+                  onChange={(e) => setNewPostCategory(e.target.value)}
+                >
+                  {CATEGORIES.filter(cat => cat.name !== 'All').map((cat) => (
+                    <option key={cat.name} value={cat.name}>
+                      {cat.icon} {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Description</label>
+                <textarea
+                  className="form-textarea"
+                  value={newPostDescription}
+                  onChange={(e) => setNewPostDescription(e.target.value)}
+                  placeholder="What's on your mind?"
+                  rows={5}
+                />
+              </div>
+              <div className="form-group">
+                <label>Images (optional)</label>
+                <input
+                  type="file"
+                  className="form-file"
+                  onChange={handleNewPostImageUpload}
+                  accept="image/*"
+                  multiple
+                />
+                {newPostImages.length > 0 && (
+                  <div className="image-previews">
+                    {newPostImages.map((image, index) => (
+                      <div key={index} className="image-preview-item">
+                        <img 
+                          src={URL.createObjectURL(image)} 
+                          alt={`Preview ${index + 1}`} 
+                        />
+                        <button
+                          type="button"
+                          className="remove-image-btn"
+                          onClick={() => removeNewPostImage(index)}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button
+                className="btn-cancel"
+                onClick={() => setShowCreatePostModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn-confirm"
+                onClick={handleCreatePostSubmit}
+                disabled={submittingPost}
+              >
+                {submittingPost ? 'Posting...' : 'Post'}
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </>  );
 }
+
+
+

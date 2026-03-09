@@ -3,12 +3,20 @@
 /* Page Container with Wave Background */
 .about-container {
   position: relative;
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
-  min-height: 100vh;
+  width: 100%;
+  margin-left: 0;
+  min-height: calc(100vh - 80px);
   padding: 0;
-  background: #0a0a0a;
+  padding-bottom: 40px;
+  background: transparent;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.about-container::after {
+  content: '';
+  display: block;
 }
 
 /* Wave Pattern Background */
@@ -19,12 +27,15 @@
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 0;
-  background: 
-    linear-gradient(135deg, rgba(10, 10, 10, 0.97) 0%, rgba(20, 20, 20, 0.95) 100%),
-    url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYwMCIgaGVpZ2h0PSI4MDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idHJhbnNwYXJlbnQiLz48cGF0aCBkPSJNMCAwIEwxNjAwIEwwIDgwMCBaIiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMCwgMjU1LCAxMzYsIDAuMDMpIiBzdHJva2Utd2lkdGg9IjEiLz48L3N2Zz4=');
+  z-index: -1;
+  background:
+    radial-gradient(ellipse at 18% 25%, rgba(28, 74, 50, 0.9) 0%, transparent 54%),
+    radial-gradient(ellipse at 82% 76%, rgba(95, 60, 30, 0.68) 0%, transparent 56%),
+    linear-gradient(180deg, rgba(6, 14, 9, 0.86) 0%, rgba(14, 28, 20, 0.82) 50%, rgba(16, 13, 9, 0.86) 100%),
+    url('../../media/Main BG.jpg');
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
 }
 
 /* ============ HERO HEADER ============ */
@@ -32,45 +43,32 @@
   position: relative;
   z-index: 1;
   text-align: center;
-  margin-bottom: 60px;
-  padding: 120px 40px 60px;
+  margin-bottom: 44px;
+  padding: 110px 40px 52px;
   background: linear-gradient(180deg, rgba(0, 255, 136, 0.05) 0%, transparent 100%);
-}
-
-.header-logo-section {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 30px;
-}
-
-.prime-logo {
-  height: 120px;
-  width: auto;
-  filter: drop-shadow(0 4px 20px rgba(0, 255, 136, 0.4));
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-15px); }
 }
 
 .about-header h1 {
   margin: 0 0 15px;
-  font-size: 3.5rem;
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
   font-weight: 800;
   letter-spacing: 1px;
   color: #ffffff;
   text-shadow: 0 2px 20px rgba(0, 255, 136, 0.3);
+  line-height: 1.1;
 }
 
 .tagline {
   margin: 0 0 25px;
-  font-size: 1.25rem;
+  font-size: clamp(1rem, 2.1vw, 1.25rem);
   opacity: 0.9;
   font-weight: 500;
   letter-spacing: 0.5px;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.5;
 }
 
 .vision-badge {
@@ -89,16 +87,32 @@
 .about-content {
   position: relative;
   z-index: 1;
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 40px 60px;
+  padding: 0 24px 60px;
+  box-sizing: border-box;
+}
+
+.about-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  margin-bottom: 30px;
+}
+
+.about-row .about-section {
+  margin-bottom: 0;
+}
+
+.about-compact {
+  height: 100%;
 }
 
 /* Section Styles */
 .about-section {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(9, 30, 20, 0.45);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(104, 170, 132, 0.2);
   border-radius: 24px;
   padding: 45px;
   margin-bottom: 30px;
@@ -106,12 +120,12 @@
 }
 
 .about-section:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(0, 255, 136, 0.15);
+  background: rgba(10, 37, 24, 0.55);
+  border-color: rgba(125, 214, 165, 0.28);
 }
 
 .about-section h2 {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 2.8vw, 2rem);
   font-weight: 700;
   color: #ffffff;
   margin: 0 0 20px 0;
@@ -131,16 +145,16 @@
 }
 
 .about-section p {
-  font-size: 1.1rem;
-  line-height: 1.8;
-  color: rgba(255, 255, 255, 0.75);
+  font-size: clamp(1rem, 1.5vw, 1.1rem);
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.9);
   margin: 0;
 }
 
 /* Features Grid */
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 25px;
   margin-top: 30px;
 }
@@ -179,15 +193,22 @@
 
 .feature-card h3 {
   color: #ffffff;
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   margin: 0 0 10px 0;
   font-weight: 600;
+  line-height: 1.3;
+}
+
+/* Keep only the card titles bright/visible */
+.about-container .feature-card h3 {
+  color: #ffffff !important;
 }
 
 .feature-card p {
-  color: #ffffff;
+  color: rgba(255, 255, 255, 0.9);
   font-size: 0.95rem;
   margin: 0;
+  line-height: 1.45;
 }
 
 /* Team Section */
@@ -199,23 +220,28 @@
 
 .team-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 25px;
 }
 
 .team-card {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(10, 33, 22, 0.46);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(108, 180, 138, 0.22);
   border-radius: 16px;
   padding: 35px 25px;
   text-align: center;
   transition: all 0.3s ease;
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .team-card:hover {
-  background: rgba(0, 255, 136, 0.08);
-  border-color: rgba(0, 255, 136, 0.25);
+  background: rgba(13, 45, 29, 0.58);
+  border-color: rgba(134, 223, 173, 0.35);
   transform: translateY(-5px);
 }
 
@@ -238,18 +264,34 @@
 }
 
 .team-name {
-  font-size: 1.1rem;
+  font-size: 1.02rem;
   font-weight: 600;
   color: #ffffff;
   margin: 0;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 /* CTA Section */
 .cta-section {
   text-align: center;
-  padding: 60px;
-  background: linear-gradient(135deg, rgba(0, 255, 136, 0.05) 0%, rgba(164, 22, 26, 0.05) 100%);
-  border-color: rgba(0, 255, 136, 0.15);
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.cta-content {
+  max-width: 42rem;
+  margin: 0 auto;
+  text-align: center;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(210, 250, 225, 0.24);
+  border-radius: 24px;
+  padding: 2.4rem 2rem;
+  backdrop-filter: blur(8px);
 }
 
 .cta-section h2::after {
@@ -258,7 +300,7 @@
 }
 
 .cta-section p {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.95);
   margin-bottom: 35px;
 }
 
@@ -337,12 +379,14 @@
     font-size: 1rem;
   }
 
-  .prime-logo {
-    height: 90px;
-  }
-
   .about-content {
     padding: 0 20px 40px;
+  }
+
+  .about-row {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
   }
 
   .about-section {
@@ -355,7 +399,7 @@
   }
 
   .features-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
     gap: 15px;
   }
 
@@ -368,7 +412,7 @@
   }
 
   .team-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
     gap: 15px;
   }
 

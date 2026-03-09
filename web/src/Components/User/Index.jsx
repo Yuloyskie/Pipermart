@@ -5,6 +5,7 @@ import Header from '../shared/Header';
 import Hero from '../shared/Hero';
 import Footer from '../shared/Footer';
 import logo from '../../../../picturesofbp/logowalangbg.png';
+import mainBg from '../../../media/Main BG.jpg';
 
 export default function Index() {
 const featuresList = [
@@ -45,11 +46,32 @@ const featuresList = [
       {/* Dark Theme Background with Image */}
       <div className="page-background">
         <img 
-          src="/paminta.webp" 
+          src={mainBg}
           alt="Background" 
           className="background-image" 
         />
         <div className="background-overlay"></div>
+      </div>
+
+      <div className="page-floating-leaves" aria-hidden="true">
+        <div className="page-leaf leaf-a">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"/></svg>
+        </div>
+        <div className="page-leaf leaf-b">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c4-4 8-7.5 8-12 0-3.5-2.5-6-6-6s-6 2.5-6 6c0 4.5 4 8 8 12z"/></svg>
+        </div>
+        <div className="page-leaf leaf-c">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.33.26 2.61.74 3.77l-1.89.66c-.6-1.41-.85-2.93-.85-4.43 0-4.97 4.03-9 9-9s9 4.03 9 9c0 1.5-.25 3.02-.85 4.43l-1.89-.66c.48-1.16.74-2.44.74-3.77 0-5.52-4.48-10-10-10z"/></svg>
+        </div>
+        <div className="page-leaf leaf-d">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"/></svg>
+        </div>
+        <div className="page-leaf leaf-e">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c4-4 8-7.5 8-12 0-3.5-2.5-6-6-6s-6 2.5-6 6c0 4.5 4 8 8 12z"/></svg>
+        </div>
+        <div className="page-leaf leaf-f">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.33.26 2.61.74 3.77l-1.89.66c-.6-1.41-.85-2.93-.85-4.43 0-4.97 4.03-9 9-9s9 4.03 9 9c0 1.5-.25 3.02-.85 4.43l-1.89-.66c.48-1.16.74-2.44.74-3.77 0-5.52-4.48-10-10-10z"/></svg>
+        </div>
       </div>
 
       {/* Header */}
@@ -66,7 +88,7 @@ const featuresList = [
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="flex justify-center"
+            className="about-visual"
           >
             <img 
               src={logo}
@@ -86,7 +108,8 @@ const featuresList = [
               About PiperSmart
             </h3>
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Empowering Farmers with AI
+              Empowering <br />
+              <span className="about-highlight">Farmers</span> with <span className="about-highlight">AI</span>
             </h2>
             <p className="text-lg leading-relaxed mb-6">
               PiperSmart is an innovative agricultural technology solution designed to help pepper farmers
