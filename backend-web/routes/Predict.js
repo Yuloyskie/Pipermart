@@ -4,6 +4,9 @@ const multer = require('multer');
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const { isAuthenticatedUser } = require('../middlewares/auth');
+const LeafAnalysis = require('../models/LeafAnalysis');
+const BungaAnalysis = require('../models/BungaAnalysis');
 
 // Configure multer for file uploads
 const storage = multer.memoryStorage();
@@ -343,6 +346,114 @@ router.post('/ripeness', upload.single('image'), async (req, res) => {
     } catch (error) {
         console.error('❌ [bunga] Error:', error);
         res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// ========== GET USER'S LEAF ANALYSES ==========
+router.get('/leaf-analysis', isAuthenticatedUser, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const analyses = await LeafAnalysis.find({ user: userId })
+            .sort({ createdAt: -1 })
+            .limit(100);
+        
+        res.status(200).json({
+            success: true,
+            data: analyses
+        });
+    } catch (error) {
+        console.error('❌ Error fetching leaf analyses:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch leaf analyses',
+            error: error.message
+        });
+    }
+});
+
+// ========== GET USER'S BUNGA ANALYSES ==========
+router.get('/bunga-analysis', isAuthenticatedUser, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const analyses = await BungaAnalysis.find({ user: userId })
+            .sort({ createdAt: -1 })
+            .limit(100);
+        
+        res.status(200).json({
+            success: true,
+            data: analyses
+        });
+    } catch (error) {
+        console.error('❌ Error fetching bunga analyses:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch bunga analyses',
+            error: error.message
+        });
+    }
+});
+
+// ========== DELETE LEAF ANALYSIS ==========
+router.delete('/leaf-analysis/:id', isAuthenticatedUser, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user.id;
+
+        const analysis = await LeafAnalysis.findOneAndDelete({
+            _id: id,
+            user: userId
+        });
+
+        if (!analysis) {
+            return res.status(404).json({
+                success: false,
+                message: 'Leaf analysis not found'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Leaf analysis deleted successfully'
+        });
+    } catch (error) {
+        console.error('❌ Error deleting leaf analysis:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to delete leaf analysis',
+            error: error.message
+        });
+    }
+});
+
+// ========== DELETE BUNGA ANALYSIS ==========
+router.delete('/bunga-analysis/:id', isAuthenticatedUser, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user.id;
+
+        const analysis = await BungaAnalysis.findOneAndDelete({
+            _id: id,
+            user: userId
+        });
+
+        if (!analysis) {
+            return res.status(404).json({
+                success: false,
+                message: 'Bunga analysis not found'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Bunga analysis deleted successfully'
+        });
+    } catch (error) {
+        console.error('❌ Error deleting bunga analysis:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to delete bunga analysis',
+            error: error.message
+        });
     }
 });
 

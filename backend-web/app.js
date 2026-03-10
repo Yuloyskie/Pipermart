@@ -67,6 +67,22 @@ app.use('/api/v1/macromap', macromapRoutes);
 const forumRoutes = require('./routes/Forum');
 app.use('/api/v1/forum', forumRoutes);
 
+// ========== DASHBOARD ROUTES ==========
+const dashboardRoutes = require('./routes/Dashboard');
+app.use('/api/v1/dashboard', dashboardRoutes);
+
+// ========== REPORTS ROUTES ==========
+const reportsRoutes = require('./routes/Reports');
+app.use('/api/v1/reports', reportsRoutes);
+
+// ========== POST REPORTED ROUTES ==========
+const postReportedRoutes = require('./routes/PostReported');
+app.use('/api/v1/reports', postReportedRoutes);
+
+// ========== NEWS ROUTES ==========
+const newsRoutes = require('./routes/News');
+app.use('/api/v1/news', newsRoutes);
+
 // ========== CHAT ROUTES ==========
 const chatRoutes = require('./routes/Chat');
 app.use('/api/v1', chatRoutes);

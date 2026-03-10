@@ -11,16 +11,16 @@ const AdminFooter = () => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
   const colors = {
-    primary: '#27AE60',
-    primaryLight: '#52BE80',
+    primary: '#0F766E',
+    primaryLight: '#14B8A6',
     secondary: '#FFFFFF',
-    background: '#F0F9F4',
-    text: '#1B4D3E',
-    textLight: '#52866A',
-    border: '#D5EFDB',
-    success: '#27AE60',
-    warning: '#F39C12',
-    danger: '#E74C3C',
+    background: '#F8FAFC',
+    text: '#0F172A',
+    textLight: '#475569',
+    border: '#E2E8F0',
+    success: '#059669',
+    warning: '#D97706',
+    danger: '#DC2626',
   };
 
   useEffect(() => {

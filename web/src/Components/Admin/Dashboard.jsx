@@ -22,24 +22,6 @@ const AdminDashboard = () => {
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
-  // Modern corporate color palette
-  const colors = {
-    primary: '#0F766E',      // Dark teal
-    primaryLight: '#14B8A6', // Light teal
-    secondary: '#F8FAFC',    // Off white
-    dark: '#0F172A',         // Very dark blue
-    darkGray: '#1E293B',     // Dark gray
-    lightGray: '#F1F5F9',    // Light gray
-    border: '#E2E8F0',       // Border
-    text: '#0F172A',
-    textLight: '#475569',
-    accent: '#8B5CF6',       // Purple accent
-    success: '#10B981',      // Green
-    warning: '#F59E0B',      // Amber
-    info: '#0891B2',         // Cyan
-    danger: '#EF4444'        // Red
-  };
-
   const handleRefresh = async () => {
     setRefreshing(true);
     try {
@@ -151,221 +133,215 @@ const AdminDashboard = () => {
     );
   }
 
-  const chartColors = ['#0F766E', '#8B5CF6'];
+  const chartColors = ['#E91E63', '#3B82F6', '#10B981', '#F59E0B'];
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen w-full bg-gray-100">
       <AdminHeader />
       
       {/* Main Scrollable Content */}
       <main className="overflow-y-auto scrollbar-hide">
-        <div className="max-w-7xl mx-auto px-6 py-12">
+        <div className="w-full px-6 py-8">
           
           {/* Hero Section */}
-          <div className="mb-16">
-            <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-2">
-              Welcome back, <span className="text-teal-600">{user?.name || 'Admin'}</span> 👋
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Welcome back, <span className="text-purple-600">{user?.name || 'Admin'}</span>
             </h1>
-            <p className="text-slate-600 text-lg">Your PiperSmart dashboard insights at a glance</p>
+            <p className="text-gray-600">Your PiperSmart dashboard insights at a glance</p>
           </div>
 
-          {/* Quick Stats Grid - Premium Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            <PremiumStatCard
+          {/* Top Stats Row - 3 Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <PurpleStatCard
               title="Total Users"
               value={dashboardData?.totalUsers || 0}
               icon="👥"
-              color={colors.primary}
-              subtitle={`${dashboardData?.activeUsers || 0} active`}
-              isRefreshing={refreshing}
+              backgroundColor="bg-gradient-to-br from-pink-400 to-pink-600"
+              subtitle={`+${dashboardData?.activeUsers || 0} active`}
+              percentageChange={`${Math.round((dashboardData?.activeUsers / (dashboardData?.totalUsers || 1)) * 100)}%`}
             />
-            <PremiumStatCard
+            <PurpleStatCard
               title="Total Analyses"
               value={dashboardData?.totalAnalyses || 0}
               icon="📊"
-              color={colors.accent}
-              subtitle={`${dashboardData?.analysesThisMonth || 0} this month`}
+              backgroundColor="bg-gradient-to-br from-blue-400 to-blue-600"
+              subtitle={`+${dashboardData?.analysesThisMonth || 0} this month`}
+              percentageChange={`-10%`}
             />
-            <PremiumStatCard
-              title="Bunga Analyses"
-              value={dashboardData?.totalBungaAnalyses || 0}
-              icon={logoImage}
-              isImageIcon={true}
-              color={colors.info}
-              subtitle={`${dashboardData?.totalLeafAnalyses || 0} leaf analyses`}
-            />
-            <PremiumStatCard
-              title="Verified Users"
-              value={dashboardData?.verifiedUsers || 0}
-              icon="✓"
-              color={colors.success}
-              subtitle={`${dashboardData?.unverifiedUsers || 0} pending`}
+            <PurpleStatCard
+              title="Active Users Today"
+              value={userOverview?.activeToday || 0}
+              icon="🌟"
+              backgroundColor="bg-gradient-to-br from-teal-400 to-teal-600"
+              subtitle={`+${userOverview?.newThisWeek || 0} new this week`}
+              percentageChange={`+5%`}
             />
           </div>
 
-          {/* Charts Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+          {/* Main Charts Section - Visit & Sales & Traffic Sources */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             {/* Large Chart - 2 columns */}
-            <PremiumChartCard 
-              title="📈 User Growth" 
+            <PurpleChartCard 
+              title="📅 Visit And Analysis Statistics" 
               className="lg:col-span-2"
-              onExpand={() => setFullscreenChart({ type: 'growth', data: userGrowth })}
-            >
-              {userGrowth.length > 0 ? (
-                <ResponsiveContainer width="100%" height={350}>
-                  <LineChart data={userGrowth}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={colors.border} />
-                    <XAxis dataKey="date" stroke={colors.textLight} />
-                    <YAxis stroke={colors.textLight} />
-                    <Tooltip contentStyle={{ backgroundColor: colors.secondary, border: `1px solid ${colors.border}` }} />
-                    <Line type="monotone" dataKey="users" stroke={colors.primary} strokeWidth={3} dot={{ fill: colors.primary, r: 5 }} />
-                  </LineChart>
-                </ResponsiveContainer>
-              ) : (
-                <p className="text-center text-slate-500 py-24">No data available</p>
-              )}
-            </PremiumChartCard>
-
-            {/* Right side stacked */}
-            <div className="flex flex-col gap-6">
-              {/* Analysis Distribution */}
-              <PremiumChartCard 
-                title="📊 Distribution" 
-                onExpand={() => setFullscreenChart({ type: 'distribution', data: analysisDistribution })}
-              >
-                {analysisDistribution.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={160}>
-                    <PieChart>
-                      <Pie
-                        data={analysisDistribution}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({ name, percentage }) => `${percentage}%`}
-                        outerRadius={60}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {analysisDistribution.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip formatter={(value) => value.toLocaleString()} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <p className="text-center text-slate-500 py-12">No data</p>
-                )}
-              </PremiumChartCard>
-
-              {/* Top Diseases Mini */}
-              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-                <h3 className="text-lg font-bold text-slate-900 mb-4">🦠 Top Diseases</h3>
-                <div className="space-y-2">
-                  {topDiseases.slice(0, 3).map((disease, idx) => (
-                    <div key={idx} className="flex justify-between items-center p-2">
-                      <span className="text-sm text-slate-600">#{disease.rank} {disease.disease}</span>
-                      <span className="font-bold text-teal-600 text-sm">{disease.count}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Weekly Activity & User Overview */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
-            {/* Weekly Activity */}
-            <PremiumChartCard 
-              title="📅 Weekly Activity" 
               onExpand={() => setFullscreenChart({ type: 'weekly', data: weeklyActivity })}
             >
               {weeklyActivity.length > 0 ? (
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={weeklyActivity}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={colors.border} />
-                    <XAxis dataKey="date" stroke={colors.textLight} />
-                    <YAxis stroke={colors.textLight} />
-                    <Tooltip contentStyle={{ backgroundColor: colors.secondary, border: `1px solid ${colors.border}` }} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                    <XAxis dataKey="date" stroke="#6B7280" />
+                    <YAxis stroke="#6B7280" />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#FFF', border: '1px solid #E5E7EB', borderRadius: '8px' }}
+                      formatter={(value) => value.toLocaleString()}
+                    />
                     <Legend />
-                    <Bar dataKey="bunga" fill={colors.primary} radius={[8, 8, 0, 0]} />
-                    <Bar dataKey="leaf" fill={colors.info} radius={[8, 8, 0, 0]} />
+                    <Bar dataKey="bunga" fill="#E91E63" radius={[8, 8, 0, 0]} />
+                    <Bar dataKey="leaf" fill="#3B82F6" radius={[8, 8, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <p className="text-center text-slate-500 py-20">No data available</p>
+                <p className="text-center text-gray-500 py-20">No data available</p>
               )}
-            </PremiumChartCard>
+            </PurpleChartCard>
 
-            {/* User Overview */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm hover:shadow-md transition-shadow">
-              <h3 className="text-lg font-bold text-slate-900 mb-6">👥 User Metrics</h3>
-              <div className="space-y-4">
-                <OverviewItemPremium label="Active Today" value={userOverview?.activeToday || 0} color={colors.success} />
-                <OverviewItemPremium label="New This Week" value={userOverview?.newThisWeek || 0} color={colors.info} />
-                <OverviewItemPremium label="Inactive (30d)" value={userOverview?.inactive || 0} color={colors.warning} />
-                <OverviewItemPremium label="Verified" value={userOverview?.verified || 0} color={colors.success} />
-                <OverviewItemPremium label="Unverified" value={userOverview?.unverified || 0} color={colors.danger} />
+            {/* Traffic Sources / Analysis Distribution */}
+            <PurpleChartCard 
+              title="📊 Analysis Distribution" 
+              onExpand={() => setFullscreenChart({ type: 'distribution', data: analysisDistribution })}
+            >
+              {analysisDistribution.length > 0 ? (
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={analysisDistribution}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ percentage }) => `${percentage}%`}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {analysisDistribution.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value) => value.toLocaleString()} />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <p className="text-center text-gray-500 py-20">No data</p>
+              )}
+            </PurpleChartCard>
+          </div>
+
+          {/* User Growth Chart */}
+          <div className="grid grid-cols-1 mb-8">
+            <PurpleChartCard 
+              title="📈 User Growth" 
+              onExpand={() => setFullscreenChart({ type: 'growth', data: userGrowth })}
+            >
+              {userGrowth.length > 0 ? (
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={userGrowth}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                    <XAxis dataKey="date" stroke="#6B7280" />
+                    <YAxis stroke="#6B7280" />
+                    <Tooltip contentStyle={{ backgroundColor: '#FFF', border: '1px solid #E5E7EB', borderRadius: '8px' }} />
+                    <Line type="monotone" dataKey="users" stroke="#A855F7" strokeWidth={3} dot={{ fill: '#A855F7', r: 5 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : (
+                <p className="text-center text-gray-500 py-20">No data available</p>
+              )}
+            </PurpleChartCard>
+          </div>
+
+          {/* Bottom Section - User Metrics & Top Diseases */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            {/* User Metrics */}
+            <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+              <h3 className="text-lg font-bold text-gray-900 mb-6">👥 User Metrics</h3>
+              <div className="space-y-3">
+                <OverviewItemPurple label="Active Today" value={userOverview?.activeToday || 0} color="#10B981" />
+                <OverviewItemPurple label="New This Week" value={userOverview?.newThisWeek || 0} color="#3B82F6" />
+                <OverviewItemPurple label="Verified Users" value={userOverview?.verified || 0} color="#A855F7" />
+                <OverviewItemPurple label="Unverified" value={userOverview?.unverified || 0} color="#F59E0B" />
+                <OverviewItemPurple label="Inactive (30d)" value={userOverview?.inactive || 0} color="#EF4444" />
+              </div>
+            </div>
+
+            {/* Top Diseases */}
+            <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+              <h3 className="text-lg font-bold text-gray-900 mb-6">🦠 Top Diseases</h3>
+              <div className="space-y-3">
+                {topDiseases.slice(0, 5).map((disease, idx) => (
+                  <div key={idx} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                    <span className="text-sm text-gray-700 font-medium">#{disease.rank} {disease.disease}</span>
+                    <span className="font-bold text-purple-600">{disease.count}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
 
           {/* Recent Activity */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm hover:shadow-md transition-shadow mb-12">
-            <h3 className="text-lg font-bold text-slate-900 mb-6">🔔 Recent Activity</h3>
-            <div className="space-y-4 max-h-96 overflow-y-auto scrollbar-hide">
-              {recentActivity.length > 0 ? (
-                recentActivity.map((activity, index) => {
+          {recentActivity.length > 0 && (
+            <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow mb-8">
+              <h3 className="text-lg font-bold text-gray-900 mb-6">🔔 Recent Activity</h3>
+              <div className="space-y-3 max-h-96 overflow-y-auto scrollbar-hide">
+                {recentActivity.map((activity, index) => {
                   const isBungaActivity = activity.title?.toLowerCase().includes('bunga') || activity.description?.toLowerCase().includes('bunga');
                   return (
-                    <div key={index} className="flex gap-4 p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition">
+                    <div key={index} className="flex gap-4 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
                       {isBungaActivity ? (
                         <img src={logoImage} alt="Bunga" className="h-8 w-8 object-contain flex-shrink-0" />
                       ) : (
-                        <div className="text-2xl flex-shrink-0">{activity.icon}</div>
+                        <div className="text-lg flex-shrink-0">{activity.icon}</div>
                       )}
                       <div className="flex-1 min-w-0">
-                        <div className="font-semibold text-slate-900 text-sm">{activity.title}</div>
-                        <div className="text-slate-600 text-xs mt-1">{activity.description}</div>
-                        <div className="text-slate-400 text-xs mt-2">
+                        <div className="font-semibold text-gray-900 text-sm">{activity.title}</div>
+                        <div className="text-gray-600 text-xs mt-1">{activity.description}</div>
+                        <div className="text-gray-400 text-xs mt-1">
                           {new Date(activity.timestamp).toLocaleString()}
                         </div>
                       </div>
                     </div>
                   );
-                })
-              ) : (
-                <p className="text-center text-slate-500 py-12">No recent activity</p>
-              )}
+                })}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Quick Actions */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            <PremiumAction 
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <PurpleAction 
               label="Refresh Dashboard" 
               icon="🔄" 
               onClick={handleRefresh} 
-              color={colors.primary}
+              color="text-purple-600"
               disabled={refreshing}
             />
-            <PremiumAction 
+            <PurpleAction 
               label="View All Users" 
               icon="👥" 
               onClick={() => navigate('/admin/profile')} 
-              color={colors.primary}
+              color="text-blue-600"
             />
-            <PremiumAction 
+            <PurpleAction 
               label="View Reports" 
               icon="📊" 
               onClick={() => navigate('/admin/reports')} 
-              color={colors.accent}
+              color="text-pink-600"
             />
-            <PremiumAction 
+            <PurpleAction 
               label="System Health" 
               icon="⚙️" 
               onClick={() => {}} 
-              color={colors.info}
+              color="text-teal-600"
             />
           </div>
         </div>
@@ -376,7 +352,6 @@ const AdminDashboard = () => {
         <FullscreenChartModal 
           chart={fullscreenChart} 
           onClose={() => setFullscreenChart(null)}
-          colors={colors}
           chartColors={chartColors}
         />
       )}
@@ -397,38 +372,31 @@ const AdminDashboard = () => {
   );
 };
 
-// Premium Helper Components
-const PremiumStatCard = ({ title, value, icon, color, subtitle, isRefreshing, isImageIcon }) => (
-  <div className="relative group bg-white rounded-2xl border border-slate-200 p-8 shadow-sm hover:shadow-lg hover:border-slate-300 transition-all duration-300 overflow-hidden">
-    {/* Accent line at top */}
-    <div className="absolute top-0 left-0 right-0 h-1" style={{ backgroundColor: color }} />
-    
+// Purple Layout Helper Components
+const PurpleStatCard = ({ title, value, icon, backgroundColor, subtitle, percentageChange }) => (
+  <div className={`relative group rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 p-6 text-white ${backgroundColor}`}>
     <div className="flex justify-between items-start mb-4">
-      {isImageIcon ? (
-        <img src={icon} alt={title} className="h-12 w-12 object-contain" />
-      ) : (
-        <div className="text-4xl">{icon}</div>
-      )}
-      <div className="text-2xl opacity-10">→</div>
+      <div className="text-4xl">{icon}</div>
+      <div className="text-sm font-semibold">{percentageChange}</div>
     </div>
     
-    <div className="text-slate-600 text-xs font-semibold uppercase tracking-wider mb-2">{title}</div>
-    <div className="text-4xl font-bold text-slate-900 mb-2" style={{ color }}>
-      {value.toLocaleString()}
+    <div className="text-base font-medium opacity-90 mb-2">{title}</div>
+    <div className="text-3xl font-bold mb-2">
+      ${typeof value === 'number' && value > 999 ? (value / 1000).toFixed(1) + 'K+' : value > 999 ? value.toLocaleString() : value}
     </div>
     {subtitle && (
-      <div className="text-sm text-slate-500">{subtitle}</div>
+      <div className="text-sm opacity-80">{subtitle}</div>
     )}
   </div>
 );
 
-const PremiumChartCard = ({ title, children, className = '', onExpand }) => (
-  <div className={`bg-white rounded-2xl border border-slate-200 p-8 shadow-sm hover:shadow-lg hover:border-slate-300 transition-all duration-300 ${className}`}>
-    <div className="flex justify-between items-center mb-6">
-      <h3 className="text-lg font-bold text-slate-900">{title}</h3>
+const PurpleChartCard = ({ title, children, className = '', onExpand }) => (
+  <div className={`bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all duration-300 ${className}`}>
+    <div className="flex justify-between items-center mb-4">
+      <h3 className="text-base font-bold text-gray-900">{title}</h3>
       <button
         onClick={onExpand}
-        className="p-2 rounded-lg hover:bg-slate-100 transition-colors opacity-60 hover:opacity-100"
+        className="p-2 rounded-lg hover:bg-gray-100 transition-colors opacity-60 hover:opacity-100"
         title="Expand"
       >
         ⛶
@@ -438,18 +406,18 @@ const PremiumChartCard = ({ title, children, className = '', onExpand }) => (
   </div>
 );
 
-const FullscreenChartModal = ({ chart, onClose, colors, chartColors }) => (
+const FullscreenChartModal = ({ chart, onClose, chartColors }) => (
   <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
-    <div className="bg-white rounded-3xl border border-slate-300 w-full h-full max-w-6xl max-h-full shadow-2xl flex flex-col" onClick={(e) => e.stopPropagation()}>
-      <div className="flex justify-between items-center p-8 border-b border-slate-200">
-        <h2 className="text-2xl font-bold text-slate-900">
+    <div className="bg-white rounded-lg border border-gray-300 w-full h-full max-w-6xl max-h-full shadow-2xl flex flex-col" onClick={(e) => e.stopPropagation()}>
+      <div className="flex justify-between items-center p-8 border-b border-gray-200">
+        <h2 className="text-2xl font-bold text-gray-900">
           {chart.type === 'growth' && '📈 User Growth (Last 7 Days)'}
           {chart.type === 'distribution' && '📊 Analysis Distribution'}
           {chart.type === 'weekly' && '📅 Weekly Activity'}
         </h2>
         <button 
           onClick={onClose}
-          className="p-2 hover:bg-slate-100 rounded-lg transition"
+          className="p-2 hover:bg-gray-100 rounded-lg transition"
         >
           ✕
         </button>
@@ -458,11 +426,11 @@ const FullscreenChartModal = ({ chart, onClose, colors, chartColors }) => (
         {chart.type === 'growth' && (
           <ResponsiveContainer width="100%" height={500}>
             <LineChart data={chart.data}>
-              <CartesianGrid strokeDasharray="3 3" stroke={colors.border} />
-              <XAxis dataKey="date" stroke={colors.textLight} />
-              <YAxis stroke={colors.textLight} />
-              <Tooltip contentStyle={{ backgroundColor: colors.secondary, border: `1px solid ${colors.border}` }} />
-              <Line type="monotone" dataKey="users" stroke={colors.primary} strokeWidth={3} dot={{ fill: colors.primary, r: 6 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+              <XAxis dataKey="date" stroke="#6B7280" />
+              <YAxis stroke="#6B7280" />
+              <Tooltip contentStyle={{ backgroundColor: '#FFF', border: '1px solid #E5E7EB' }} />
+              <Line type="monotone" dataKey="users" stroke="#A855F7" strokeWidth={3} dot={{ fill: '#A855F7', r: 6 }} />
             </LineChart>
           </ResponsiveContainer>
         )}
@@ -474,7 +442,7 @@ const FullscreenChartModal = ({ chart, onClose, colors, chartColors }) => (
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, percentage }) => `${name} ${percentage}%`}
+                label={({ percentage }) => `${percentage}%`}
                 outerRadius={150}
                 fill="#8884d8"
                 dataKey="value"
@@ -490,13 +458,13 @@ const FullscreenChartModal = ({ chart, onClose, colors, chartColors }) => (
         {chart.type === 'weekly' && (
           <ResponsiveContainer width="100%" height={500}>
             <BarChart data={chart.data}>
-              <CartesianGrid strokeDasharray="3 3" stroke={colors.border} />
-              <XAxis dataKey="date" stroke={colors.textLight} />
-              <YAxis stroke={colors.textLight} />
-              <Tooltip contentStyle={{ backgroundColor: colors.secondary, border: `1px solid ${colors.border}` }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+              <XAxis dataKey="date" stroke="#6B7280" />
+              <YAxis stroke="#6B7280" />
+              <Tooltip contentStyle={{ backgroundColor: '#FFF', border: '1px solid #E5E7EB' }} />
               <Legend wrapperStyle={{ paddingTop: '20px' }} />
-              <Bar dataKey="bunga" fill={colors.primary} radius={[8, 8, 0, 0]} />
-              <Bar dataKey="leaf" fill={colors.info} radius={[8, 8, 0, 0]} />
+              <Bar dataKey="bunga" fill="#E91E63" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="leaf" fill="#3B82F6" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         )}
@@ -505,24 +473,21 @@ const FullscreenChartModal = ({ chart, onClose, colors, chartColors }) => (
   </div>
 );
 
-const OverviewItemPremium = ({ label, value, color }) => (
-  <div className="flex justify-between items-center p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition">
-    <span className="text-slate-700 font-medium text-sm">{label}</span>
-    <span className="text-2xl font-bold" style={{ color }}>{value}</span>
+const OverviewItemPurple = ({ label, value, color }) => (
+  <div className="flex justify-between items-center">
+    <span className="text-gray-700 font-medium text-sm">{label}</span>
+    <span className="text-xl font-bold" style={{ color }}>{value}</span>
   </div>
 );
 
-const PremiumAction = ({ label, icon, onClick, color, disabled }) => (
+const PurpleAction = ({ label, icon, onClick, color, disabled }) => (
   <button
     onClick={onClick}
     disabled={disabled}
-    className={`relative group bg-white rounded-2xl border border-slate-200 p-8 text-center shadow-sm hover:shadow-lg hover:border-slate-300 transition-all duration-300 ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}`}
+    className={`relative group bg-white rounded-lg border border-gray-200 p-6 text-center shadow-sm hover:shadow-md transition-all duration-300 ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}`}
   >
-    {/* Accent line at top */}
-    <div className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl" style={{ backgroundColor: color }} />
-    
-    <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">{icon}</div>
-    <div className="font-semibold text-slate-900 text-sm">{label}</div>
+    <div className={`text-4xl mb-3 group-hover:scale-110 transition-transform ${color}`}>{icon}</div>
+    <div className="font-semibold text-gray-900 text-sm">{label}</div>
   </button>
 );
 

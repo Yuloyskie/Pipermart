@@ -2,7 +2,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Index from './Components/User/Index.jsx';
 import Login from './Components/User/Login.jsx';
 import Register from './Components/user/Register.jsx';
-import Dashboard from './Components/Admin/Dashboard.jsx';
+import AdminDashboard from './Components/Admin/Dashboard.jsx';
+import ReportsAdmin from './Components/Admin/ReportsAdmin.jsx';
+import PostReported from './Components/Admin/PostReported.jsx';
 import Profile from './Components/User/Profile.jsx';
 import AdminProfile from './Components/Admin/AdminProfile.jsx';
 import EditProfile from './Components/User/EditProfile.jsx';
@@ -23,6 +25,7 @@ import About from './Components/User/About.jsx';
 import Contact from './Components/User/Contact.jsx';
 import HowItWorks from './Components/User/HowItWorks.jsx';
 import FriendRequests from './Components/User/FriendRequests.jsx';
+import RecentActivitiesPage from './Components/User/RecentActivitiesPage.jsx';
 
 function App() {
   return (
@@ -41,7 +44,9 @@ function App() {
         <Route path="/bunga-analysis" element={<BungaAnalysis />} />
         <Route path="/weather" element={<WeatherPage />} />
         <Route path="/macro-mapping" element={<MacromappingPage />} />
-        <Route path="/admin/dashboard" element={<Dashboard />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/reports" element={<ReportsAdmin />} />
+        <Route path="/admin/reported-posts" element={<PostReported />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/edit" element={<EditProfile />} />
         <Route path="/profile/:userId" element={<Profile />} />
@@ -63,6 +68,7 @@ function App() {
         
         {/* Friend routes */}
         <Route path="/friend-requests" element={<FriendRequests />} />
+        <Route path="/recent-activities" element={<RecentActivitiesPage />} />
       </Routes>
       <Chatbot />
     </Router>

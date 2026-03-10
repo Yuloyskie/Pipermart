@@ -10,10 +10,10 @@ import UserProfileCard from './UserProfileCard';
 
 const CATEGORIES = [
   { name: 'All', icon: '💬' },
-  { name: 'Disease Identification', icon: '🍃' },
+  { name: 'Disease ID', icon: '🍃' },
   { name: 'Best Practices', icon: '✅' },
   { name: 'Regional Tips', icon: '🌍' },
-  { name: 'Equipment & Tools', icon: '🔧' },
+  { name: 'Equipment', icon: '🔧' },
   { name: 'Success Stories', icon: '🏆' }
 ];
 
@@ -46,7 +46,7 @@ export default function Forum() {
   const [showCreatePostModal, setShowCreatePostModal] = useState(false);
   const [newPostTitle, setNewPostTitle] = useState('');
   const [newPostDescription, setNewPostDescription] = useState('');
-  const [newPostCategory, setNewPostCategory] = useState('Disease Identification');
+  const [newPostCategory, setNewPostCategory] = useState('Disease ID');
   const [newPostImages, setNewPostImages] = useState([]);
   const [submittingPost, setSubmittingPost] = useState(false);
 
@@ -518,7 +518,7 @@ export default function Forum() {
       setShowCreatePostModal(false);
       setNewPostTitle('');
       setNewPostDescription('');
-      setNewPostCategory('Disease Identification');
+      setNewPostCategory('Disease ID');
       setNewPostImages([]);
       fetchThreads(1, true);
     } catch (error) {

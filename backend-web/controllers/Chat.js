@@ -130,7 +130,7 @@ exports.getAllChats = async (req, res) => {
 exports.sendMessage = async (req, res) => {
   try {
     const { chatId } = req.params;
-    const { content } = req.body;
+    const { content, replyTo } = req.body;
     const senderId = req.user._id;
 
     if (!content || !content.trim()) {
@@ -160,13 +160,29 @@ exports.sendMessage = async (req, res) => {
     // Create normalized chatKey (should match the passed chatId)
     const chatKey = [senderIdStr, recipientId].sort().join('-');
 
-    const message = await Message.create({
+    const messageData = {
       chatId: chatKey,
       sender: senderId,
       content: content,
-    });
+    };
 
-    const populatedMessage = await message.populate('sender', 'name email avatar');
+    // Add replyTo if provided
+    if (replyTo) {
+      messageData.replyTo = replyTo;
+    }
+
+    const message = await Message.create(messageData);
+
+    const populatedMessage = await Message.findById(message._id)
+      .populate('sender', 'name email avatar')
+      .populate({
+        path: 'replyTo',
+        select: 'content sender isDeleted',
+        populate: {
+          path: 'sender',
+          select: 'name email avatar'
+        }
+      });
 
     console.log('✅ Message sent:', message._id);
     res.status(201).json({
@@ -187,6 +203,14 @@ exports.getMessages = async (req, res) => {
     // chatId is already in normalized format: userId1-userId2
     const messages = await Message.find({ chatId: chatId })
       .populate('sender', 'name email avatar')
+      .populate({
+        path: 'replyTo',
+        select: 'content sender isDeleted',
+        populate: {
+          path: 'sender',
+          select: 'name email avatar'
+        }
+      })
       .sort({ createdAt: 1 });
 
     console.log(`✅ Fetched ${messages.length} messages from chatId: ${chatId}`);
@@ -244,9 +268,10 @@ exports.deleteMessage = async (req, res) => {
       return res.status(403).json({ success: false, message: 'Not authorized to delete this message' });
     }
 
-    await Message.findByIdAndDelete(messageId);
+    // Mark message as deleted instead of physically deleting
+    await Message.findByIdAndUpdate(messageId, { isDeleted: true });
 
-    console.log('✅ Message deleted:', messageId);
+    console.log('✅ Message marked as deleted:', messageId);
     res.status(200).json({
       success: true,
       message: 'Message deleted successfully',

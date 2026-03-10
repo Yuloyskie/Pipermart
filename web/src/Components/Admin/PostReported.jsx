@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import AdminHeader from './AdminHeader';
+import AdminFooter from './AdminFooter';
 
 const PostReported = () => {
   const navigate = useNavigate();
@@ -22,19 +24,19 @@ const PostReported = () => {
 
   // Color scheme
   const colors = {
-    primary: '#27AE60',
-    primaryLight: '#52BE80',
+    primary: '#0F766E',
+    primaryLight: '#14B8A6',
     secondary: '#FFFFFF',
-    background: '#F0F9F4',
-    backgroundHover: '#E8F6F0',
-    text: '#1B4D3E',
-    textLight: '#52866A',
-    border: '#D5EFDB',
-    accent: '#E67E22',
-    danger: '#E74C3C',
-    success: '#27AE60',
-    warning: '#F39C12',
-    info: '#3498DB'
+    background: '#F8FAFC',
+    backgroundHover: '#EEF2FF',
+    text: '#0F172A',
+    textLight: '#475569',
+    border: '#E2E8F0',
+    accent: '#4F46E5',
+    danger: '#DC2626',
+    success: '#059669',
+    warning: '#D97706',
+    info: '#0284C7'
   };
 
   // Check authentication
@@ -316,10 +318,12 @@ const PostReported = () => {
   };
 
   return (
-    <div style={{
-      backgroundColor: '#f5f7fa',
-      minHeight: '100vh',
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#f5f7fa' }}>
+      <AdminHeader />
+      <main style={{
+      flex: 1,
       padding: '32px 20px',
+      backgroundColor: '#f5f7fa',
       backgroundImage: `
         radial-gradient(circle at 20% 50%, rgba(39, 174, 96, 0.05) 0%, transparent 50%),
         radial-gradient(circle at 80% 80%, rgba(46, 204, 113, 0.05) 0%, transparent 50%)
@@ -1204,6 +1208,8 @@ const PostReported = () => {
           </div>
         )}
       </div>
+      </main>
+      <AdminFooter />
     </div>
   );
 };

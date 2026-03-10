@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import AdminHeader from './AdminHeader';
+import AdminFooter from './AdminFooter';
 
 const AdminProfile = () => {
   const [user, setUser] = useState(null);
@@ -40,42 +42,63 @@ const AdminProfile = () => {
     navigate('/login');
   };
 
-  if (loading) return <p style={{ textAlign: 'center', marginTop: '50px' }}>Loading Admin Profile...</p>;
+  const colors = {
+    background: '#F8FAFC',
+    card: '#FFFFFF',
+    text: '#0F172A',
+    textLight: '#475569',
+    border: '#E2E8F0',
+    primary: '#0F766E'
+  };
+
+  if (loading) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#475569' }}>
+        Loading Admin Profile...
+      </div>
+    );
+  }
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-      <div style={{ textAlign: 'center', padding: '20px', border: '1px solid #ddd', borderRadius: '12px', width: '300px' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: colors.background }}>
+      <AdminHeader />
+      <main style={{ flex: 1, padding: '32px 20px' }}>
+        <div style={{ maxWidth: '760px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', padding: '28px', border: `1px solid ${colors.border}`, borderRadius: '16px', background: colors.card, boxShadow: '0 10px 24px rgba(15, 23, 42, 0.08)' }}>
         {/* Avatar */}
         <div>
           <img 
             src={user?.avatar?.url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'Admin')}`} 
             alt={user?.name} 
-            style={{ width: '120px', height: '120px', borderRadius: '50%', objectFit: 'cover', marginBottom: '15px' }}
+            style={{ width: '120px', height: '120px', borderRadius: '50%', objectFit: 'cover', marginBottom: '18px', border: `2px solid ${colors.border}` }}
           />
         </div>
 
         {/* Basic Info */}
-        <p><strong>Full Name:</strong> {user?.name}</p>
-        <p><strong>Email:</strong> {user?.email}</p>
-        {user?.contact && <p><strong>Contact:</strong> {user.contact}</p>}
+        <p style={{ color: colors.text }}><strong>Full Name:</strong> {user?.name}</p>
+        <p style={{ color: colors.text }}><strong>Email:</strong> {user?.email}</p>
+        {user?.contact && <p style={{ color: colors.text }}><strong>Contact:</strong> {user.contact}</p>}
 
         {/* Address */}
         {user?.address && (
           <div>
-            <p><strong>City:</strong> {user.address.city || '-'}</p>
-            <p><strong>Barangay:</strong> {user.address.barangay || '-'}</p>
-            <p><strong>Street:</strong> {user.address.street || '-'}</p>
-            <p><strong>Zip Code:</strong> {user.address.zipcode || '-'}</p>
+            <p style={{ color: colors.text }}><strong>City:</strong> {user.address.city || '-'}</p>
+            <p style={{ color: colors.text }}><strong>Barangay:</strong> {user.address.barangay || '-'}</p>
+            <p style={{ color: colors.text }}><strong>Street:</strong> {user.address.street || '-'}</p>
+            <p style={{ color: colors.text }}><strong>Zip Code:</strong> {user.address.zipcode || '-'}</p>
           </div>
         )}
 
         {/* Actions */}
         <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <Link to="/admin/profile/edit">Edit Profile</Link>
-          <Link to="/admin/change-password">Change Password</Link>
+          <Link to="/admin/profile/edit" style={{ color: colors.primary, fontWeight: 600 }}>Edit Profile</Link>
+          <Link to="/admin/change-password" style={{ color: colors.primary, fontWeight: 600 }}>Change Password</Link>
           <button onClick={handleLogout}>Logout</button>
         </div>
       </div>
+        </div>
+      </main>
+      <AdminFooter />
     </div>
   );
 };

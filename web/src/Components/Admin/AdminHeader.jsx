@@ -2,6 +2,48 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import logoImage from './logowalangbg.png';
+import './AdminHeader.css';
+
+const navItems = [
+  { to: '/admin/dashboard', label: 'Dashboard', icon: 'dashboard' },
+  { to: '/admin/reports', label: 'Reports & Analytics', icon: 'reports' },
+  { to: '/admin/reported-posts', label: 'Content Moderation', icon: 'flag' },
+  { to: '/admin/profile', label: 'Admin Profile', icon: 'user' }
+];
+
+const Icon = ({ type }) => {
+  if (type === 'dashboard') {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 13h6v7H4v-7ZM14 4h6v16h-6V4ZM4 4h6v7H4V4ZM14 12h6v8h-6v-8Z" fill="currentColor" />
+      </svg>
+    );
+  }
+
+  if (type === 'reports') {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 19V5m0 14h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        <path d="m7 15 4-4 3 2 4-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+
+  if (type === 'flag') {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5 21V4m0 0h11l-2 3 2 3H5Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="8" r="3.2" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M5 20a7 7 0 0 1 14 0" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+};
 
 const AdminHeader = () => {
   const navigate = useNavigate();
@@ -10,25 +52,13 @@ const AdminHeader = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
-  const colors = {
-    primary: '#27AE60',
-    primaryLight: '#52BE80',
-    secondary: '#FFFFFF',
-    background: '#F0F9F4',
-    text: '#1B4D3E',
-    textLight: '#52866A',
-    border: '#D5EFDB',
-    accent: '#E67E22',
-    danger: '#E74C3C',
-  };
-
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem('token');
       if (!token) return;
 
       try {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        axios.defaults.headers.common.Authorization = `Bearer ${token}`;
         const response = await axios.get(`${API_BASE_URL}/api/v1/users/me`);
         if (response.data.success) {
           setUser(response.data.user);
@@ -41,221 +71,97 @@ const AdminHeader = () => {
     fetchUser();
   }, [API_BASE_URL]);
 
+  useEffect(() => {
+    setDropdownOpen(false);
+  }, [location.pathname]);
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     navigate('/login');
   };
 
-  const isActive = (path) => location.pathname === path;
-
-  const NavLink = ({ to, label, icon }) => (
-    <button
-      onClick={() => navigate(to)}
-      style={{
-        padding: '10px 16px',
-        backgroundColor: isActive(to) ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
-        color: colors.secondary,
-        border: 'none',
-        cursor: 'pointer',
-        fontSize: '14px',
-        fontWeight: isActive(to) ? '700' : '500',
-        borderBottom: isActive(to) ? `3px solid ${colors.secondary}` : 'none',
-        transition: 'all 0.3s ease',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '6px',
-        borderRadius: '4px 4px 0 0',
-      }}
-      onMouseEnter={(e) => {
-        if (!isActive(to)) {
-          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-        }
-      }}
-      onMouseLeave={(e) => {
-        if (!isActive(to)) {
-          e.currentTarget.style.backgroundColor = 'transparent';
-        }
-      }}
-    >
-      <span>{icon}</span>
-      <span>{label}</span>
-    </button>
-  );
-
   return (
-    <header style={{
-      backgroundColor: colors.primary,
-      background: `linear-gradient(90deg, ${colors.primary} 0%, ${colors.primaryLight} 100%)`,
-      padding: '0',
-      boxShadow: '0 4px 12px rgba(39, 174, 96, 0.15)',
-      position: 'sticky',
-      top: 0,
-      zIndex: 1000,
-      borderBottom: `3px solid ${colors.secondary}`,
-    }}>
-      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0' }}>
-        {/* Top Bar */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '16px 24px',
-          borderBottom: `1px solid rgba(255, 255, 255, 0.1)`,
-        }}>
-          {/* Logo and Title */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            cursor: 'pointer',
-          }}
-          onClick={() => navigate('/admin/dashboard')}
-          >
-            <img src={logoImage} alt="Logo" style={{ height: '40px', objectFit: 'contain' }} />
-            <div style={{ color: colors.secondary }}>
-              <div style={{ fontSize: '18px', fontWeight: 'bold', margin: 0 }}>PiperSmart</div>
-              <div style={{ fontSize: '11px', opacity: 0.85, margin: 0 }}>Admin Panel</div>
+    <header className="admin-header">
+      <div className="admin-header-inner">
+        <div className="admin-header-top">
+          <div className="admin-brand" onClick={() => navigate('/admin/dashboard')}>
+            <img src={logoImage} alt="PiperSmart Logo" />
+            <div>
+              <div className="admin-brand-title">PiperSmart</div>
+              <div className="admin-brand-subtitle">Administration Console</div>
             </div>
           </div>
 
-          {/* User Profile Dropdown */}
           <div style={{ position: 'relative' }}>
             <button
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                border: '1px solid rgba(255, 255, 255, 0.25)',
-                color: colors.secondary,
-                padding: '8px 14px',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: '500',
-                transition: 'all 0.3s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.25)';
-              }}
-              onMouseLeave={(e) => {
-                if (!dropdownOpen) {
-                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
-                }
-              }}
+              className="admin-user-btn"
+              onClick={() => setDropdownOpen((prev) => !prev)}
+              type="button"
             >
-              {user?.avatar?.url && (
-                <img
-                  src={user.avatar.url}
-                  alt="Avatar"
+              {user?.avatar?.url ? (
+                <img src={user.avatar.url} alt="Admin Avatar" className="admin-user-avatar" />
+              ) : (
+                <span
+                  className="admin-user-avatar"
                   style={{
-                    width: '28px',
-                    height: '28px',
-                    borderRadius: '50%',
-                    objectFit: 'cover',
-                    border: `2px solid ${colors.secondary}`,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: '#1e293b',
+                    color: '#e2e8f0',
+                    fontWeight: 700,
+                    fontSize: 12
                   }}
-                />
+                >
+                  {(user?.name || 'A').charAt(0).toUpperCase()}
+                </span>
               )}
-              <span>{user?.name || 'Admin'}</span>
-              <span style={{ fontSize: '16px', transition: 'all 0.3s ease', transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0)' }}>▼</span>
+              <span className="admin-user-name">{user?.name || 'Administrator'}</span>
+              <span className={`admin-user-caret ${dropdownOpen ? 'open' : ''}`}>v</span>
             </button>
 
-            {/* Dropdown Menu */}
             {dropdownOpen && (
-              <div style={{
-                position: 'absolute',
-                top: '100%',
-                right: 0,
-                marginTop: '8px',
-                backgroundColor: colors.secondary,
-                border: `1px solid ${colors.border}`,
-                borderRadius: '8px',
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)',
-                minWidth: '200px',
-                overflow: 'hidden',
-                zIndex: 1001,
-              }}>
-                <div style={{
-                  padding: '12px 16px',
-                  borderBottom: `1px solid ${colors.border}`,
-                  fontSize: '13px',
-                  color: colors.textLight,
-                }}>
-                  <div style={{ fontWeight: '600', color: colors.text }}>{user?.name || 'Admin'}</div>
-                  <div style={{ marginTop: '4px', opacity: 0.8 }}>{user?.email}</div>
-                  <div style={{ marginTop: '4px', fontSize: '12px', color: '#999' }}>Role: Administrator</div>
+              <div className="admin-user-menu">
+                <div className="admin-user-menu-head">
+                  <div className="admin-user-menu-name">{user?.name || 'Administrator'}</div>
+                  <div className="admin-user-menu-email">{user?.email || 'No email'}</div>
+                  <div className="admin-user-menu-role">Role: Administrator</div>
                 </div>
-
                 <button
-                  onClick={() => {
-                    navigate('/admin/profile');
-                    setDropdownOpen(false);
-                  }}
-                  style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    color: colors.text,
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    borderBottom: `1px solid ${colors.border}`,
-                    transition: 'all 0.2s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = colors.background;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                  }}
+                  type="button"
+                  className="admin-user-menu-btn"
+                  onClick={() => navigate('/admin/profile')}
                 >
-                  👤 Profile Settings
+                  Profile Settings
                 </button>
-
                 <button
+                  type="button"
+                  className="admin-user-menu-btn danger"
                   onClick={handleLogout}
-                  style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    color: colors.danger,
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    transition: 'all 0.2s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#FFEBEE';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                  }}
                 >
-                  🚪 Logout
+                  Sign Out
                 </button>
               </div>
             )}
           </div>
         </div>
 
-        {/* Navigation Bar */}
-        <nav style={{
-          display: 'flex',
-          gap: '0',
-          padding: '0 24px',
-          overflow: 'auto',
-        }}>
-          <NavLink to="/admin/dashboard" label="Dashboard" icon="📊" />
-          <NavLink to="/admin/reports" label="Reports & Analytics" icon="📈" />
-          <NavLink to="/admin/reported-posts" label="Reported Posts" icon="🚩" />
-          <NavLink to="/admin/profile" label="Profile" icon="👤" />
+        <nav className="admin-nav">
+          {navItems.map((item) => {
+            const active = location.pathname === item.to;
+            return (
+              <button
+                key={item.to}
+                type="button"
+                onClick={() => navigate(item.to)}
+                className={`admin-nav-link ${active ? 'active' : ''}`}
+              >
+                <Icon type={item.icon} />
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
         </nav>
       </div>
     </header>

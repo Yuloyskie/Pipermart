@@ -12,6 +12,8 @@ const Chat = forwardRef((props, ref) => {
   const [loading, setLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [hoveredMessageId, setHoveredMessageId] = useState(null);
   const messagesEndRef = useRef(null);
 
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
@@ -145,9 +147,14 @@ const Chat = forwardRef((props, ref) => {
     if (!messageInput.trim() || !selectedChat) return;
 
     try {
+      const messageData = { content: messageInput };
+      if (replyingTo) {
+        messageData.replyTo = replyingTo._id;
+      }
+      
       await axios.post(
         `${BACKEND_URL}/api/v1/chat/chats/${selectedChat._id}/messages`,
-        { content: messageInput },
+        messageData,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -155,12 +162,37 @@ const Chat = forwardRef((props, ref) => {
         }
       );
       setMessageInput('');
+      setReplyingTo(null);
       fetchMessages();
       fetchChats();
     } catch (error) {
       console.error('Error sending message:', error);
       alert('Failed to send message');
     }
+  };
+
+  const handleDeleteMessage = async (messageId) => {
+    if (!window.confirm('Delete this message?')) return;
+    
+    try {
+      await axios.delete(
+        `${BACKEND_URL}/api/v1/chat/messages/${messageId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        }
+      );
+      fetchMessages();
+    } catch (error) {
+      console.error('Error deleting message:', error);
+      alert('Failed to delete message');
+    }
+  };
+
+  const handleReplyToMessage = (message) => {
+    setReplyingTo(message);
+    setHoveredMessageId(null);
   };
 
   const handleCloseChat = () => {
@@ -341,20 +373,75 @@ const Chat = forwardRef((props, ref) => {
                           if (!msg.sender) return null;
                           const senderId = msg.sender?._id || msg.sender;
                           const isSent = senderId === currentUser._id;
+                          
                           return (
                             <div
                               key={msg._id}
                               className={`message-item ${isSent ? 'sent' : 'received'}`}
+                              onMouseEnter={() => setHoveredMessageId(msg._id)}
+                              onMouseLeave={() => setHoveredMessageId(null)}
                             >
+                              {msg.replyTo && (
+                                <div className="message-reply-context">
+                                  <span className="reply-icon">↳</span>
+                                  <span className="reply-text">
+                                    Replying to: {msg.replyTo.sender?.name || 'Unknown'}
+                                  </span>
+                                </div>
+                              )}
+                              
                               <div className="message-content">
-                                <p className="message-text">{msg.content || ''}</p>
-                                <span className="message-time">
-                                  {msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString([], {
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                  }) : ''}
-                                </span>
+                                {msg.replyTo && !msg.isDeleted && (
+                                  <div className="message-replied-content">
+                                    <p className={`replied-message-text ${msg.replyTo.isDeleted ? 'deleted' : ''}`}>
+                                      {msg.replyTo.isDeleted ? '[message deleted]' : (msg.replyTo.content || '')}
+                                    </p>
+                                  </div>
+                                )}
+                                {msg.isDeleted ? (
+                                  <p className="message-deleted">{msg.sender?.name || 'User'} deleted a message</p>
+                                ) : (
+                                  <>
+                                    <p className="message-text">{msg.content || ''}</p>
+                                    <span className="message-time">
+                                      {msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString([], {
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                      }) : ''}
+                                    </span>
+                                  </>
+                                )}
                               </div>
+
+                              {hoveredMessageId === msg._id && !msg.isDeleted && (
+                                <div className="message-actions">
+                                  {isSent ? (
+                                    <button
+                                      className="message-delete-btn"
+                                      onClick={() => handleDeleteMessage(msg._id)}
+                                      title="Delete message"
+                                    >
+                                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                                      </svg>
+                                    </button>
+                                  ) : (
+                                    <button
+                                      className="message-reply-btn"
+                                      onClick={() => handleReplyToMessage(msg)}
+                                      title="Reply to message"
+                                    >
+                                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <polyline points="23 4 23 10 17 10"></polyline>
+                                        <path d="M20.49 15.004c-1.306-1.662-3.711-2.748-6.327-2.748-5.537 0-10.033 4.582-10.033 10.25S8.646 42.75 14.183 42.75c2.559 0 4.905-1.075 6.182-2.701"></path>
+                                      </svg>
+                                    </button>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           );
                         })
@@ -363,19 +450,37 @@ const Chat = forwardRef((props, ref) => {
                     </div>
 
                     <div className="message-input-area">
-                      <input
-                        type="text"
-                        className="message-input"
-                        value={messageInput}
-                        onChange={(e) => setMessageInput(e.target.value)}
-                        onKeyPress={(e) => {
-                          if (e.key === 'Enter') handleSendMessage();
-                        }}
-                        placeholder="Type a message..."
-                      />
-                      <button className="send-btn" onClick={handleSendMessage}>
-                        <span style={{color: '#f7fcf9', fontSize: '16px'}}>➤</span>
-                      </button>
+                      {replyingTo && (
+                        <div className="reply-preview">
+                          <div className="reply-preview-content">
+                            <span className="reply-preview-label">Replying to {replyingTo.sender?.name}:</span>
+                            <span className="reply-preview-text">{replyingTo.content}</span>
+                          </div>
+                          <button
+                            className="reply-preview-close"
+                            onClick={() => setReplyingTo(null)}
+                            title="Cancel reply"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      )}
+                      
+                      <div className="input-controls">
+                        <input
+                          type="text"
+                          className="message-input"
+                          value={messageInput}
+                          onChange={(e) => setMessageInput(e.target.value)}
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') handleSendMessage();
+                          }}
+                          placeholder="Type a message..."
+                        />
+                        <button className="send-btn" onClick={handleSendMessage}>
+                          <span style={{color: '#f7fcf9', fontSize: '16px'}}>➤</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}

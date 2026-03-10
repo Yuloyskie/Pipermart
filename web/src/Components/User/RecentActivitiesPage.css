@@ -1,0 +1,189 @@
+﻿/* ============ RECENT ACTIVITIES PAGE ============ */
+
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Global Page Background */
+.page-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100vh;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.background-image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  transform: translateX(-50%) translateY(-50%);
+  object-fit: cover;
+  z-index: 0;
+}
+
+.background-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background:
+    radial-gradient(ellipse at 18% 25%, rgba(28, 74, 50, 0.78) 0%, transparent 54%),
+    radial-gradient(ellipse at 82% 76%, rgba(95, 60, 30, 0.52) 0%, transparent 56%),
+    linear-gradient(180deg, rgba(8, 18, 12, 0.74) 0%, rgba(18, 38, 27, 0.68) 50%, rgba(20, 18, 12, 0.74) 100%);
+}
+
+.recent-activities-page-container {
+  flex: 1;
+  margin-top: 90px;
+  padding: 40px 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.activities-page-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  animation: slideUp 0.5s ease;
+}
+
+.activities-page-header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 0 20px;
+}
+
+.activities-page-header h1 {
+  font-size: 32px;
+  color: #ffffff;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.activities-subtitle {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.unauthorized-message {
+  text-align: center;
+  padding: 60px 20px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 16px;
+}
+
+.activities-page-content .recent-activities-container {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+}
+
+.activities-page-content .recent-activities-header {
+  display: none;
+}
+
+.activities-page-content .activity-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(0, 255, 136, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.activities-page-content .activity-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(0, 255, 136, 0.3);
+}
+
+.activities-page-content .activity-title {
+  color: #ffffff;
+}
+
+.activities-page-content .activity-description {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.activities-page-content .activity-time {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.activities-page-content .empty-state-icon {
+  filter: brightness(1.2);
+}
+
+.activities-page-content .empty-state-message {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.activities-page-content .activities-loading {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.btn-login-link {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 30px;
+  background: linear-gradient(135deg, #00FF88 0%, #00CC6A 100%);
+  color: #0B1A14;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+}
+
+.btn-login-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 255, 136, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .recent-activities-page-container {
+    margin-top: 70px;
+    padding: 20px 10px;
+  }
+
+  .activities-page-header h1 {
+    font-size: 24px;
+  }
+
+  .activities-page-header {
+    margin-bottom: 30px;
+    padding: 0 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .activities-page-header h1 {
+    font-size: 20px;
+  }
+
+  .activities-subtitle {
+    font-size: 12px;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

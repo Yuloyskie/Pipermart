@@ -246,6 +246,7 @@ export default function Header() {
                 <Link to="/bunga-analysis">Bunga Analysis</Link>
                 <Link to="/forum">Community Forum</Link>
                 <Link to="/macro-mapping">Macromapping</Link>
+                <Link to="/recent-activities">Recent Activities</Link>
                 <Link to="/how-it-works">How it works</Link>
               </div>
             )}
