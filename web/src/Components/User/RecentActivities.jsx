@@ -48,14 +48,24 @@ const RecentActivities = ({ userId, currentUser }) => {
 
       // Debug logging
       console.log('📊 Recent Activities Data:');
-      console.log('Leaf:', leafRes.status === 'fulfilled' ? leafRes.value?.data?.data : 'Failed');
-      console.log('Bunga:', bungaRes.status === 'fulfilled' ? bungaRes.value?.data?.data : 'Failed');
-      console.log('Posts:', postsRes.status === 'fulfilled' ? postsRes.value?.data?.data : 'Failed');
-      console.log('Macromapping:', macromappingRes.status === 'fulfilled' ? macromappingRes.value?.data?.data : 'Failed');
-      
-      if (macromappingRes.status === 'rejected') {
-        console.error('❌ Macromapping fetch error:', macromappingRes.reason?.message);
+      console.log('🌿 Leaf:', leafRes.status === 'fulfilled' ? leafRes.value?.data?.data : 'Failed');
+      if (leafRes.status === 'rejected') {
+        console.error('❌ Leaf fetch error:', leafRes.reason?.response?.status, leafRes.reason?.response?.data?.message || leafRes.reason?.message);
       }
+      console.log('🫒 Bunga:', bungaRes.status === 'fulfilled' ? bungaRes.value?.data?.data : 'Failed');
+      if (bungaRes.status === 'rejected') {
+        console.error('❌ Bunga fetch error:', bungaRes.reason?.response?.status, bungaRes.reason?.response?.data?.message || bungaRes.reason?.message);
+      }
+      console.log('📝 Posts:', postsRes.status === 'fulfilled' ? postsRes.value?.data?.data : 'Failed');
+      if (postsRes.status === 'rejected') {
+        console.error('❌ Posts fetch error:', postsRes.reason?.response?.status, postsRes.reason?.response?.data?.message || postsRes.reason?.message);
+      }
+      console.log('📍 Macromapping:', macromappingRes.status === 'fulfilled' ? macromappingRes.value?.data?.data : 'Failed');
+      if (macromappingRes.status === 'rejected') {
+        console.error('❌ Macromapping fetch error:', macromappingRes.reason?.response?.status, macromappingRes.reason?.response?.data?.message || macromappingRes.reason?.message);
+      }
+      console.log('🔑 Token present:', !!token);
+      console.log('🌐 Backend URL:', BACKEND_URL);
     } catch (err) {
       console.error('Error fetching activities:', err);
       setError('Failed to load activities');
@@ -263,54 +273,92 @@ const RecentActivities = ({ userId, currentUser }) => {
 
               <div className="activity-content">
                 {activity.type === 'leaf' && (
-                  <div className="activity-details">
-                    <div className="detail-row">
-                      <span className="detail-label">Disease:</span>
-                      <span className="detail-value">{activity.results?.disease || 'N/A'}</span>
+                  <>
+                    <div className="activity-details">
+                      <div className="detail-row">
+                        <span className="detail-label">Disease:</span>
+                        <span className="detail-value">{activity.results?.disease || 'N/A'}</span>
+                      </div>
+                      <div className="detail-row">
+                        <span className="detail-label">Confidence:</span>
+                        <span className="detail-value">{activity.results?.confidence?.toFixed(2) || 0}%</span>
+                      </div>
                     </div>
-                    <div className="detail-row">
-                      <span className="detail-label">Confidence:</span>
-                      <span className="detail-value">{activity.results?.confidence?.toFixed(2) || 0}%</span>
-                    </div>
-                  </div>
+                    {activity.image && (
+                      <div className="activity-images">
+                        <div className="activity-images-title">📸 Leaf Image</div>
+                        <div className="activity-images-grid">
+                          <div className="activity-image-wrapper">
+                            <img src={activity.image?.url} alt="Leaf analysis" onError={(e) => e.target.style.display = 'none'} />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </>
                 )}
 
                 {activity.type === 'bunga' && (
-                  <div className="activity-details">
-                    <div className="detail-row">
-                      <span className="detail-label">Ripeness:</span>
-                      <span className="detail-value">{activity.results?.ripeness || 'N/A'} ({activity.results?.ripeness_percentage || 0}%)</span>
+                  <>
+                    <div className="activity-details">
+                      <div className="detail-row">
+                        <span className="detail-label">Ripeness:</span>
+                        <span className="detail-value">{activity.results?.ripeness || 'N/A'} ({activity.results?.ripeness_percentage || 0}%)</span>
+                      </div>
+                      <div className="detail-row">
+                        <span className="detail-label">Health:</span>
+                        <span className="detail-value">{activity.results?.health_class || 'N/A'} ({activity.results?.health_percentage || 0}%)</span>
+                      </div>
+                      <div className="detail-row">
+                        <span className="detail-label">Confidence:</span>
+                        <span className="detail-value">{activity.results?.confidence?.toFixed(2) || 0}%</span>
+                      </div>
                     </div>
-                    <div className="detail-row">
-                      <span className="detail-label">Health:</span>
-                      <span className="detail-value">{activity.results?.health_class || 'N/A'} ({activity.results?.health_percentage || 0}%)</span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">Confidence:</span>
-                      <span className="detail-value">{activity.results?.confidence?.toFixed(2) || 0}%</span>
-                    </div>
-                  </div>
+                    {activity.image && (
+                      <div className="activity-images">
+                        <div className="activity-images-title">🫒 Pepper Image</div>
+                        <div className="activity-images-grid">
+                          <div className="activity-image-wrapper">
+                            <img src={activity.image?.url} alt="Bunga analysis" onError={(e) => e.target.style.display = 'none'} />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </>
                 )}
 
                 {activity.type === 'post' && (
-                  <div className="activity-details">
-                    <div className="detail-row">
-                      <span className="detail-label">Thread:</span>
-                      <span className="detail-value">{activity.threadId?.title || 'No thread title'}</span>
+                  <>
+                    <div className="activity-details">
+                      <div className="detail-row">
+                        <span className="detail-label">Thread:</span>
+                        <span className="detail-value">{activity.threadId?.title || 'No thread title'}</span>
+                      </div>
+                      <div className="detail-row">
+                        <span className="detail-label">Category:</span>
+                        <span className="detail-value">{activity.threadId?.category || 'General'}</span>
+                      </div>
+                      <div className="detail-row">
+                        <span className="detail-label">Content:</span>
+                        <span className="detail-value">{activity.content?.substring(0, 50) || 'No content'}...</span>
+                      </div>
+                      <div className="detail-row">
+                        <span className="detail-label">Created:</span>
+                        <span className="detail-value">{new Date(activity.createdAt).toLocaleDateString()}</span>
+                      </div>
                     </div>
-                    <div className="detail-row">
-                      <span className="detail-label">Category:</span>
-                      <span className="detail-value">{activity.threadId?.category || 'General'}</span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">Content:</span>
-                      <span className="detail-value">{activity.content?.substring(0, 50) || 'No content'}...</span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">Created:</span>
-                      <span className="detail-value">{new Date(activity.createdAt).toLocaleDateString()}</span>
-                    </div>
-                  </div>
+                    {activity.images && activity.images.length > 0 && (
+                      <div className="activity-images">
+                        <div className="activity-images-title">📷 Posted Images ({activity.images.length})</div>
+                        <div className="activity-images-grid">
+                          {activity.images.map((img, idx) => (
+                            <div key={idx} className="activity-image-wrapper">
+                              <img src={img.url} alt={`Post image ${idx + 1}`} onError={(e) => e.target.style.display = 'none'} />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </>
                 )}
 
                 {activity.type === 'macromapping' && (

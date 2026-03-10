@@ -122,42 +122,60 @@ const AdminDashboard = () => {
 
   if (loading) {
     return (
-      <div className="h-screen w-full bg-gradient-to-b from-slate-900 via-slate-50 to-white flex items-center justify-center">
+      <div className="h-screen w-full bg-gradient-to-br from-purple-500 via-blue-500 to-cyan-500 flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block mb-6">
-            <div className="w-16 h-16 border-4 border-slate-200 border-t-teal-600 rounded-full animate-spin" />
+            <div className="w-20 h-20 border-4 border-white border-t-purple-300 rounded-full animate-spin shadow-2xl drop-shadow-lg" />
           </div>
-          <p className="text-slate-700 font-semibold text-lg">Loading Dashboard...</p>
+          <p className="text-white font-bold text-xl drop-shadow-lg">Loading Dashboard...</p>
+          <p className="text-white/70 text-sm mt-2">Preparing your analytics</p>
         </div>
       </div>
     );
   }
 
-  const chartColors = ['#E91E63', '#3B82F6', '#10B981', '#F59E0B'];
+  const chartColors = ['#8B6F47', '#556B2F', '#A0522D', '#D4A574'];
 
   return (
-    <div className="min-h-screen w-full bg-gray-100">
+    <div style={{ 
+      minHeight: '100vh', 
+      width: '100%',
+      background: 'linear-gradient(135deg, #3d2817 0%, #5c4a3d 100%)'
+    }}>
       <AdminHeader />
       
       {/* Main Scrollable Content */}
-      <main className="overflow-y-auto scrollbar-hide">
-        <div className="w-full px-6 py-8">
+      <main style={{ overflowY: 'auto', height: 'calc(100vh - 80px)' }}>
+        <div style={{ width: '100%', padding: '40px 30px' }}>
           
-          {/* Hero Section */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Welcome back, <span className="text-purple-600">{user?.name || 'Admin'}</span>
-            </h1>
-            <p className="text-gray-600">Your PiperSmart dashboard insights at a glance</p>
+          {/* Hero Section with Enhanced Styling */}
+          <div style={{ marginBottom: '40px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '12px' }}>
+              <h1 style={{
+                fontSize: '48px',
+                fontWeight: 'bold',
+                background: 'linear-gradient(90deg, #D4A574, #8B6F47, #D4A574)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                margin: 0
+              }}>
+                Dashboard
+              </h1>
+            </div>
+            <p style={{ fontSize: '18px', color: '#666', margin: '0 0 8px 0' }}>
+              Welcome back, <span style={{ fontWeight: 'bold', color: '#D4A574' }}>{user?.name || 'Admin'}</span> 👋
+            </p>
+            <p style={{ fontSize: '14px', color: '#999', margin: 0 }}>Monitor your PiperSmart analytics and insights</p>
           </div>
 
           {/* Top Stats Row - 3 Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', marginBottom: '40px' }}>
             <PurpleStatCard
               title="Total Users"
               value={dashboardData?.totalUsers || 0}
               icon="👥"
-              backgroundColor="bg-gradient-to-br from-pink-400 to-pink-600"
+              gradient="linear-gradient(135deg, #8B6F47 0%, #A0522D 100%)"
               subtitle={`+${dashboardData?.activeUsers || 0} active`}
               percentageChange={`${Math.round((dashboardData?.activeUsers / (dashboardData?.totalUsers || 1)) * 100)}%`}
             />
@@ -165,7 +183,7 @@ const AdminDashboard = () => {
               title="Total Analyses"
               value={dashboardData?.totalAnalyses || 0}
               icon="📊"
-              backgroundColor="bg-gradient-to-br from-blue-400 to-blue-600"
+              gradient="linear-gradient(135deg, #556B2F 0%, #6F8C3D 100%)"
               subtitle={`+${dashboardData?.analysesThisMonth || 0} this month`}
               percentageChange={`-10%`}
             />
@@ -173,41 +191,42 @@ const AdminDashboard = () => {
               title="Active Users Today"
               value={userOverview?.activeToday || 0}
               icon="🌟"
-              backgroundColor="bg-gradient-to-br from-teal-400 to-teal-600"
+              gradient="linear-gradient(135deg, #C19A6B 0%, #D4A574 100%)"
               subtitle={`+${userOverview?.newThisWeek || 0} new this week`}
               percentageChange={`+5%`}
             />
           </div>
 
-          {/* Main Charts Section - Visit & Sales & Traffic Sources */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* Main Charts Section */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px', marginBottom: '40px' }}>
             {/* Large Chart - 2 columns */}
-            <PurpleChartCard 
-              title="📅 Visit And Analysis Statistics" 
-              className="lg:col-span-2"
-              onExpand={() => setFullscreenChart({ type: 'weekly', data: weeklyActivity })}
-            >
-              {weeklyActivity.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={weeklyActivity}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                    <XAxis dataKey="date" stroke="#6B7280" />
-                    <YAxis stroke="#6B7280" />
-                    <Tooltip 
-                      contentStyle={{ backgroundColor: '#FFF', border: '1px solid #E5E7EB', borderRadius: '8px' }}
-                      formatter={(value) => value.toLocaleString()}
-                    />
-                    <Legend />
-                    <Bar dataKey="bunga" fill="#E91E63" radius={[8, 8, 0, 0]} />
-                    <Bar dataKey="leaf" fill="#3B82F6" radius={[8, 8, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              ) : (
-                <p className="text-center text-gray-500 py-20">No data available</p>
-              )}
-            </PurpleChartCard>
+            <div style={{ gridColumn: '1 / -1' }}>
+              <PurpleChartCard 
+                title="📅 Visit And Analysis Statistics" 
+                onExpand={() => setFullscreenChart({ type: 'weekly', data: weeklyActivity })}
+              >
+                {weeklyActivity.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={weeklyActivity}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                      <XAxis dataKey="date" stroke="#6B7280" />
+                      <YAxis stroke="#6B7280" />
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: '#FFF', border: '2px solid #8B6F47', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.15)' }}
+                        formatter={(value) => value.toLocaleString()}
+                      />
+                      <Legend />
+                      <Bar dataKey="bunga" fill="#8B6F47" radius={[8, 8, 0, 0]} />
+                      <Bar dataKey="leaf" fill="#556B2F" radius={[8, 8, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <p style={{ textAlign: 'center', color: '#999', padding: '60px 20px' }}>No data available</p>
+                )}
+              </PurpleChartCard>
+            </div>
 
-            {/* Traffic Sources / Analysis Distribution */}
+            {/* Analysis Distribution */}
             <PurpleChartCard 
               title="📊 Analysis Distribution" 
               onExpand={() => setFullscreenChart({ type: 'distribution', data: analysisDistribution })}
@@ -229,17 +248,15 @@ const AdminDashboard = () => {
                         <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(value) => value.toLocaleString()} />
+                    <Tooltip formatter={(value) => value.toLocaleString()} contentStyle={{ backgroundColor: '#FFF', border: '2px solid #8B6F47', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.15)' }} />
                   </PieChart>
                 </ResponsiveContainer>
               ) : (
-                <p className="text-center text-gray-500 py-20">No data</p>
+                <p style={{ textAlign: 'center', color: '#999', padding: '60px 20px' }}>No data</p>
               )}
             </PurpleChartCard>
-          </div>
 
-          {/* User Growth Chart */}
-          <div className="grid grid-cols-1 mb-8">
+            {/* User Growth */}
             <PurpleChartCard 
               title="📈 User Growth" 
               onExpand={() => setFullscreenChart({ type: 'growth', data: userGrowth })}
@@ -250,38 +267,84 @@ const AdminDashboard = () => {
                     <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
                     <XAxis dataKey="date" stroke="#6B7280" />
                     <YAxis stroke="#6B7280" />
-                    <Tooltip contentStyle={{ backgroundColor: '#FFF', border: '1px solid #E5E7EB', borderRadius: '8px' }} />
-                    <Line type="monotone" dataKey="users" stroke="#A855F7" strokeWidth={3} dot={{ fill: '#A855F7', r: 5 }} />
+                    <Tooltip contentStyle={{ backgroundColor: '#FFF', border: '2px solid #8B6F47', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.15)' }} />
+                    <Line type="monotone" dataKey="users" stroke="#D4A574" strokeWidth={4} dot={{ fill: '#D4A574', r: 6 }} />
                   </LineChart>
                 </ResponsiveContainer>
               ) : (
-                <p className="text-center text-gray-500 py-20">No data available</p>
+                <p style={{ textAlign: 'center', color: '#999', padding: '60px 20px' }}>No data available</p>
               )}
             </PurpleChartCard>
           </div>
 
           {/* Bottom Section - User Metrics & Top Diseases */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '24px', marginBottom: '40px' }}>
             {/* User Metrics */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-              <h3 className="text-lg font-bold text-gray-900 mb-6">👥 User Metrics</h3>
-              <div className="space-y-3">
-                <OverviewItemPurple label="Active Today" value={userOverview?.activeToday || 0} color="#10B981" />
-                <OverviewItemPurple label="New This Week" value={userOverview?.newThisWeek || 0} color="#3B82F6" />
-                <OverviewItemPurple label="Verified Users" value={userOverview?.verified || 0} color="#A855F7" />
-                <OverviewItemPurple label="Unverified" value={userOverview?.unverified || 0} color="#F59E0B" />
-                <OverviewItemPurple label="Inactive (30d)" value={userOverview?.inactive || 0} color="#EF4444" />
+            <div style={{
+              background: 'white',
+              borderRadius: '16px',
+              border: '1px solid #e0e0e0',
+              padding: '32px',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.08)',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 12px 30px rgba(124, 58, 237, 0.15)'}
+            onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.08)'}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+                <div style={{ fontSize: '28px' }}>👥</div>
+                <h3 style={{ fontSize: '20px', fontWeight: 'bold', background: 'linear-gradient(90deg, #8B6F47, #D4A574)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', margin: 0 }}>User Metrics</h3>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <OverviewItemPurple label="Active Today" value={userOverview?.activeToday || 0} color="#556B2F" />
+                <OverviewItemPurple label="New This Week" value={userOverview?.newThisWeek || 0} color="#8B6F47" />
+                <OverviewItemPurple label="Verified Users" value={userOverview?.verified || 0} color="#D4A574" />
+                <OverviewItemPurple label="Unverified" value={userOverview?.unverified || 0} color="#A0522D" />
+                <OverviewItemPurple label="Inactive (30d)" value={userOverview?.inactive || 0} color="#5c4a3d" />
               </div>
             </div>
 
             {/* Top Diseases */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-              <h3 className="text-lg font-bold text-gray-900 mb-6">🦠 Top Diseases</h3>
-              <div className="space-y-3">
+            <div style={{
+              background: 'white',
+              borderRadius: '16px',
+              border: '1px solid #e0e0e0',
+              padding: '32px',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.08)',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 12px 30px rgba(239, 68, 68, 0.15)'}
+            onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.08)'}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+                <div style={{ fontSize: '28px' }}>🦠</div>
+                <h3 style={{ fontSize: '20px', fontWeight: 'bold', background: 'linear-gradient(90deg, #A0522D, #8B6F47)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', margin: 0 }}>Top Diseases</h3>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {topDiseases.slice(0, 5).map((disease, idx) => (
-                  <div key={idx} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
-                    <span className="text-sm text-gray-700 font-medium">#{disease.rank} {disease.disease}</span>
-                    <span className="font-bold text-purple-600">{disease.count}</span>
+                  <div 
+                    key={idx} 
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      padding: '16px',
+                      background: 'linear-gradient(90deg, #f5e6d3, #f0e4d0)',
+                      borderRadius: '12px',
+                      transition: 'all 0.3s ease',
+                      cursor: 'pointer',
+                      border: '1px solid #d4c5b0'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'linear-gradient(90deg, #e6d5bc, #dccaa5)';
+                      e.currentTarget.style.border = '1px solid #8B6F47';
+                      e.currentTarget.style.transform = 'translateX(4px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'linear-gradient(90deg, #f5e6d3, #f0e4d0)';
+                      e.currentTarget.style.border = '1px solid #d4c5b0';
+                      e.currentTarget.style.transform = 'translateX(0)';
+                    }}>
+                    <span style={{ fontSize: '14px', color: '#333', fontWeight: '500' }}>#{disease.rank} {disease.disease}</span>
+                    <span style={{ fontWeight: 'bold', color: 'white', background: '#8B6F47', padding: '6px 16px', borderRadius: '20px', fontSize: '13px' }}>{disease.count}</span>
                   </div>
                 ))}
               </div>
@@ -290,23 +353,55 @@ const AdminDashboard = () => {
 
           {/* Recent Activity */}
           {recentActivity.length > 0 && (
-            <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow mb-8">
-              <h3 className="text-lg font-bold text-gray-900 mb-6">🔔 Recent Activity</h3>
-              <div className="space-y-3 max-h-96 overflow-y-auto scrollbar-hide">
+            <div style={{
+              background: 'white',
+              borderRadius: '16px',
+              border: '1px solid #e0e0e0',
+              padding: '32px',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.08)',
+              marginBottom: '40px',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 12px 30px rgba(16, 185, 129, 0.15)'}
+            onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.08)'}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+                <div style={{ fontSize: '28px' }}>🔔</div>
+                <h3 style={{ fontSize: '20px', fontWeight: 'bold', background: 'linear-gradient(90deg, #556B2F, #6F8C3D)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', margin: 0 }}>Recent Activity</h3>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '400px', overflowY: 'auto' }}>
                 {recentActivity.map((activity, index) => {
                   const isBungaActivity = activity.title?.toLowerCase().includes('bunga') || activity.description?.toLowerCase().includes('bunga');
                   return (
-                    <div key={index} className="flex gap-4 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                    <div 
+                      key={index} 
+                      style={{
+                        display: 'flex',
+                        gap: '16px',
+                        padding: '16px',
+                        background: 'linear-gradient(90deg, #f5e6d3, #f0e4d0)',
+                        borderRadius: '12px',
+                        border: '1px solid #d4c5b0',
+                        transition: 'all 0.3s ease',
+                        cursor: 'pointer'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'linear-gradient(90deg, #e6d5bc, #dccaa5)';
+                        e.currentTarget.style.border = '1px solid #8B6F47';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'linear-gradient(90deg, #f5e6d3, #f0e4d0)';
+                        e.currentTarget.style.border = '1px solid #d4c5b0';
+                      }}>
                       {isBungaActivity ? (
-                        <img src={logoImage} alt="Bunga" className="h-8 w-8 object-contain flex-shrink-0" />
+                        <img src={logoImage} alt="Bunga" style={{ height: '40px', width: '40px', objectFit: 'contain', flexShrink: 0, padding: '4px', background: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }} />
                       ) : (
-                        <div className="text-lg flex-shrink-0">{activity.icon}</div>
+                        <div style={{ fontSize: '24px', flexShrink: 0, padding: '4px', background: 'white', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>{activity.icon}</div>
                       )}
-                      <div className="flex-1 min-w-0">
-                        <div className="font-semibold text-gray-900 text-sm">{activity.title}</div>
-                        <div className="text-gray-600 text-xs mt-1">{activity.description}</div>
-                        <div className="text-gray-400 text-xs mt-1">
-                          {new Date(activity.timestamp).toLocaleString()}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: 'bold', color: '#1f2937', fontSize: '14px', marginBottom: '4px' }}>{activity.title}</div>
+                        <div style={{ color: '#4b5563', fontSize: '12px', marginBottom: '4px' }}>{activity.description}</div>
+                        <div style={{ color: '#999', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          ⏱️ {new Date(activity.timestamp).toLocaleString()}
                         </div>
                       </div>
                     </div>
@@ -317,31 +412,31 @@ const AdminDashboard = () => {
           )}
 
           {/* Quick Actions */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', marginBottom: '40px' }}>
             <PurpleAction 
               label="Refresh Dashboard" 
               icon="🔄" 
               onClick={handleRefresh} 
-              color="text-purple-600"
+              gradient="linear-gradient(135deg, #8B6F47, #556B2F)"
               disabled={refreshing}
             />
             <PurpleAction 
               label="View All Users" 
               icon="👥" 
               onClick={() => navigate('/admin/profile')} 
-              color="text-blue-600"
+              gradient="linear-gradient(135deg, #556B2F, #6F8C3D)"
             />
             <PurpleAction 
               label="View Reports" 
               icon="📊" 
               onClick={() => navigate('/admin/reports')} 
-              color="text-pink-600"
+              gradient="linear-gradient(135deg, #A0522D, #8B6F47)"
             />
             <PurpleAction 
               label="System Health" 
               icon="⚙️" 
               onClick={() => {}} 
-              color="text-teal-600"
+              gradient="linear-gradient(135deg, #D4A574, #C19A6B)"
             />
           </div>
         </div>
@@ -359,6 +454,22 @@ const AdminDashboard = () => {
       <AdminFooter />
 
       <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+          from { 
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to { 
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
         .scrollbar-hide {
           -ms-overflow-style: none;
           scrollbar-width: none;
@@ -367,36 +478,113 @@ const AdminDashboard = () => {
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
         }
+        
+        /* Custom scrollbar for activity feeds */
+        div::-webkit-scrollbar {
+          width: 8px;
+        }
+        
+        div::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        
+        div::-webkit-scrollbar-thumb {
+          background: linear-gradient(180deg, #8B6F47, #556B2F);
+          border-radius: 4px;
+        }
+        
+        div::-webkit-scrollbar-thumb:hover {
+          background: linear-gradient(180deg, #6d28d9, #1d4ed8);
+        }
+        
+        /* Smooth transitions */
+        * {
+          transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+        }
       `}</style>
     </div>
   );
 };
 
-// Purple Layout Helper Components
-const PurpleStatCard = ({ title, value, icon, backgroundColor, subtitle, percentageChange }) => (
-  <div className={`relative group rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 p-6 text-white ${backgroundColor}`}>
-    <div className="flex justify-between items-start mb-4">
-      <div className="text-4xl">{icon}</div>
-      <div className="text-sm font-semibold">{percentageChange}</div>
+// Enhanced Helper Components with Inline Styles
+const PurpleStatCard = ({ title, value, icon, gradient, subtitle, percentageChange }) => (
+  <div 
+    style={{
+      position: 'relative',
+      borderRadius: '16px',
+      overflow: 'hidden',
+      boxShadow: '0 8px 20px rgba(0,0,0,0.12)',
+      padding: '24px',
+      color: 'white',
+      background: gradient,
+      cursor: 'pointer',
+      transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+      transform: 'translateY(0)',
+      zIndex: 1
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.transform = 'translateY(-8px)';
+      e.currentTarget.style.boxShadow = '0 16px 40px rgba(0,0,0,0.2)';
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.transform = 'translateY(0)';
+      e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.12)';
+    }}>
+    <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0)', zIndex: 0 }} />
+    <div style={{ position: 'relative', zIndex: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+      <div style={{ fontSize: '48px', textShadow: '0 2px 10px rgba(0,0,0,0.2)' }}>{icon}</div>
+      <div style={{ fontSize: '12px', fontWeight: 'bold', padding: '6px 12px', background: 'rgba(255,255,255,0.25)', backdropFilter: 'blur(10px)', borderRadius: '20px', whiteSpace: 'nowrap' }}>{percentageChange}</div>
     </div>
-    
-    <div className="text-base font-medium opacity-90 mb-2">{title}</div>
-    <div className="text-3xl font-bold mb-2">
-      ${typeof value === 'number' && value > 999 ? (value / 1000).toFixed(1) + 'K+' : value > 999 ? value.toLocaleString() : value}
+    <div style={{ position: 'relative', zIndex: 10, color: 'rgba(255,255,255,0.85)', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '8px' }}>{title}</div>
+    <div style={{ position: 'relative', zIndex: 10, fontSize: '36px', fontWeight: 'bold', marginBottom: '8px', textShadow: '0 2px 10px rgba(0,0,0,0.2)' }}>
+      {typeof value === 'number' && value > 999 ? (value / 1000).toFixed(1) + 'K' : value.toLocaleString()}
     </div>
     {subtitle && (
-      <div className="text-sm opacity-80">{subtitle}</div>
+      <div style={{ position: 'relative', zIndex: 10, fontSize: '13px', color: 'rgba(255,255,255,0.85)', fontWeight: '500' }}>{subtitle}</div>
     )}
   </div>
 );
 
-const PurpleChartCard = ({ title, children, className = '', onExpand }) => (
-  <div className={`bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all duration-300 ${className}`}>
-    <div className="flex justify-between items-center mb-4">
-      <h3 className="text-base font-bold text-gray-900">{title}</h3>
+const PurpleChartCard = ({ title, children, onExpand }) => (
+  <div style={{
+    background: 'white',
+    borderRadius: '16px',
+    border: '1px solid #e0e0e0',
+    padding: '32px',
+    boxShadow: '0 4px 15px rgba(0,0,0,0.08)',
+    transition: 'all 0.3s ease',
+    cursor: 'pointer'
+  }}
+  onMouseEnter={(e) => {
+    e.currentTarget.style.boxShadow = '0 12px 35px rgba(139, 111, 71, 0.15)';
+    e.currentTarget.style.borderColor = '#8B6F47';
+  }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.08)';
+    e.currentTarget.style.borderColor = '#e0e0e0';
+  }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+      <h3 style={{ fontSize: '18px', fontWeight: 'bold', background: 'linear-gradient(90deg, #8B6F47, #556B2F)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', margin: 0 }}>{title}</h3>
       <button
         onClick={onExpand}
-        className="p-2 rounded-lg hover:bg-gray-100 transition-colors opacity-60 hover:opacity-100"
+        style={{
+          padding: '8px 12px',
+          borderRadius: '8px',
+          background: 'linear-gradient(90deg, #f5e6d3, #f0e4d0)',
+          border: 'none',
+          cursor: 'pointer',
+          fontSize: '16px',
+          transition: 'all 0.3s ease',
+          opacity: 0.6
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.opacity = '1';
+          e.currentTarget.style.transform = 'scale(1.1)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.opacity = '0.6';
+          e.currentTarget.style.transform = 'scale(1)';
+        }}
         title="Expand"
       >
         ⛶
@@ -406,31 +594,141 @@ const PurpleChartCard = ({ title, children, className = '', onExpand }) => (
   </div>
 );
 
+const OverviewItemPurple = ({ label, value, color }) => (
+  <div style={{
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '16px',
+    background: 'linear-gradient(90deg, #f5e6d3, #f0e4d0)',
+    borderRadius: '12px',
+    transition: 'all 0.3s ease',
+    border: '1px solid #d4c5b0',
+    cursor: 'pointer'
+  }}
+  onMouseEnter={(e) => {
+    e.currentTarget.style.background = 'linear-gradient(90deg, #e6d5bc, #dccaa5)';
+    e.currentTarget.style.border = '1px solid #8B6F47';
+    e.currentTarget.style.transform = 'translateX(4px)';
+  }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.background = 'linear-gradient(90deg, #f5e6d3, #f0e4d0)';
+    e.currentTarget.style.border = '1px solid #d4c5b0';
+    e.currentTarget.style.transform = 'translateX(0)';
+  }}>
+    <span style={{ color: '#4a3e35', fontWeight: '500', fontSize: '14px' }}>{label}</span>
+    <span style={{ fontSize: '20px', fontWeight: 'bold', padding: '8px 16px', borderRadius: '8px', color: 'white', backgroundColor: color }}>{value}</span>
+  </div>
+);
+
+const PurpleAction = ({ label, icon, onClick, gradient, disabled }) => (
+  <button
+    onClick={onClick}
+    disabled={disabled}
+    style={{
+      position: 'relative',
+      overflow: 'hidden',
+      background: 'white',
+      borderRadius: '16px',
+      border: '1px solid #e0e0e0',
+      padding: '32px',
+      textAlign: 'center',
+      boxShadow: '0 4px 15px rgba(0,0,0,0.08)',
+      cursor: disabled ? 'not-allowed' : 'pointer',
+      opacity: disabled ? 0.5 : 1,
+      transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+    }}
+    onMouseEnter={(e) => {
+      if (disabled) return;
+      e.currentTarget.style.transform = 'translateY(-8px)';
+      e.currentTarget.style.boxShadow = '0 12px 30px rgba(139, 111, 71, 0.25)';
+      e.currentTarget.style.borderColor = '#8B6F47';
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.transform = 'translateY(0)';
+      e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.08)';
+      e.currentTarget.style.borderColor = '#e0e0e0';
+    }}>
+    <div style={{ position: 'absolute', inset: 0, background: `${gradient}`, opacity: 0, transition: 'opacity 0.3s ease' }} />
+    <div style={{ position: 'relative', zIndex: 10 }}>
+      <div style={{ fontSize: '44px', marginBottom: '12px', transition: 'transform 0.3s ease' }}>{icon}</div>
+      <div style={{ fontWeight: 'bold', color: '#1f2937', fontSize: '14px', background: gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>{label}</div>
+    </div>
+  </button>
+);
+
 const FullscreenChartModal = ({ chart, onClose, chartColors }) => (
-  <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
-    <div className="bg-white rounded-lg border border-gray-300 w-full h-full max-w-6xl max-h-full shadow-2xl flex flex-col" onClick={(e) => e.stopPropagation()}>
-      <div className="flex justify-between items-center p-8 border-b border-gray-200">
-        <h2 className="text-2xl font-bold text-gray-900">
-          {chart.type === 'growth' && '📈 User Growth (Last 7 Days)'}
+  <div style={{
+    position: 'fixed',
+    inset: 0,
+    background: 'rgba(0,0,0,0.7)',
+    backdropFilter: 'blur(10px)',
+    zIndex: 50,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '16px',
+    animation: 'fadeIn 0.3s ease-in-out'
+  }} onClick={onClose}>
+    <div style={{
+      background: 'white',
+      borderRadius: '20px',
+      border: '2px solid #8B6F47',
+      width: '100%',
+      height: '100%',
+      maxWidth: '1200px',
+      maxHeight: '90vh',
+      boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'hidden',
+      animation: 'slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)'
+    }} onClick={(e) => e.stopPropagation()}>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '32px',
+        borderBottom: '1px solid #e0e0e0',
+        background: 'linear-gradient(90deg, #f5e6d3, #f0e4d0)'
+      }}>
+        <h2 style={{ fontSize: '28px', fontWeight: 'bold', background: 'linear-gradient(90deg, #8B6F47, #556B2F)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', margin: 0 }}>
+          {chart.type === 'growth' && '📈 User Growth'}
           {chart.type === 'distribution' && '📊 Analysis Distribution'}
           {chart.type === 'weekly' && '📅 Weekly Activity'}
         </h2>
         <button 
           onClick={onClose}
-          className="p-2 hover:bg-gray-100 rounded-lg transition"
-        >
+          style={{
+            padding: '8px',
+            background: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontSize: '20px',
+            transition: 'all 0.3s ease',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'rotate(90deg)';
+            e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.15)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'rotate(0)';
+            e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+          }}>
           ✕
         </button>
       </div>
-      <div className="flex-1 p-8 overflow-auto">
+      <div style={{ flex: 1, padding: '32px', overflowY: 'auto', background: 'linear-gradient(135deg, #ffffff, #f5f5f5)' }}>
         {chart.type === 'growth' && (
           <ResponsiveContainer width="100%" height={500}>
             <LineChart data={chart.data}>
               <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
               <XAxis dataKey="date" stroke="#6B7280" />
               <YAxis stroke="#6B7280" />
-              <Tooltip contentStyle={{ backgroundColor: '#FFF', border: '1px solid #E5E7EB' }} />
-              <Line type="monotone" dataKey="users" stroke="#A855F7" strokeWidth={3} dot={{ fill: '#A855F7', r: 6 }} />
+              <Tooltip contentStyle={{ backgroundColor: '#FFF', border: '2px solid #8B6F47', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.15)' }} />
+              <Line type="monotone" dataKey="users" stroke="#D4A574" strokeWidth={4} dot={{ fill: '#D4A574', r: 6 }} />
             </LineChart>
           </ResponsiveContainer>
         )}
@@ -451,7 +749,7 @@ const FullscreenChartModal = ({ chart, onClose, chartColors }) => (
                   <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value) => value.toLocaleString()} />
+              <Tooltip formatter={(value) => value.toLocaleString()} contentStyle={{ backgroundColor: '#FFF', border: '2px solid #8B6F47', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.15)' }} />
             </PieChart>
           </ResponsiveContainer>
         )}
@@ -461,34 +759,16 @@ const FullscreenChartModal = ({ chart, onClose, chartColors }) => (
               <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
               <XAxis dataKey="date" stroke="#6B7280" />
               <YAxis stroke="#6B7280" />
-              <Tooltip contentStyle={{ backgroundColor: '#FFF', border: '1px solid #E5E7EB' }} />
+              <Tooltip contentStyle={{ backgroundColor: '#FFF', border: '2px solid #8B6F47', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.15)' }} />
               <Legend wrapperStyle={{ paddingTop: '20px' }} />
-              <Bar dataKey="bunga" fill="#E91E63" radius={[8, 8, 0, 0]} />
-              <Bar dataKey="leaf" fill="#3B82F6" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="bunga" fill="#8B6F47" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="leaf" fill="#556B2F" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         )}
       </div>
     </div>
   </div>
-);
-
-const OverviewItemPurple = ({ label, value, color }) => (
-  <div className="flex justify-between items-center">
-    <span className="text-gray-700 font-medium text-sm">{label}</span>
-    <span className="text-xl font-bold" style={{ color }}>{value}</span>
-  </div>
-);
-
-const PurpleAction = ({ label, icon, onClick, color, disabled }) => (
-  <button
-    onClick={onClick}
-    disabled={disabled}
-    className={`relative group bg-white rounded-lg border border-gray-200 p-6 text-center shadow-sm hover:shadow-md transition-all duration-300 ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}`}
-  >
-    <div className={`text-4xl mb-3 group-hover:scale-110 transition-transform ${color}`}>{icon}</div>
-    <div className="font-semibold text-gray-900 text-sm">{label}</div>
-  </button>
 );
 
 export default AdminDashboard;
