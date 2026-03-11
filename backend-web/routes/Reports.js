@@ -6,7 +6,8 @@ const {
   getLeafAnalysisReports,
   getDashboardStats,
   filterBungaAnalyses,
-  filterLeafAnalyses
+  filterLeafAnalyses,
+  exportAnalyticsPDF
 } = require('../controllers/ReportsController');
 
 // Middleware: Check if user is admin
@@ -14,7 +15,7 @@ const isAdmin = (req, res, next) => {
   if (req.user.role !== 'admin') {
     return res.status(403).json({
       success: false,
-      message: '❌ Access denied. Admin only.'
+      message: 'Access denied. Admin only.'
     });
   }
   next();
@@ -56,5 +57,12 @@ router.get('/bunga/filter', isAuthenticatedUser, isAdmin, filterBungaAnalyses);
  * Query params: disease, minConfidence, maxConfidence, page, limit
  */
 router.get('/leaf/filter', isAuthenticatedUser, isAdmin, filterLeafAnalyses);
+
+/**
+ * POST /api/v1/reports/export/pdf
+ * Export filtered analytics data as PDF
+ * Body: { format: 'simple'|'full', dataType: 'bunga'|'leaf'|'all'|'activities', filters?: {...} }
+ */
+router.post('/export/pdf', isAuthenticatedUser, isAdmin, exportAnalyticsPDF);
 
 module.exports = router;

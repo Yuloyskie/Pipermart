@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { MdList, MdSchedule, MdSearch, MdComment, MdPerson } from 'react-icons/md';
 import AdminHeader from './AdminHeader';
 import AdminFooter from './AdminFooter';
 
@@ -26,7 +27,7 @@ const PostReported = () => {
   const colors = {
     primary: '#0F766E',
     primaryLight: '#14B8A6',
-    secondary: '#FFFFFF',
+    secondary: '#FFDBAC',
     background: '#F8FAFC',
     backgroundHover: '#EEF2FF',
     text: '#0F172A',
@@ -63,22 +64,22 @@ const PostReported = () => {
         url += `&status=${status}`;
       }
 
-      console.log('🔍 Fetching reported posts from:', url);
-      console.log('🔐 Auth header:', axios.defaults.headers.common['Authorization']);
+      console.log('[INFO] Fetching reported posts from:', url);
+      console.log('[AUTH] Auth header:', axios.defaults.headers.common['Authorization']);
 
       const response = await axios.get(url);
-      console.log('✅ Response received:', response.data);
+      console.log('[SUCCESS] Response received:', response.data);
       
       if (response.data.success) {
-        console.log('📊 Posts data:', response.data.data);
+        console.log('[DATA] Posts data:', response.data.data);
         setReportedPosts(response.data.data);
         setCurrentPage(page);
       } else {
-        console.warn('⚠️ Response not successful:', response.data);
+        console.warn('[WARNING] Response not successful:', response.data);
         setError('Failed to load reported posts');
       }
     } catch (err) {
-      console.error('❌ Error fetching reported posts:', err);
+      console.error('[ERROR] Error fetching reported posts:', err);
       console.error('   Status:', err.response?.status);
       console.error('   Data:', err.response?.data);
       setError(err.response?.data?.message || 'Failed to fetch reported posts');
@@ -91,15 +92,15 @@ const PostReported = () => {
   const fetchStats = async () => {
     try {
       const statsUrl = `${API_BASE_URL}/api/v1/reports/posts/stats`;
-      console.log('📊 Fetching stats from:', statsUrl);
+      console.log('[DATA] Fetching stats from:', statsUrl);
       const response = await axios.get(statsUrl);
-      console.log('✅ Stats response:', response.data);
+      console.log('[SUCCESS] Stats response:', response.data);
       if (response.data.success) {
-        console.log('📈 Stats data:', response.data.data);
+        console.log('[STATS] Stats data:', response.data.data);
         setStats(response.data.data);
       }
     } catch (err) {
-      console.error('❌ Error fetching stats:', err);
+      console.error('[ERROR] Error fetching stats:', err);
       console.error('   Status:', err.response?.status);
       console.error('   Data:', err.response?.data);
     }
@@ -271,7 +272,7 @@ const PostReported = () => {
       pending: {
         bgColor: 'linear-gradient(135deg, #FFF3CD, #FFECB3)',
         textColor: '#856404',
-        icon: '⏳',
+        icon: <MdSchedule size={16} />,
         label: 'Pending'
       },
       reviewed: {
@@ -318,17 +319,13 @@ const PostReported = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#f5f7fa' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundImage: 'linear-gradient(135deg, rgba(13, 74, 47, 0.7), rgba(139, 111, 71, 0.6)), url(/media/BGadmin.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
       <AdminHeader />
       <main style={{
       flex: 1,
       padding: '32px 20px',
-      backgroundColor: '#f5f7fa',
-      backgroundImage: `
-        radial-gradient(circle at 20% 50%, rgba(39, 174, 96, 0.05) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(46, 204, 113, 0.05) 0%, transparent 50%)
-      `,
-      backgroundAttachment: 'fixed'
+      overflowY: 'auto',
+      height: 'calc(100vh - 80px)'
     }}>
       <style>{`
         @keyframes slideInDown {
@@ -401,7 +398,7 @@ const PostReported = () => {
             opacity: 0.06,
             animation: 'pulse 4s infinite'
           }}>
-            📋
+            <div style={{ fontSize: '250px', opacity: 0.06 }}><MdList /></div>
           </div>
           <div style={{ position: 'relative', zIndex: 1 }}>
             <h1 style={{

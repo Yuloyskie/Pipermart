@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { LineChart, Line, PieChart, Pie, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
+import { MdPeople, MdBarChart, MdTrendingUp, MdNotifications, MdSettings } from 'react-icons/md';
 import AdminHeader from './AdminHeader';
 import AdminFooter from './AdminFooter';
 import logoImage from '../Admin/logowalangbg.png';
@@ -140,7 +141,10 @@ const AdminDashboard = () => {
     <div style={{ 
       minHeight: '100vh', 
       width: '100%',
-      background: 'linear-gradient(135deg, #3d2817 0%, #5c4a3d 100%)'
+      backgroundImage: 'linear-gradient(135deg, rgba(13, 74, 47, 0.7), rgba(139, 111, 71, 0.6)), url(/media/BGadmin.jpg)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed'
     }}>
       <AdminHeader />
       
@@ -174,26 +178,32 @@ const AdminDashboard = () => {
             <PurpleStatCard
               title="Total Users"
               value={dashboardData?.totalUsers || 0}
-              icon="👥"
+              icon={<MdPeople size={48} color="white" />}
               gradient="linear-gradient(135deg, #8B6F47 0%, #A0522D 100%)"
               subtitle={`+${dashboardData?.activeUsers || 0} active`}
               percentageChange={`${Math.round((dashboardData?.activeUsers / (dashboardData?.totalUsers || 1)) * 100)}%`}
+              backgroundImage="/media/Users.webp"
+              overlayColor="rgba(80, 60, 40, 0.75)"
             />
             <PurpleStatCard
               title="Total Analyses"
               value={dashboardData?.totalAnalyses || 0}
-              icon="📊"
+              icon={<MdBarChart size={48} color="white" />}
               gradient="linear-gradient(135deg, #556B2F 0%, #6F8C3D 100%)"
               subtitle={`+${dashboardData?.analysesThisMonth || 0} this month`}
               percentageChange={`-10%`}
+              backgroundImage="/media/analysisadmin.webp"
+              overlayColor="rgba(40, 50, 20, 0.75)"
             />
             <PurpleStatCard
               title="Active Users Today"
               value={userOverview?.activeToday || 0}
-              icon="🌟"
+              icon={<MdTrendingUp size={48} color="white" />}
               gradient="linear-gradient(135deg, #C19A6B 0%, #D4A574 100%)"
               subtitle={`+${userOverview?.newThisWeek || 0} new this week`}
               percentageChange={`+5%`}
+              backgroundImage="/media/ATusers.jpg"
+              overlayColor="rgba(100, 80, 50, 0.75)"
             />
           </div>
 
@@ -202,7 +212,7 @@ const AdminDashboard = () => {
             {/* Large Chart - 2 columns */}
             <div style={{ gridColumn: '1 / -1' }}>
               <PurpleChartCard 
-                title="📅 Visit And Analysis Statistics" 
+                title={<><MdBarChart style={{ marginRight: '8px', display: 'inline' }} />Visit And Analysis Statistics</>} 
                 onExpand={() => setFullscreenChart({ type: 'weekly', data: weeklyActivity })}
               >
                 {weeklyActivity.length > 0 ? (
@@ -228,7 +238,7 @@ const AdminDashboard = () => {
 
             {/* Analysis Distribution */}
             <PurpleChartCard 
-              title="📊 Analysis Distribution" 
+              title={<><MdBarChart style={{ marginRight: '8px', display: 'inline' }} />Analysis Distribution</>} 
               onExpand={() => setFullscreenChart({ type: 'distribution', data: analysisDistribution })}
             >
               {analysisDistribution.length > 0 ? (
@@ -258,7 +268,7 @@ const AdminDashboard = () => {
 
             {/* User Growth */}
             <PurpleChartCard 
-              title="📈 User Growth" 
+              title={<><MdTrendingUp style={{ marginRight: '8px', display: 'inline' }} />User Growth</>} 
               onExpand={() => setFullscreenChart({ type: 'growth', data: userGrowth })}
             >
               {userGrowth.length > 0 ? (
@@ -291,7 +301,7 @@ const AdminDashboard = () => {
             onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 12px 30px rgba(124, 58, 237, 0.15)'}
             onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.08)'}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-                <div style={{ fontSize: '28px' }}>👥</div>
+            <div style={{ fontSize: '28px' }}><MdPeople size={28} /></div>
                 <h3 style={{ fontSize: '20px', fontWeight: 'bold', background: 'linear-gradient(90deg, #8B6F47, #D4A574)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', margin: 0 }}>User Metrics</h3>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -365,7 +375,7 @@ const AdminDashboard = () => {
             onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 12px 30px rgba(16, 185, 129, 0.15)'}
             onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.08)'}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-                <div style={{ fontSize: '28px' }}>🔔</div>
+                <div style={{ fontSize: '28px' }}><MdNotifications size={28} /></div>
                 <h3 style={{ fontSize: '20px', fontWeight: 'bold', background: 'linear-gradient(90deg, #556B2F, #6F8C3D)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', margin: 0 }}>Recent Activity</h3>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '400px', overflowY: 'auto' }}>
@@ -434,7 +444,7 @@ const AdminDashboard = () => {
             />
             <PurpleAction 
               label="System Health" 
-              icon="⚙️" 
+              icon={<MdSettings />} 
               onClick={() => {}} 
               gradient="linear-gradient(135deg, #D4A574, #C19A6B)"
             />
@@ -507,7 +517,7 @@ const AdminDashboard = () => {
 };
 
 // Enhanced Helper Components with Inline Styles
-const PurpleStatCard = ({ title, value, icon, gradient, subtitle, percentageChange }) => (
+const PurpleStatCard = ({ title, value, icon, gradient, subtitle, percentageChange, backgroundImage, overlayColor = 'rgba(0,0,0,0.6)' }) => (
   <div 
     style={{
       position: 'relative',
@@ -516,7 +526,9 @@ const PurpleStatCard = ({ title, value, icon, gradient, subtitle, percentageChan
       boxShadow: '0 8px 20px rgba(0,0,0,0.12)',
       padding: '24px',
       color: 'white',
-      background: gradient,
+      background: backgroundImage ? `url(${backgroundImage})` : gradient,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
       cursor: 'pointer',
       transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
       transform: 'translateY(0)',
@@ -530,7 +542,7 @@ const PurpleStatCard = ({ title, value, icon, gradient, subtitle, percentageChan
       e.currentTarget.style.transform = 'translateY(0)';
       e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.12)';
     }}>
-    <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0)', zIndex: 0 }} />
+    <div style={{ position: 'absolute', inset: 0, background: overlayColor, zIndex: 0 }} />
     <div style={{ position: 'relative', zIndex: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
       <div style={{ fontSize: '48px', textShadow: '0 2px 10px rgba(0,0,0,0.2)' }}>{icon}</div>
       <div style={{ fontSize: '12px', fontWeight: 'bold', padding: '6px 12px', background: 'rgba(255,255,255,0.25)', backdropFilter: 'blur(10px)', borderRadius: '20px', whiteSpace: 'nowrap' }}>{percentageChange}</div>
@@ -693,8 +705,8 @@ const FullscreenChartModal = ({ chart, onClose, chartColors }) => (
         background: 'linear-gradient(90deg, #f5e6d3, #f0e4d0)'
       }}>
         <h2 style={{ fontSize: '28px', fontWeight: 'bold', background: 'linear-gradient(90deg, #8B6F47, #556B2F)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', margin: 0 }}>
-          {chart.type === 'growth' && '📈 User Growth'}
-          {chart.type === 'distribution' && '📊 Analysis Distribution'}
+            {chart.type === 'growth' && <MdTrendingUp style={{ marginRight: '8px' }} />}User Growth
+            {chart.type === 'distribution' && <MdBarChart style={{ marginRight: '8px' }} />}Analysis Distribution
           {chart.type === 'weekly' && '📅 Weekly Activity'}
         </h2>
         <button 
@@ -720,7 +732,7 @@ const FullscreenChartModal = ({ chart, onClose, chartColors }) => (
           ✕
         </button>
       </div>
-      <div style={{ flex: 1, padding: '32px', overflowY: 'auto', background: 'linear-gradient(135deg, #ffffff, #f5f5f5)' }}>
+      <div style={{ flex: 1, padding: '32px', overflowY: 'auto', background: 'linear-gradient(135deg, #FFDBAC, #f5f5f5)' }}>
         {chart.type === 'growth' && (
           <ResponsiveContainer width="100%" height={500}>
             <LineChart data={chart.data}>

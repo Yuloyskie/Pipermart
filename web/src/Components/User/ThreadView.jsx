@@ -29,6 +29,9 @@ export default function ThreadView() {
   const [reportReason, setReportReason] = useState('');
   const [reportingId, setReportingId] = useState(null);
   const [submittingReport, setSubmittingReport] = useState(false);
+  
+  // Read dark mode preference from localStorage
+  const isDarkTheme = localStorage.getItem('forumDarkTheme') === 'true';
 
   useEffect(() => {
     fetchThreadData();
@@ -323,7 +326,7 @@ export default function ThreadView() {
   return (
     <>
       <Header />
-      <div className="thread-view-container">
+      <div className={`thread-view-container ${isDarkTheme ? 'dark-theme' : ''}`}>
         {/* Original Thread */}
         <div className="thread-detail-card">
           <div className="thread-detail-header">

@@ -79,8 +79,8 @@
 }
 
 .activity-item {
-  background: linear-gradient(135deg, #E8F5E9 0%, #F1F8F6 100%);
-  border: 2px solid #81C784;
+  background: linear-gradient(135deg, #e8f5e9 0%, #f0fdf4 100%);
+  border: 2px solid #22c55e;
   border-radius: 12px;
   padding: 20px;
   transition: all 0.3s ease;
@@ -99,10 +99,10 @@
 }
 
 .activity-item:hover {
-  box-shadow: 0 8px 24px rgba(39, 174, 96, 0.15);
-  border-color: #4CAF50;
+  box-shadow: 0 8px 24px rgba(34, 197, 94, 0.3);
+  border-color: #16a34a;
   transform: translateY(-2px);
-  background: linear-gradient(135deg, #D4EDDA 0%, #E8F5E9 100%);
+  background: linear-gradient(135deg, #d1fae5 0%, #dbeafe 100%);
 }
 
 .activity-item.leaf {
@@ -137,12 +137,14 @@
 
 .activity-type-badge {
   display: inline-block;
-  padding: 6px 12px;
-  background: rgba(39, 174, 96, 0.1);
-  color: #27AE60;
+  padding: 8px 14px;
+  background: rgba(34, 197, 94, 0.15);
+  color: #000;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .activity-item.bunga .activity-type-badge {
@@ -167,7 +169,8 @@
 
 .activity-date {
   font-size: 12px;
-  color: #999;
+  color: #000;
+  font-weight: 600;
 }
 
 /* ============ ACTIVITY CONTENT ============ */
@@ -184,23 +187,25 @@
 .detail-row {
   display: flex;
   justify-content: space-between;
-  padding: 8px;
-  background: rgba(76, 175, 80, 0.08);
+  padding: 10px;
+  background: rgba(34, 197, 94, 0.08);
   border-radius: 6px;
-  border-left: 3px solid #4CAF50;
+  border-left: 3px solid #22c55e;
   padding-left: 10px;
 }
 
 .detail-label {
   font-size: 13px;
-  color: #666;
+  color: #000;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .detail-value {
   font-size: 13px;
-  color: #333;
-  font-weight: 500;
+  color: #2E7D32;
+  font-weight: 600;
 }
 
 /* ============ ACTIVITY ACTIONS ============ */
@@ -253,14 +258,16 @@
 .activity-images {
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px solid rgba(76, 175, 80, 0.2);
+  border-top: 1px solid rgba(154, 205, 50, 0.3);
 }
 
 .activity-images-title {
   font-size: 12px;
   font-weight: 600;
-  color: #2E7D32;
+  color: #000;
   margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .activity-images-grid {
@@ -273,11 +280,11 @@
   position: relative;
   border-radius: 8px;
   overflow: hidden;
-  background: linear-gradient(135deg, #F0F847 0%, #CDDC39 100%);
-  border: 2px solid #9CCC65;
+  background: linear-gradient(135deg, #e8f5e9 0%, #f0fdf4 100%);
+  border: 2px solid #22c55e;
   transition: all 0.3s ease;
   aspect-ratio: 1;
-  box-shadow: 0 2px 8px rgba(205, 220, 57, 0.3);
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
 }
 
 .activity-image-wrapper:hover {
@@ -299,8 +306,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #F0F847 0%, #CDDC39 100%);
-  color: #558B2F;
+  background: linear-gradient(135deg, #e8f5e9 0%, #f0fdf4 100%);
+  color: #000;
   font-size: 12px;
   font-weight: 600;
 }

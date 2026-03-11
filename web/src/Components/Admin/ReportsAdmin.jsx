@@ -8,6 +8,7 @@ import {
 import logoImage from './logowalangbg.png';
 import AdminHeader from './AdminHeader';
 import AdminFooter from './AdminFooter';
+import ExportPdfModal from './ExportPdfModal';
 
 const ReportsAdmin = () => {
   const navigate = useNavigate();
@@ -27,12 +28,14 @@ const ReportsAdmin = () => {
   const [pageSize] = useState(10);
   const [bungaFilters, setBungaFilters] = useState({});
   const [leafFilters, setLeafFilters] = useState({});
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [exportFiltersSuggestion, setExportFiltersSuggestion] = useState({});
 
   // Color scheme (green theme)
   const colors = {
     primary: '#27AE60',
     primaryLight: '#52BE80',
-    secondary: '#FFFFFF',
+    secondary: '#FFDBAC',
     background: '#F0F9F4',
     backgroundHover: '#E8F6F0',
     text: '#1B4D3E',
@@ -142,6 +145,17 @@ const ReportsAdmin = () => {
       if (!leafReports) fetchLeafReports(1);
     }
   }, [activeTab]);
+
+  // Update export filters when active tab changes
+  useEffect(() => {
+    if (activeTab === 'bunga') {
+      setExportFiltersSuggestion(bungaFilters);
+    } else if (activeTab === 'leaf') {
+      setExportFiltersSuggestion(leafFilters);
+    } else {
+      setExportFiltersSuggestion({});
+    }
+  }, [activeTab, bungaFilters, leafFilters]);
 
   // ==================== DASHBOARD TAB ====================
   const DashboardTab = () => {
@@ -695,15 +709,18 @@ const ReportsAdmin = () => {
       display: 'flex',
       flexDirection: 'column',
       minHeight: '100vh',
-      backgroundColor: '#F8FAFB',
-      fontFamily: 'inherit'
+      backgroundImage: 'linear-gradient(135deg, rgba(13, 74, 47, 0.7), rgba(139, 111, 71, 0.6)), url(/media/BGadmin.jpg)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed'
     }}>
       <AdminHeader />
 
       <main style={{
         flex: 1,
         padding: '32px 20px',
-        backgroundImage: `linear-gradient(135deg, #F0F9F4 0%, #F8FAFB 100%)`
+        overflowY: 'auto',
+        height: 'calc(100vh - 80px)'
       }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
           {/* Error Alert */}
@@ -721,6 +738,44 @@ const ReportsAdmin = () => {
             ❌ {error}
           </div>
         )}
+
+        {/* Export Controls */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          gap: '12px',
+          marginBottom: '20px'
+        }}>
+          <button
+            onClick={() => setShowExportModal(true)}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: colors.accent,
+              color: colors.secondary,
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              fontSize: '14px',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 2px 8px rgba(230, 126, 34, 0.2)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = '#D95A1C';
+              e.target.style.boxShadow = '0 4px 12px rgba(230, 126, 34, 0.3)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = colors.accent;
+              e.target.style.boxShadow = '0 2px 8px rgba(230, 126, 34, 0.2)';
+            }}
+            title="Export current data as PDF"
+          >
+            Export PDF
+          </button>
+        </div>
 
         {/* Tab Navigation */}
         <div style={{
@@ -798,6 +853,14 @@ const ReportsAdmin = () => {
         </div>
         </div>
       </main>
+
+      <ExportPdfModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        currentFilters={exportFiltersSuggestion}
+        currentActiveTab={activeTab}
+        API_BASE_URL={API_BASE_URL}
+      />
 
       <AdminFooter />
     </div>

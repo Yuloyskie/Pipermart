@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import axios from 'axios';
+import { MdPhotoCamera } from 'react-icons/md';
 import './Chat.css';
 
 const Chat = forwardRef((props, ref) => {
@@ -14,7 +15,15 @@ const Chat = forwardRef((props, ref) => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [replyingTo, setReplyingTo] = useState(null);
   const [hoveredMessageId, setHoveredMessageId] = useState(null);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [chatBgColor, setChatBgColor] = useState(null);
+  const [chatBgImage, setChatBgImage] = useState(null);
+  const [chatNickname, setChatNickname] = useState('');
   const messagesEndRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const bgImageInputRef = useRef(null);
 
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 
@@ -95,8 +104,56 @@ const Chat = forwardRef((props, ref) => {
       fetchMessages();
       // when a conversation is selected, mark any unread messages in it as read
       markUnreadInCurrentChat(selectedChat);
+      
+      // Load chat settings from backend
+      const loadChatSettings = async () => {
+        try {
+          const response = await axios.get(
+            `${BACKEND_URL}/api/v1/chat/${selectedChat._id}/settings`,
+            {
+              headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+            }
+          );
+          const settings = response.data.data || {};
+          setChatBgColor(settings.bgColor || null);
+          setChatBgImage(settings.bgImage || null);
+          setChatNickname(settings.nickname || '');
+        } catch (error) {
+          console.log('Note: Chat settings not available yet');
+        }
+      };
+
+      // Debug: Log avatar data
+      const otherUser = selectedChat.participants?.find(p => p._id !== currentUser._id);
+      console.log('👤 Chat loaded with user:', otherUser?.name, 'Avatar:', otherUser?.avatar);
+      
+      loadChatSettings();
     }
-  }, [selectedChat]);
+  }, [selectedChat, BACKEND_URL]);
+
+  // Real-time message polling - fetch new messages every 2 seconds
+  useEffect(() => {
+    if (!selectedChat) return;
+
+    const pollMessages = async () => {
+      try {
+        const response = await axios.get(`${BACKEND_URL}/api/v1/chat/chats/${selectedChat._id}/messages`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        const msgs = response.data.data || [];
+        setMessages(msgs);
+        await markUnreadMsgs(msgs);
+      } catch (error) {
+        console.error('Error polling messages:', error);
+      }
+    };
+
+    // Poll every 2 seconds for new messages
+    const interval = setInterval(pollMessages, 2000);
+    return () => clearInterval(interval);
+  }, [selectedChat, BACKEND_URL]);
 
   useEffect(() => {
     scrollToBottom();
@@ -144,30 +201,85 @@ const Chat = forwardRef((props, ref) => {
   };
 
   const handleSendMessage = async () => {
-    if (!messageInput.trim() || !selectedChat) return;
+    if ((!messageInput.trim() && selectedImages.length === 0) || !selectedChat) return;
 
     try {
-      const messageData = { content: messageInput };
-      if (replyingTo) {
-        messageData.replyTo = replyingTo._id;
-      }
-      
-      await axios.post(
-        `${BACKEND_URL}/api/v1/chat/chats/${selectedChat._id}/messages`,
-        messageData,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
+      setUploading(true);
+      const uploadedImageUrls = [];
+
+      // Upload all selected images
+      for (const imageFile of selectedImages) {
+        try {
+          const formData = new FormData();
+          formData.append('image', imageFile);
+
+          const uploadResponse = await axios.post(
+            `${BACKEND_URL}/api/v1/chat/upload-image`,
+            formData,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'multipart/form-data'
+              }
+            }
+          );
+          uploadedImageUrls.push(uploadResponse.data.data.imageUrl);
+        } catch (uploadError) {
+          console.error('Image upload failed:', uploadError);
+          alert(`Failed to upload image: ${imageFile.name}`);
         }
-      );
+      }
+
+      // Send message(s) with uploaded images
+      // If multiple images, send one message with all images
+      if (uploadedImageUrls.length > 0) {
+        for (const imageUrl of uploadedImageUrls) {
+          const messageData = { 
+            content: messageInput || '',
+            imageUrl: imageUrl
+          };
+          if (replyingTo) {
+            messageData.replyTo = replyingTo._id;
+          }
+
+          await axios.post(
+            `${BACKEND_URL}/api/v1/chat/chats/${selectedChat._id}/messages`,
+            messageData,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+              }
+            }
+          );
+        }
+      } else if (messageInput.trim()) {
+        // If no images, just send the text message
+        const messageData = { content: messageInput };
+        if (replyingTo) {
+          messageData.replyTo = replyingTo._id;
+        }
+        
+        await axios.post(
+          `${BACKEND_URL}/api/v1/chat/chats/${selectedChat._id}/messages`,
+          messageData,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+          }
+        );
+      }
+
       setMessageInput('');
+      setSelectedImages([]);
       setReplyingTo(null);
-      fetchMessages();
-      fetchChats();
+      await fetchMessages();
+      await fetchChats();
     } catch (error) {
       console.error('Error sending message:', error);
       alert('Failed to send message');
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -199,6 +311,94 @@ const Chat = forwardRef((props, ref) => {
     setSelectedChat(null);
     setMessages([]);
     setMessageInput('');
+    setSelectedImages([]);
+    setShowSettings(false);
+  };
+
+  const saveChatSettings = async (bgColor = chatBgColor, bgImage = chatBgImage, nickname = chatNickname) => {
+    if (!selectedChat) return;
+    try {
+      await axios.put(
+        `${BACKEND_URL}/api/v1/chat/${selectedChat._id}/settings`,
+        {
+          bgColor: bgColor,
+          bgImage: bgImage,
+          nickname: nickname
+        },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        }
+      );
+      console.log('✅ Chat settings saved to backend');
+    } catch (error) {
+      console.error('Error saving chat settings:', error);
+    }
+  };
+
+  const handleBgColorChange = (color) => {
+    setChatBgColor(color);
+    saveChatSettings(color, chatBgImage, chatNickname);
+  };
+
+  const handleBgImageUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const imageData = event.target?.result;
+        
+        // Upload to Cloudinary via backend
+        try {
+          const formData = new FormData();
+          formData.append('image', file);
+          
+          const uploadResponse = await axios.post(
+            `${BACKEND_URL}/api/v1/chat/upload-image`,
+            formData,
+            {
+              headers: { 
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'multipart/form-data'
+              }
+            }
+          );
+          
+          const imageUrl = uploadResponse.data.data.imageUrl;
+          setChatBgImage(imageUrl);
+          saveChatSettings(chatBgColor, imageUrl, chatNickname);
+        } catch (error) {
+          console.error('Error uploading background image:', error);
+          // Fallback to base64
+          setChatBgImage(imageData);
+          saveChatSettings(chatBgColor, imageData, chatNickname);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleNicknameChange = (newNickname) => {
+    setChatNickname(newNickname);
+    saveChatSettings(chatBgColor, chatBgImage, newNickname);
+  };
+
+  const handleImageSelect = (e) => {
+    const files = e.target.files;
+    if (files) {
+      const newImages = [];
+      for (let file of files) {
+        if (file.type.startsWith('image/')) {
+          newImages.push(file);
+        }
+      }
+      setSelectedImages(prev => [...prev, ...newImages]);
+    }
+    // Reset input so same file can be selected again
+    e.target.value = '';
+  };
+
+  const removeImage = (index) => {
+    setSelectedImages(prev => prev.filter((_, i) => i !== index));
   };
 
   // helper which accepts an array of messages and marks any that are unread and sent by others
@@ -334,8 +534,18 @@ const Chat = forwardRef((props, ref) => {
       {isOpen && (
         <div className={`chat-window ${isMinimized ? 'minimized' : ''}`}>
           <div className="chat-header">
-            <h3><span style={{color: '#27AE60'}}>P</span> Messages</h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <img src="/logowalangbg.png" alt="PiperSmart" style={{ height: '28px', width: 'auto' }} />
+              <h3 style={{ margin: 0 }}>Messages</h3>
+            </div>
             <div className="chat-controls">
+              <button
+                className="chat-settings-btn"
+                onClick={() => setShowSettings(!showSettings)}
+                title="Chat Settings"
+              >
+                ⋯
+              </button>
               <button
                 className="chat-minimize-btn"
                 onClick={() => setIsMinimized(!isMinimized)}
@@ -357,15 +567,147 @@ const Chat = forwardRef((props, ref) => {
           {!isMinimized && (
             <>
               <div className="chat-content">
-                {selectedChat && (
-                  <div className="chat-messages-view">
-                    <div className="chat-messages-header">
-                      <h4>
-                        {selectedChat.participants?.find(p => p._id !== currentUser._id)?.name || 'Chat'}
-                      </h4>
+                {showSettings && selectedChat && (
+                  <div className="chat-settings-modal">
+                    <div className="settings-section">
+                      <h4>Background Color</h4>
+                      <div className="color-options">
+                        <button 
+                          className={`color-btn ${chatBgColor === null ? 'active' : ''}`}
+                          style={{ background: '#FFFFFF', border: '2px solid #ddd' }}
+                          onClick={() => handleBgColorChange(null)}
+                          title="Default"
+                        />
+                        <button 
+                          className={`color-btn ${chatBgColor === '#FFE5E5' ? 'active' : ''}`}
+                          style={{ background: '#FFE5E5' }}
+                          onClick={() => handleBgColorChange('#FFE5E5')}
+                          title="Light Red"
+                        />
+                        <button 
+                          className={`color-btn ${chatBgColor === '#E5F0FF' ? 'active' : ''}`}
+                          style={{ background: '#E5F0FF' }}
+                          onClick={() => handleBgColorChange('#E5F0FF')}
+                          title="Light Blue"
+                        />
+                        <button 
+                          className={`color-btn ${chatBgColor === '#FFFACD' ? 'active' : ''}`}
+                          style={{ background: '#FFFACD' }}
+                          onClick={() => handleBgColorChange('#FFFACD')}
+                          title="Light Yellow"
+                        />
+                        <button 
+                          className={`color-btn ${chatBgColor === '#E5FFE5' ? 'active' : ''}`}
+                          style={{ background: '#E5FFE5' }}
+                          onClick={() => handleBgColorChange('#E5FFE5')}
+                          title="Light Green"
+                        />
+                        <button 
+                          className={`color-btn ${chatBgColor === '#F5F5F5' ? 'active' : ''}`}
+                          style={{ background: '#F5F5F5', border: '2px solid #999' }}
+                          onClick={() => handleBgColorChange('#F5F5F5')}
+                          title="Light Gray"
+                        />
+                        <button 
+                          className={`color-btn ${chatBgColor === '#333333' ? 'active' : ''}`}
+                          style={{ background: '#333333' }}
+                          onClick={() => handleBgColorChange('#333333')}
+                          title="Black"
+                        />
+                      </div>
                     </div>
 
-                    <div className="messages-list">
+                    <div className="settings-section">
+                      <h4>Custom Background</h4>
+                      <button 
+                        className="upload-btn"
+                        onClick={() => bgImageInputRef.current?.click()}
+                      >
+                        📸 Upload Image
+                      </button>
+                      <input
+                        ref={bgImageInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleBgImageUpload}
+                        style={{ display: 'none' }}
+                      />
+                      {chatBgImage && (
+                        <button 
+                          className="remove-bg-btn"
+                          onClick={() => {
+                            setChatBgImage(null);
+                            saveChatSettings(chatBgColor, null, chatNickname);
+                          }}
+                        >
+                          ✕ Remove Custom Image
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="settings-section">
+                      <h4>Nickname</h4>
+                      <input
+                        type="text"
+                        placeholder="Give this chat a nickname..."
+                        value={chatNickname}
+                        onChange={(e) => handleNicknameChange(e.target.value)}
+                        className="nickname-input"
+                        maxLength="30"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {!showSettings && selectedChat && (
+                  <div className="chat-messages-view">
+                    <div className="chat-messages-header">
+                      {(() => {
+                        const otherUser = selectedChat.participants?.find(p => p._id !== currentUser._id);
+                        return (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
+                            <div style={{
+                              width: '40px',
+                              height: '40px',
+                              borderRadius: '50%',
+                              backgroundColor: '#E4E6EB',
+                              backgroundImage: (otherUser?.avatar && typeof otherUser.avatar === 'string') ? `url(${otherUser.avatar})` : 'none',
+                              backgroundSize: 'cover',
+                              backgroundPosition: 'center',
+                              backgroundRepeat: 'no-repeat',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontSize: '20px',
+                              fontWeight: 'bold',
+                              color: '#27AE60',
+                              border: '2px solid #ddd'
+                            }}>
+                              {(!otherUser?.avatar || typeof otherUser.avatar !== 'string') ? otherUser?.name?.charAt(0).toUpperCase() : ''}
+                            </div>
+                            <div>
+                              <h4 style={{ margin: 0, fontSize: '14px', fontWeight: '600', color: '#000' }}>
+                                {chatNickname || otherUser?.name || 'Chat'}
+                              </h4>
+                              <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: '#65676B' }}>
+                                Active now
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+
+                    <div 
+                      className="messages-list"
+                      style={{
+                        backgroundColor: chatBgColor || '#F0F0F0',
+                        backgroundImage: chatBgImage ? `url(${chatBgImage})` : 'none',
+                        backgroundSize: chatBgImage ? 'cover' : 'auto',
+                        backgroundPosition: 'center',
+                        backgroundAttachment: 'fixed'
+                      }}
+                    >
                       {messages.length === 0 ? (
                         <div className="no-messages">No messages yet. Start typing!</div>
                       ) : (
@@ -380,16 +722,39 @@ const Chat = forwardRef((props, ref) => {
                               className={`message-item ${isSent ? 'sent' : 'received'}`}
                               onMouseEnter={() => setHoveredMessageId(msg._id)}
                               onMouseLeave={() => setHoveredMessageId(null)}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'flex-end',
+                                gap: '8px',
+                                marginBottom: '8px',
+                                justifyContent: isSent ? 'flex-end' : 'flex-start'
+                              }}
                             >
-                              {msg.replyTo && (
-                                <div className="message-reply-context">
-                                  <span className="reply-icon">↳</span>
-                                  <span className="reply-text">
-                                    Replying to: {msg.replyTo.sender?.name || 'Unknown'}
-                                  </span>
+                              {!isSent && (
+                                <div 
+                                  style={{
+                                    width: '28px',
+                                    height: '28px',
+                                    borderRadius: '50%',
+                                    backgroundColor: '#E4E6EB',
+                                    backgroundImage: (msg.sender?.avatar && typeof msg.sender.avatar === 'string') ? `url(${msg.sender.avatar})` : 'none',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '12px',
+                                    fontWeight: 'bold',
+                                    color: '#27AE60',
+                                    flexShrink: 0,
+                                    border: '1px solid #ddd'
+                                  }}
+                                  title={msg.sender?.name}
+                                >
+                                  {(!msg.sender?.avatar || typeof msg.sender.avatar !== 'string') ? msg.sender?.name?.charAt(0).toUpperCase() : ''}
                                 </div>
                               )}
-                              
                               <div className="message-content">
                                 {msg.replyTo && !msg.isDeleted && (
                                   <div className="message-replied-content">
@@ -402,7 +767,22 @@ const Chat = forwardRef((props, ref) => {
                                   <p className="message-deleted">{msg.sender?.name || 'User'} deleted a message</p>
                                 ) : (
                                   <>
-                                    <p className="message-text">{msg.content || ''}</p>
+                                    {msg.content && <p className="message-text">{msg.content}</p>}
+                                    {msg.imageUrl && (
+                                      <img 
+                                        src={msg.imageUrl} 
+                                        alt="Chat image" 
+                                        style={{
+                                          maxWidth: '200px',
+                                          maxHeight: '200px',
+                                          borderRadius: '8px',
+                                          marginBottom: '8px',
+                                          cursor: 'pointer',
+                                          display: 'block'
+                                        }}
+                                        onClick={() => window.open(msg.imageUrl, '_blank')}
+                                      />
+                                    )}
                                     <span className="message-time">
                                       {msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString([], {
                                         hour: '2-digit',
@@ -466,19 +846,107 @@ const Chat = forwardRef((props, ref) => {
                         </div>
                       )}
                       
+                      {selectedImages.length > 0 && (
+                        <div style={{
+                          padding: '8px 12px',
+                          backgroundColor: '#F0F4F8',
+                          borderBottom: '1px solid #E5E7EB',
+                          display: 'flex',
+                          gap: '8px',
+                          flexWrap: 'wrap',
+                          alignItems: 'flex-start'
+                        }}>
+                          {selectedImages.map((img, idx) => (
+                            <div
+                              key={idx}
+                              style={{
+                                position: 'relative',
+                                display: 'inline-block'
+                              }}
+                            >
+                              <img 
+                                src={URL.createObjectURL(img)} 
+                                alt={`Selected ${idx}`} 
+                                style={{
+                                  width: '50px',
+                                  height: '50px',
+                                  borderRadius: '4px',
+                                  objectFit: 'cover'
+                                }}
+                              />
+                              <button
+                                onClick={() => removeImage(idx)}
+                                style={{
+                                  position: 'absolute',
+                                  top: '-8px',
+                                  right: '-8px',
+                                  background: '#EF4444',
+                                  color: 'white',
+                                  border: 'none',
+                                  borderRadius: '50%',
+                                  width: '20px',
+                                  height: '20px',
+                                  cursor: 'pointer',
+                                  fontSize: '12px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center'
+                                }}
+                                title="Remove"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      
                       <div className="input-controls">
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          onChange={handleImageSelect}
+                          accept="image/*"
+                          multiple
+                          style={{ display: 'none' }}
+                        />
+                        <button
+                          onClick={() => fileInputRef.current?.click()}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: '#27AE60',
+                            cursor: 'pointer',
+                            fontSize: '20px',
+                            padding: '8px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}
+                          title="Add images"
+                          disabled={uploading}
+                        >
+                          <MdPhotoCamera />
+                        </button>
                         <input
                           type="text"
                           className="message-input"
                           value={messageInput}
                           onChange={(e) => setMessageInput(e.target.value)}
                           onKeyPress={(e) => {
-                            if (e.key === 'Enter') handleSendMessage();
+                            if (e.key === 'Enter' && !uploading) handleSendMessage();
                           }}
                           placeholder="Type a message..."
+                          disabled={uploading}
                         />
-                        <button className="send-btn" onClick={handleSendMessage}>
-                          <span style={{color: '#f7fcf9', fontSize: '16px'}}>➤</span>
+                        <button 
+                          className="send-btn" 
+                          onClick={handleSendMessage}
+                          disabled={uploading}
+                        >
+                          <span style={{color: '#f7fcf9', fontSize: '16px'}}>
+                            {uploading ? '...' : '➤'}
+                          </span>
                         </button>
                       </div>
                     </div>

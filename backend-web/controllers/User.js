@@ -828,7 +828,7 @@ exports.getFriends = async (req, res) => {
     }
 
     const user = await User.findById(req.user._id)
-      .populate('friends', '_id name email avatar');
+      .populate('friends', '_id name email avatar isActive lastOnline');
 
     res.status(200).json({
       success: true,

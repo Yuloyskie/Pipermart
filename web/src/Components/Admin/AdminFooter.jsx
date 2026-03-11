@@ -13,7 +13,7 @@ const AdminFooter = () => {
   const colors = {
     primary: '#0F766E',
     primaryLight: '#14B8A6',
-    secondary: '#FFFFFF',
+    secondary: '#FFDBAC',
     background: '#F8FAFC',
     text: '#0F172A',
     textLight: '#475569',

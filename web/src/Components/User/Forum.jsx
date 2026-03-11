@@ -17,6 +17,28 @@ const CATEGORIES = [
   { name: 'Success Stories', icon: '🏆' }
 ];
 
+// Helper function to determine if user is online based on lastOnline
+const getOnlineStatus = (lastOnline) => {
+  if (!lastOnline) return { isOnline: false, text: 'Offline' };
+  
+  const lastOnlineDate = new Date(lastOnline);
+  const now = new Date();
+  const diffMinutes = (now - lastOnlineDate) / (1000 * 60);
+  
+  // User is online if they were active in the last 5 minutes
+  const isOnline = diffMinutes < 5;
+  
+  if (isOnline) {
+    return { isOnline: true, text: 'Active' };
+  } else if (diffMinutes < 60) {
+    return { isOnline: false, text: `${Math.floor(diffMinutes)}m ago` };
+  } else if (diffMinutes < 1440) {
+    return { isOnline: false, text: `${Math.floor(diffMinutes / 60)}h ago` };
+  } else {
+    return { isOnline: false, text: `${Math.floor(diffMinutes / 1440)}d ago` };
+  }
+};
+
 export default function Forum() {
   const [threads, setThreads] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -40,7 +62,16 @@ export default function Forum() {
   const [pendingRequests, setPendingRequests] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeSearch, setActiveSearch] = useState(false);
-  const [isDarkTheme, setIsDarkTheme] = useState(false);
+  const [isDarkTheme, setIsDarkTheme] = useState(() => {
+    // Read dark mode preference from localStorage on initial load
+    const savedTheme = localStorage.getItem('forumDarkTheme');
+    return savedTheme === 'true';
+  });
+
+  // Save dark mode preference to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('forumDarkTheme', isDarkTheme.toString());
+  }, [isDarkTheme]);
 
   // Create Post popup state
   const [showCreatePostModal, setShowCreatePostModal] = useState(false);
@@ -895,7 +926,14 @@ export default function Forum() {
                       </div>
                       <div className="friend-info">
                         <p className="friend-name">{friend.name}</p>
-                        <p className="friend-status">{friend.status || 'Online'}</p>
+                        {(() => {
+                          const status = getOnlineStatus(friend.lastOnline);
+                          return (
+                            <p className={`friend-status ${status.isOnline ? 'status-active' : 'status-offline'}`}>
+                              {status.isOnline ? '🟢 Active' : `⚫ ${status.text}`}
+                            </p>
+                          );
+                        })()}
                       </div>
                     </div>
                   ))}

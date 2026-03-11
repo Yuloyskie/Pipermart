@@ -44,7 +44,7 @@ const AdminProfile = () => {
 
   const colors = {
     background: '#F8FAFC',
-    card: '#FFFFFF',
+    card: '#FFDBAC',
     text: '#0F172A',
     textLight: '#475569',
     border: '#E2E8F0',
@@ -60,9 +60,9 @@ const AdminProfile = () => {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: colors.background }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundImage: 'linear-gradient(135deg, rgba(13, 74, 47, 0.7), rgba(139, 111, 71, 0.6)), url(/media/BGadmin.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
       <AdminHeader />
-      <main style={{ flex: 1, padding: '32px 20px' }}>
+      <main style={{ flex: 1, padding: '32px 20px', overflowY: 'auto', height: 'calc(100vh - 80px)' }}>
         <div style={{ maxWidth: '760px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', padding: '28px', border: `1px solid ${colors.border}`, borderRadius: '16px', background: colors.card, boxShadow: '0 10px 24px rgba(15, 23, 42, 0.08)' }}>
         {/* Avatar */}

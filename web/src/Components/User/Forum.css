@@ -104,7 +104,7 @@
 }
 
 .category-item:hover { background: #f0f2f5; color: #22c55e; }
-.category-item.active { background: #e8f5e9; color: #22c55e; font-weight: 600; }
+.category-item.active { background: #e8f5e9; color: #000; font-weight: 600; }
 
 .drafts-section { margin-top: 20px; padding-top: 16px; border-top: 1px solid #e5e5e5; }
 .drafts-link { display: block; padding: 10px 12px; background: #fff3cd; color: #856404; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; text-align: center; }
@@ -305,7 +305,7 @@
 .filter-buttons { display: flex; flex-direction: column; gap: 6px; }
 .filter-btn { padding: 8px 12px; background: none; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; color: #65676b; cursor: pointer; text-align: left; }
 .filter-btn:hover { background: #f0f2f5; }
-.filter-btn.active { background: #e8f5e9; color: #22c55e; font-weight: 600; }
+.filter-btn.active { background: rgba(34, 197, 94, 0.15); color: #000; font-weight: 600; }
 
 /* Search Section */
 .search-section {
@@ -332,7 +332,7 @@
 
 .search-input:focus {
   border-color: #22c55e;
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
 }
 
 .search-input::placeholder {
@@ -382,7 +382,7 @@
 .forum-tabs { display: flex; flex-direction: column; gap: 4px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #e5e5e5; }
 .tab-btn { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: none; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; color: #65676b; cursor: pointer; text-align: left; }
 .tab-btn:hover { background: #f0f2f5; }
-.tab-btn.active { background: #e8f5e9; color: #22c55e; font-weight: 600; }
+.tab-btn.active { background: #e8f5e9; color: #000; font-weight: 600; }
 
 /* ============ THREAD CARD ============ */
 .thread-card { background: var(--forum-surface); border-radius: 8px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); overflow: hidden; }
@@ -396,7 +396,7 @@
 .author-name-fb { font-size: 15px; font-weight: 600; color: #050505; margin: 0; }
 .post-meta { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
 .post-time { font-size: 13px; color: #65676b; }
-.category-badge-inline { font-size: 12px; padding: 2px 8px; background: #e8f5e9; color: #22c55e; border-radius: 4px; }
+.category-badge-inline { font-size: 12px; padding: 2px 8px; background: #e8f5e9; color: #000; border-radius: 4px; }
 
 .post-content-wrapper { margin-bottom: 12px; }
 .post-title-link { text-decoration: none; color: inherit; }
@@ -416,7 +416,7 @@
 /* Post Actions */
 .post-actions-fb { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
 .post-action-link { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: none; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; color: #65676b; cursor: pointer; transition: all 0.2s; text-decoration: none; }
-.post-action-link:hover { background: #f0f2f5; color: #22c55e; }
+.post-action-link:hover { background: #f0f2f5; color: #000; }
 
 /* ============ MESSAGES ============ */
 .no-threads-message { text-align: center; padding: 60px 20px; background: var(--forum-surface); border-radius: 8px; }
@@ -627,7 +627,7 @@
 .author-info { flex: 1; }
 .author-name { font-size: 17px; font-weight: 600; color: #050505; margin: 0; }
 .thread-meta { font-size: 14px; color: #65676b; margin: 4px 0 0; }
-.category-badge-detail { display: inline-block; padding: 3px 10px; background: #e8f5e9; color: #22c55e; border-radius: 4px; font-size: 12px; font-weight: 600; }
+.category-badge-detail { display: inline-block; padding: 3px 10px; background: #e8f5e9; color: #000; border-radius: 4px; font-size: 12px; font-weight: 600; }
 
 .thread-detail-content { padding: 20px 24px; }
 .thread-detail-title { font-size: 26px; font-weight: 700; color: #050505; margin: 0 0 16px; line-height: 1.3; }
@@ -640,7 +640,7 @@
 .thread-detail-actions .stats { display: flex; gap: 20px; margin-bottom: 12px; font-size: 14px; color: #65676b; }
 .thread-detail-actions .actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .action-btn { padding: 10px 16px; background: white; border: 1px solid #e5e5e5; border-radius: 8px; font-size: 14px; font-weight: 500; color: #444; cursor: pointer; transition: all 0.2s; }
-.action-btn:hover { background: #f5f5f5; border-color: #22c55e; color: #22c55e; }
+.action-btn:hover { background: #f5f5f5; border-color: #22c55e; color: #000; }
 
 .thread-divider { max-width: 900px; margin: 0 auto 30px; height: 1px; background: #e5e5e5; }
 .replies-section { max-width: 900px; margin: 0 auto 40px; }
@@ -659,7 +659,7 @@
 .reply-content p { font-size: 15px; color: #1c1e21; line-height: 1.6; margin: 0; white-space: pre-wrap; }
 .reply-actions { display: flex; gap: 12px; padding-top: 12px; border-top: 1px solid #f0f0f0; }
 .reply-action { padding: 8px 14px; background: none; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; color: #65676b; cursor: pointer; transition: all 0.2s; }
-.reply-action:hover { background: #f0f2f5; color: #22c55e; }
+.reply-action:hover { background: #f0f2f5; color: #000; }
 
 .reply-input-section { 
   max-width: 900px; 
@@ -687,12 +687,12 @@
 }
 .reply-user-info p { font-size: 15px; font-weight: 600; color: #050505; margin: 0; }
 .reply-textarea { width: 100%; padding: 14px 16px; border: 2px solid #e5e5e5; border-radius: 10px; font-size: 15px; font-family: inherit; resize: vertical; min-height: 120px; transition: border-color 0.2s; box-sizing: border-box; }
-.reply-textarea:focus { outline: none; border-color: #22c55e; }
+.reply-textarea:focus { outline: none; border-color: #22c55e; box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15); }
 .reply-form-actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .image-upload-btn { padding: 10px 18px; background: #f5f5f5; border: 1px solid #e5e5e5; border-radius: 8px; font-size: 14px; font-weight: 500; color: #444; cursor: pointer; transition: all 0.2s; }
-.image-upload-btn:hover { background: #f0f0f0; border-color: #22c55e; color: #22c55e; }
+.image-upload-btn:hover { background: #f0fdf4; border-color: #22c55e; color: #000; font-weight: 600; }
 .btn-post-reply { padding: 12px 24px; background: linear-gradient(135deg, #22c55e, #16a34a); border: none; border-radius: 8px; font-size: 15px; font-weight: 600; color: white; cursor: pointer; transition: all 0.2s; }
-.btn-post-reply:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4); }
+.btn-post-reply:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3); background: linear-gradient(135deg, #16a34a, #15803d); }
 .btn-post-reply:disabled { opacity: 0.6; cursor: not-allowed; }
 
 @media (max-width: 768px) { .thread-view-container { padding: 80px 12px 20px; } .thread-detail-header { padding: 16px 16px 0; } .thread-detail-content { padding: 16px; } .thread-detail-title { font-size: 22px; } .thread-detail-actions { padding: 12px 16px; } .thread-detail-actions .actions { flex-direction: column; } .action-btn { width: 100%; text-align: center; } .reply-card { padding: 16px; } .reply-input-section { padding: 16px; } .reply-form-actions { flex-direction: column; align-items: stretch; } .btn-post-reply { width: 100%; text-align: center; } }
@@ -717,6 +717,8 @@
 .friend-info { flex: 1; min-width: 0; }
 .friend-name { font-size: 14px; font-weight: 600; color: #050505; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .friend-status { font-size: 12px; color: #65676b; margin: 2px 0 0; }
+.friend-status.status-active { color: #22c55e; font-weight: 600; }
+.friend-status.status-offline { color: #999; font-weight: 500; }
 .friends-loading { text-align: center; padding: 20px; color: #65676b; font-size: 14px; }
 .no-friends-message { text-align: center; padding: 20px; }
 .no-friends-message p { font-size: 14px; font-weight: 600; color: #050505; margin: 0 0 4px; }
@@ -727,10 +729,10 @@
 .suggestions-section::-webkit-scrollbar { width: 6px; }
 .suggestions-section::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
 .suggestions-section::-webkit-scrollbar-thumb { background: #22c55e; border-radius: 3px; }
-.suggestions-section::-webkit-scrollbar-thumb:hover { background: #16a34a; }
+.suggestions-section::-webkit-scrollbar-thumb:hover { background: #7CB342; }
 .suggestion-item { display: flex; align-items: center; gap: 8px; }
 .suggestion-item .friend-item { flex: 1; }
-.add-friend-btn { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #22c55e, #16a34a); border: none; color: white; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+.add-friend-btn { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #22c55e, #16a34a); border: none; color: white; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
 .add-friend-btn:hover { transform: scale(1.1); box-shadow: 0 2px 8px rgba(34, 197, 94, 0.4); }
 .cancel-friend-btn { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #dc2626, #b91c1c); border: none; color: white; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
 .cancel-friend-btn:hover { transform: scale(1.1); box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4); }
@@ -796,7 +798,7 @@
   outline: none;
   border-color: #22c55e;
   background: white;
-  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
 }
 
 .create-post-modal .form-textarea {
@@ -1085,8 +1087,8 @@
 }
 
 .forum-container.dark-theme .category-badge-inline {
-  background: rgba(34, 197, 94, 0.15);
-  color: #22c55e;
+  background: rgba(240, 248, 71, 0.15);
+  color: #B3E5FC;
 }
 
 .forum-container.dark-theme .post-stats-fb {
@@ -1101,6 +1103,7 @@
 .forum-container.dark-theme .post-action-link:hover {
   background: rgba(34, 197, 94, 0.1);
   color: #22c55e;
+  font-weight: 600;
 }
 
 /* Dark theme - Friends/Suggestions List */
@@ -1114,6 +1117,18 @@
 
 .forum-container.dark-theme .friend-status {
   color: #909090;
+}
+
+.forum-container.dark-theme .friend-status.status-active {
+  color: #22c55e;
+}
+
+.forum-container.dark-theme .friend-status.status-offline {
+  color: #909090;
+}
+
+.forum-container.dark-theme .friend-status.status-offline {
+  color: #666;
 }
 
 .forum-container.dark-theme .no-friends-message {
@@ -1153,5 +1168,153 @@
 .forum-container.dark-theme .forum-tabs,
 .forum-container.dark-theme .settings-section {
   border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ============ THREAD VIEW DARK THEME ============ */
+.thread-view-container.dark-theme {
+  --forum-surface: rgba(30, 30, 35, 0.95);
+  --forum-surface-soft: rgba(40, 40, 45, 0.9);
+}
+
+/* Dark theme - Thread Detail Card */
+.thread-view-container.dark-theme .thread-detail-card {
+  background: var(--forum-surface);
+  color: #e5e5e5;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.thread-view-container.dark-theme .author-name {
+  color: #f0f0f0;
+}
+
+.thread-view-container.dark-theme .thread-meta {
+  color: #909090;
+}
+
+.thread-view-container.dark-theme .category-badge-detail {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.thread-view-container.dark-theme .thread-detail-title {
+  color: #f0f0f0;
+}
+
+.thread-view-container.dark-theme .thread-detail-description {
+  color: #d0d0d0;
+}
+
+.thread-view-container.dark-theme .thread-detail-actions {
+  background: rgba(255, 255, 255, 0.05);
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.thread-view-container.dark-theme .thread-detail-actions .stats {
+  color: #909090;
+}
+
+.thread-view-container.dark-theme .action-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #b0b0b0;
+}
+
+.thread-view-container.dark-theme .action-btn:hover {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: #22c55e;
+  color: #22c55e;
+}
+
+/* Dark theme - Thread Divider */
+.thread-view-container.dark-theme .thread-divider {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Dark theme - Replies Section */
+.thread-view-container.dark-theme .replies-section h2 {
+  color: #f0f0f0;
+}
+
+.thread-view-container.dark-theme .no-replies {
+  background: var(--forum-surface);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #b0b0b0;
+}
+
+/* Dark theme - Reply Card */
+.thread-view-container.dark-theme .reply-card {
+  background: var(--forum-surface);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.thread-view-container.dark-theme .reply-author-name {
+  color: #f0f0f0;
+}
+
+.thread-view-container.dark-theme .reply-time {
+  color: #909090;
+}
+
+.thread-view-container.dark-theme .reply-content p {
+  color: #d0d0d0;
+}
+
+.thread-view-container.dark-theme .reply-action {
+  color: #b0b0b0;
+}
+
+.thread-view-container.dark-theme .reply-action:hover {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+}
+
+/* Dark theme - Reply Input Section */
+.thread-view-container.dark-theme .reply-input-section {
+  background: var(--forum-surface);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.thread-view-container.dark-theme .reply-input-section h3 {
+  color: #f0f0f0;
+}
+
+.thread-view-container.dark-theme .reply-user-info p {
+  color: #f0f0f0;
+}
+
+.thread-view-container.dark-theme .reply-textarea {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e5e5e5;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.thread-view-container.dark-theme .reply-textarea:focus {
+  border-color: #22c55e;
+}
+
+.thread-view-container.dark-theme .reply-textarea::placeholder {
+  color: #808080;
+}
+
+.thread-view-container.dark-theme .image-upload-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #b0b0b0;
+}
+
+.thread-view-container.dark-theme .image-upload-btn:hover {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: #22c55e;
+  color: #22c55e;
+}
+
+/* Dark theme - Loading State */
+.thread-view-container.dark-theme.loading {
+  color: #b0b0b0;
+}
+
+/* Dark theme - Not Found */
+.thread-view-container.dark-theme:only-child {
+  color: #b0b0b0;
 }
 

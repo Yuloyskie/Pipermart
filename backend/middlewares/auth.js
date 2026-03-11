@@ -16,6 +16,13 @@ exports.isAuthenticatedUser = async (req, res, next) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         console.log('✅ Token verified for user:', decoded.id);
         req.user = await User.findById(decoded.id);
+        
+        // Update lastOnline timestamp
+        if (req.user) {
+            req.user.lastOnline = new Date();
+            await req.user.save({ validateBeforeSave: false });
+        }
+        
         next();
     } catch (error) {
         console.log('❌ Token verification failed:', error.message);

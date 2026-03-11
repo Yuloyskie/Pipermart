@@ -2,9 +2,9 @@
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: linear-gradient(135deg, #0b1220 0%, #111827 60%, #1f2937 100%);
-  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
-  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.45);
+  background: linear-gradient(135deg, #0f3d2e 0%, #1a5f52 100%);
+  border-bottom: 1px solid rgba(15, 180, 130, 0.3);
+  box-shadow: 0 10px 30px rgba(15, 180, 130, 0.2);
 }
 
 .admin-header-inner {

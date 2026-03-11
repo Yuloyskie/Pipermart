@@ -123,7 +123,7 @@ exports.getBungaAnalysisReports = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: '✅ Bunga Analysis Reports retrieved successfully',
+      message: 'Bunga Analysis Reports retrieved successfully',
       pagination: {
         currentPage: pageNumber,
         pageSize: pageSize,
@@ -134,10 +134,10 @@ exports.getBungaAnalysisReports = async (req, res) => {
       data: data
     });
   } catch (error) {
-    console.error('❌ Error fetching Bunga Analysis reports:', error.message);
+    console.error('Error fetching Bunga Analysis reports:', error.message);
     res.status(500).json({
       success: false,
-      message: '❌ Failed to fetch Bunga Analysis reports',
+      message: 'Failed to fetch Bunga Analysis reports',
       error: error.message
     });
   }
@@ -247,7 +247,7 @@ exports.getLeafAnalysisReports = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: '✅ Leaf Analysis Reports retrieved successfully',
+      message: 'Leaf Analysis Reports retrieved successfully',
       pagination: {
         currentPage: pageNumber,
         pageSize: pageSize,
@@ -258,10 +258,10 @@ exports.getLeafAnalysisReports = async (req, res) => {
       data: data
     });
   } catch (error) {
-    console.error('❌ Error fetching Leaf Analysis reports:', error.message);
+    console.error('Error fetching Leaf Analysis reports:', error.message);
     res.status(500).json({
       success: false,
-      message: '❌ Failed to fetch Leaf Analysis reports',
+      message: 'Failed to fetch Leaf Analysis reports',
       error: error.message
     });
   }
@@ -312,7 +312,7 @@ exports.getDashboardStats = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: '✅ Dashboard statistics retrieved successfully',
+      message: 'Dashboard statistics retrieved successfully',
       overview: {
         totalAnalyses: totalBungaAnalyses + totalLeafAnalyses,
         totalBungaAnalyses,
@@ -346,10 +346,10 @@ exports.getDashboardStats = async (req, res) => {
       }))
     });
   } catch (error) {
-    console.error('❌ Error fetching dashboard stats:', error.message);
+    console.error('Error fetching dashboard stats:', error.message);
     res.status(500).json({
       success: false,
-      message: '❌ Failed to fetch dashboard statistics',
+      message: 'Failed to fetch dashboard statistics',
       error: error.message
     });
   }
@@ -400,7 +400,7 @@ exports.filterBungaAnalyses = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: '✅ Filtered Bunga Analysis retrieved successfully',
+      message: 'Filtered Bunga Analysis retrieved successfully',
       pagination: {
         currentPage: pageNumber,
         pageSize: pageSize,
@@ -410,10 +410,10 @@ exports.filterBungaAnalyses = async (req, res) => {
       data: data
     });
   } catch (error) {
-    console.error('❌ Error filtering Bunga Analysis:', error.message);
+    console.error('Error filtering Bunga Analysis:', error.message);
     res.status(500).json({
       success: false,
-      message: '❌ Failed to filter Bunga Analysis',
+      message: 'Failed to filter Bunga Analysis',
       error: error.message
     });
   }
@@ -464,7 +464,7 @@ exports.filterLeafAnalyses = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: '✅ Filtered Leaf Analysis retrieved successfully',
+      message: 'Filtered Leaf Analysis retrieved successfully',
       pagination: {
         currentPage: pageNumber,
         pageSize: pageSize,
@@ -474,11 +474,253 @@ exports.filterLeafAnalyses = async (req, res) => {
       data: data
     });
   } catch (error) {
-    console.error('❌ Error filtering Leaf Analysis:', error.message);
+    console.error('Error filtering Leaf Analysis:', error.message);
     res.status(500).json({
       success: false,
-      message: '❌ Failed to filter Leaf Analysis',
+      message: 'Failed to filter Leaf Analysis',
       error: error.message
     });
   }
 };
+
+// ==================== PDF EXPORT ====================
+
+/**
+ * Export analytics data as PDF
+ * Supports: bunga, leaf, all analyses, or activities
+ */
+exports.exportAnalyticsPDF = async (req, res) => {
+  try {
+    const { format = 'simple', dataType = 'all', filters = {} } = req.body;
+    const PdfGenerator = require('../utils/PdfGenerator');
+
+    // Validate inputs
+    if (!['simple', 'full'].includes(format)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid format. Use "simple" or "full".'
+      });
+    }
+
+    if (!['bunga', 'leaf', 'all', 'activities'].includes(dataType)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid dataType. Use "bunga", "leaf", "all", or "activities".'
+      });
+    }
+
+    let data = [];
+    let stats = {};
+
+    // Fetch data based on type
+    if (dataType === 'bunga' || dataType === 'all') {
+      const bungaData = await fetchBungaData(filters);
+      data.push(...bungaData.records);
+      stats.bungaAnalyses = bungaData.stats;
+    }
+
+    if (dataType === 'leaf' || dataType === 'all') {
+      const leafData = await fetchLeafData(filters);
+      data.push(...leafData.records);
+      stats.leafAnalyses = leafData.stats;
+    }
+
+    if (dataType === 'activities') {
+      data = await fetchActivities(filters);
+    }
+
+    // Generate PDF
+    const pdfBuffer = await PdfGenerator.generateAnalyticsPDF(data, {
+      format,
+      title: `${dataType.charAt(0).toUpperCase() + dataType.slice(1)} Analytics Report`,
+      stats
+    });
+
+    // Send PDF response
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="analytics-${dataType}-${Date.now()}.pdf"`);
+    res.setHeader('Content-Length', pdfBuffer.length);
+    res.send(pdfBuffer);
+
+  } catch (error) {
+    console.error('PDF export error:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to export PDF',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * Helper: Fetch Bunga Analysis data with filters
+ */
+async function fetchBungaData(filters) {
+  try {
+    const filter = {};
+
+    if (filters.ripeness) filter['results.ripeness'] = filters.ripeness;
+    if (filters.market_grade) filter['results.market_grade'] = filters.market_grade;
+    if (filters.health_class) filter['results.health_class'] = filters.health_class;
+
+    if (filters.minConfidence || filters.maxConfidence) {
+      filter['results.confidence'] = {};
+      if (filters.minConfidence) filter['results.confidence'].$gte = parseInt(filters.minConfidence);
+      if (filters.maxConfidence) filter['results.confidence'].$lte = parseInt(filters.maxConfidence);
+    }
+
+    if (filters.startDate || filters.endDate) {
+      filter.createdAt = {};
+      if (filters.startDate) filter.createdAt.$gte = new Date(filters.startDate);
+      if (filters.endDate) filter.createdAt.$lte = new Date(filters.endDate);
+    }
+
+    const analyses = await BungaAnalysis.find(filter)
+      .populate('user', 'name email')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // Calculate stats
+    let ripeCount = 0, unripeCount = 0, rottenCount = 0;
+    let confidenceSum = 0;
+
+    analyses.forEach(a => {
+      if (a.results.ripeness === 'Ripe') ripeCount++;
+      else if (a.results.ripeness === 'Unripe') unripeCount++;
+      else if (a.results.ripeness === 'Rotten') rottenCount++;
+      confidenceSum += parseFloat(a.results.confidence) || 0;
+    });
+
+    const records = analyses.map(a => ({
+      _id: a._id,
+      userName: a.user?.name || 'Unknown',
+      userEmail: a.user?.email,
+      results: a.results,
+      processingTime: a.processingTime,
+      createdAt: a.createdAt
+    }));
+
+    return {
+      records,
+      stats: {
+        total: analyses.length,
+        avgConfidence: analyses.length > 0 ? (confidenceSum / analyses.length).toFixed(2) : 0,
+        ripe: ripeCount,
+        unripe: unripeCount,
+        rotten: rottenCount
+      }
+    };
+  } catch (error) {
+    console.error('Error fetching bunga data:', error);
+    return { records: [], stats: {} };
+  }
+}
+
+/**
+ * Helper: Fetch Leaf Analysis data with filters
+ */
+async function fetchLeafData(filters) {
+  try {
+    const filter = {};
+
+    if (filters.disease) filter['results.disease'] = filters.disease;
+
+    if (filters.minConfidence || filters.maxConfidence) {
+      filter['results.confidence'] = {};
+      if (filters.minConfidence) filter['results.confidence'].$gte = parseInt(filters.minConfidence);
+      if (filters.maxConfidence) filter['results.confidence'].$lte = parseInt(filters.maxConfidence);
+    }
+
+    if (filters.startDate || filters.endDate) {
+      filter.createdAt = {};
+      if (filters.startDate) filter.createdAt.$gte = new Date(filters.startDate);
+      if (filters.endDate) filter.createdAt.$lte = new Date(filters.endDate);
+    }
+
+    const analyses = await LeafAnalysis.find(filter)
+      .populate('user', 'name email')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    let confidenceSum = 0;
+    let totalDetections = 0;
+
+    analyses.forEach(a => {
+      confidenceSum += parseFloat(a.results.confidence) || 0;
+      totalDetections += (a.results.detections?.length || 0);
+    });
+
+    const records = analyses.map(a => ({
+      _id: a._id,
+      userName: a.user?.name || 'Unknown',
+      userEmail: a.user?.email,
+      results: a.results,
+      processingTime: a.processingTime,
+      createdAt: a.createdAt
+    }));
+
+    return {
+      records,
+      stats: {
+        total: analyses.length,
+        avgConfidence: analyses.length > 0 ? (confidenceSum / analyses.length).toFixed(2) : 0,
+        totalDetections: totalDetections,
+        avgDetectionsPerAnalysis: analyses.length > 0 ? (totalDetections / analyses.length).toFixed(2) : 0
+      }
+    };
+  } catch (error) {
+    console.error('Error fetching leaf data:', error);
+    return { records: [], stats: {} };
+  }
+}
+
+/**
+ * Helper: Fetch activity data
+ */
+async function fetchActivities(filters) {
+  try {
+    const recentUsers = await User.find()
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .select('name email avatar createdAt')
+      .lean();
+
+    const recentBunga = await BungaAnalysis.find()
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .select('userName results createdAt')
+      .lean();
+
+    const recentLeaf = await LeafAnalysis.find()
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .select('userName results createdAt')
+      .lean();
+
+    const activities = [
+      ...recentUsers.map(u => ({
+        type: 'User Registration',
+        userName: u.name,
+        description: u.email,
+        timestamp: u.createdAt
+      })),
+      ...recentBunga.map(b => ({
+        type: 'Bunga Analysis',
+        userName: b.userName,
+        description: `Ripeness: ${b.results?.ripeness || 'N/A'}`,
+        timestamp: b.createdAt
+      })),
+      ...recentLeaf.map(l => ({
+        type: 'Leaf Analysis',
+        userName: l.userName,
+        description: `Disease: ${l.results?.disease || 'N/A'}`,
+        timestamp: l.createdAt
+      }))
+    ];
+
+    return activities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  } catch (error) {
+    console.error('Error fetching activities:', error);
+    return [];
+  }
+}

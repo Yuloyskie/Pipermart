@@ -26,7 +26,7 @@ const AdminEditProfile = () => {
 
   const colors = {
     background: '#F8FAFC',
-    card: '#FFFFFF',
+    card: '#FFDBAC',
     text: '#0F172A',
     border: '#E2E8F0',
     primary: '#0F766E',
@@ -129,9 +129,9 @@ const AdminEditProfile = () => {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: colors.background }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundImage: 'linear-gradient(135deg, rgba(13, 74, 47, 0.7), rgba(139, 111, 71, 0.6)), url(/media/BGadmin.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
       <AdminHeader />
-      <main style={{ flex: 1, padding: '32px 20px' }}>
+      <main style={{ flex: 1, padding: '32px 20px', overflowY: 'auto', height: 'calc(100vh - 80px)' }}>
         <div style={{ width: '100%', maxWidth: '760px', margin: '0 auto', textAlign: 'center', background: colors.card, border: `1px solid ${colors.border}`, borderRadius: '16px', padding: '28px', boxShadow: '0 10px 24px rgba(15, 23, 42, 0.08)' }}>
           <h2 style={{ color: colors.text, marginBottom: '8px' }}>Edit Admin Profile</h2>
           <Link to="/admin/profile" style={{ color: colors.primary, fontWeight: 600 }}>Back to Profile</Link>
