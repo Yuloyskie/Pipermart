@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { MdList, MdSchedule, MdSearch, MdComment, MdPerson } from 'react-icons/md';
-import AdminHeader from './AdminHeader';
+import { MdList, MdSchedule, MdSearch, MdComment, MdPerson, MdCheckCircle, MdDelete, MdEdit, MdLabel, MdVisibility, MdArticle, MdClear, MdBuild, MdBarChart } from 'react-icons/md';
+import AdminSidebar from './AdminSidebar';
 import AdminFooter from './AdminFooter';
 
 const PostReported = () => {
@@ -11,7 +11,13 @@ const PostReported = () => {
 
   // State management
   const [reportedPosts, setReportedPosts] = useState([]);
-  const [stats, setStats] = useState(null);
+  const [stats, setStats] = useState({
+    total: 0,
+    pending: 0,
+    reviewed: 0,
+    dismissed: 0,
+    actionTaken: 0
+  });
   const [selectedReport, setSelectedReport] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -25,19 +31,19 @@ const PostReported = () => {
 
   // Color scheme
   const colors = {
-    primary: '#0F766E',
-    primaryLight: '#14B8A6',
-    secondary: '#FFDBAC',
+    primary: '#38D9A8',
+    primaryLight: '#51CF66',
+    secondary: '#a8d5ba',
     background: '#F8FAFC',
     backgroundHover: '#EEF2FF',
-    text: '#0F172A',
-    textLight: '#475569',
-    border: '#E2E8F0',
-    accent: '#4F46E5',
-    danger: '#DC2626',
-    success: '#059669',
-    warning: '#D97706',
-    info: '#0284C7'
+    text: '#FFFFFF',
+    textLight: '#E0E8F0',
+    border: '#2a8566',
+    accent: '#FFD700',
+    danger: '#FF6B6B',
+    success: '#51CF66',
+    warning: '#FFD43B',
+    info: '#74C0FC'
   };
 
   // Check authentication
@@ -255,14 +261,12 @@ const PostReported = () => {
         {label}
       </div>
       <div style={{
-        background: `linear-gradient(135deg, ${color}, ${color}dd)`,
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
+        color: color,
         fontSize: '36px',
         fontWeight: 'bold',
         marginTop: '8px'
       }}>
-        {value}
+        {value ?? 0}
       </div>
     </div>
   );
@@ -278,19 +282,19 @@ const PostReported = () => {
       reviewed: {
         bgColor: 'linear-gradient(135deg, #D1ECF1, #B3E5FC)',
         textColor: '#0C5460',
-        icon: '👀',
+        icon: <MdVisibility size={16} />,
         label: 'Reviewed'
       },
       dismissed: {
         bgColor: 'linear-gradient(135deg, #D4EDDA, #C8E6C9)',
         textColor: '#155724',
-        icon: '✅',
+        icon: <MdCheckCircle size={16} />,
         label: 'Dismissed'
       },
       'action-taken': {
         bgColor: 'linear-gradient(135deg, #F8D7DA, #FFCDD2)',
         textColor: '#721C24',
-        icon: '🗑️',
+        icon: <MdDelete size={16} />,
         label: 'Action Taken'
       }
     };
@@ -319,13 +323,14 @@ const PostReported = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundImage: 'linear-gradient(135deg, rgba(13, 74, 47, 0.7), rgba(139, 111, 71, 0.6)), url(/media/BGadmin.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
-      <AdminHeader />
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#1a5f52' }}>
+      <AdminSidebar />
       <main style={{
       flex: 1,
       padding: '32px 20px',
       overflowY: 'auto',
-      height: 'calc(100vh - 80px)'
+      height: '100vh',
+      marginLeft: '280px'
     }}>
       <style>{`
         @keyframes slideInDown {
@@ -437,7 +442,7 @@ const PostReported = () => {
             borderLeft: `4px solid ${colors.secondary}`,
             fontWeight: '500'
           }}>
-            <span style={{ fontSize: '20px' }}>✅</span>
+            <span style={{ fontSize: '20px' }}><MdCheckCircle size={24} color={colors.success} /></span>
             <span>{successMessage}</span>
           </div>
         )}
@@ -458,39 +463,37 @@ const PostReported = () => {
             borderLeft: `4px solid ${colors.secondary}`,
             fontWeight: '500'
           }}>
-            <span style={{ fontSize: '20px' }}>❌</span>
+            <span style={{ fontSize: '20px' }}><MdClear size={24} color={colors.danger} /></span>
             <span>{error}</span>
           </div>
         )}
 
         {/* Statistics */}
-        {stats && (
-          <div style={{ animation: 'fadeIn 0.6s ease' }}>
-            <h2 style={{
-              color: colors.text,
-              fontSize: '22px',
-              fontWeight: 'bold',
-              marginBottom: '20px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px'
-            }}>
-              <span>📊 Overview</span>
-            </h2>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-              gap: '20px',
-              marginBottom: '40px'
-            }}>
-              <StatCard label="Total Reports" value={stats.total} icon="📋" color={colors.primary} />
-              <StatCard label="Pending Review" value={stats.pending} icon="⏳" color={colors.warning} />
-              <StatCard label="Reviewed" value={stats.reviewed} icon="👀" color={colors.info} />
-              <StatCard label="Dismissed" value={stats.dismissed} icon="✅" color={colors.success} />
-              <StatCard label="Action Taken" value={stats.actionTaken} icon="🗑️" color={colors.danger} />
-            </div>
+        <div style={{ animation: 'fadeIn 0.6s ease' }}>
+          <h2 style={{
+            color: colors.text,
+            fontSize: '22px',
+            fontWeight: 'bold',
+            marginBottom: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px'
+          }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><MdBarChart /> Overview</span>
+          </h2>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: '20px',
+            marginBottom: '40px'
+          }}>
+            <StatCard label="Total Reports" value={stats?.total || 0} icon={<MdArticle size={20} />} color={colors.primary} />
+            <StatCard label="Pending Review" value={stats?.pending || 0} icon={<MdSchedule size={20} />} color={colors.warning} />
+            <StatCard label="Reviewed" value={stats?.reviewed || 0} icon={<MdVisibility size={20} />} color={colors.info} />
+            <StatCard label="Dismissed" value={stats?.dismissed || 0} icon={<MdCheckCircle size={20} />} color={colors.success} />
+            <StatCard label="Action Taken" value={stats?.actionTaken || 0} icon={<MdDelete size={20} />} color={colors.danger} />
           </div>
-        )}
+        </div>
 
         {/* Filter Section */}
         <div style={{
@@ -542,11 +545,11 @@ const PostReported = () => {
               e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)';
             }}
           >
-            <option value="all">📋 All Reports</option>
-            <option value="pending">⏳ Pending Review</option>
-            <option value="reviewed">👀 Reviewed</option>
-            <option value="dismissed">✅ Dismissed</option>
-            <option value="action-taken">🗑️ Action Taken</option>
+            <option value="all"><MdArticle size={16} style={{ display: 'inline', marginRight: '4px' }} /> All Reports</option>
+            <option value="pending"><MdSchedule size={16} style={{ display: 'inline', marginRight: '4px' }} /> Pending Review</option>
+            <option value="reviewed"><MdVisibility size={16} style={{ display: 'inline', marginRight: '4px' }} /> Reviewed</option>
+            <option value="dismissed"><MdCheckCircle size={16} style={{ display: 'inline', marginRight: '4px' }} /> Dismissed</option>
+            <option value="action-taken"><MdDelete size={16} style={{ display: 'inline', marginRight: '4px' }} /> Action Taken</option>
           </select>
         </div>
 
@@ -562,7 +565,7 @@ const PostReported = () => {
               marginBottom: '20px',
               animation: 'bounce 1.5s infinite'
             }}>
-              ⏳
+              <MdSchedule size={48} color={colors.warning} />
             </div>
             <p style={{ color: colors.textLight, fontSize: '16px', fontWeight: '500' }}>
               Loading reported threads...
@@ -611,7 +614,7 @@ const PostReported = () => {
                       alignItems: 'center',
                       gap: '8px'
                     }}>
-                      <span style={{ fontSize: '18px' }}>📋</span>
+                      <MdArticle size={24} color={colors.primary} />
                       {item.post.title}
                     </h3>
                     <p style={{
@@ -622,7 +625,7 @@ const PostReported = () => {
                       alignItems: 'center',
                       gap: '6px'
                     }}>
-                      <span>✍️ By: {item.author.name}</span>
+                      <MdEdit size={16} /> By: {item.author.name}
                     </p>
                   </div>
                   <StatusBadge status={item.report.status} />
@@ -640,7 +643,7 @@ const PostReported = () => {
                   borderLeft: `4px solid ${colors.accent}`,
                   lineHeight: '1.5'
                 }}>
-                  <strong style={{ color: colors.accent }}>💬 Report Reason:</strong>
+                    <strong style={{ color: colors.accent, display: 'flex', alignItems: 'center', gap: '6px' }}><MdComment size={16} /> Report Reason:</strong>
                   <div style={{ marginTop: '8px', color: colors.text }}>{item.report.reason}</div>
                 </div>
 
@@ -660,7 +663,7 @@ const PostReported = () => {
                     alignItems: 'center',
                     gap: '6px'
                   }}>
-                    <span>🏷️</span>
+                    <MdLabel size={16} />
                     <span><strong>Category:</strong> {item.post.category}</span>
                   </div>
                   <div style={{
@@ -671,7 +674,7 @@ const PostReported = () => {
                     alignItems: 'center',
                     gap: '6px'
                   }}>
-                    <span>👤</span>
+                    <MdPerson size={16} />
                     <span><strong>Reporter:</strong> {item.reportedBy.name}</span>
                   </div>
                   <div style={{
@@ -682,7 +685,7 @@ const PostReported = () => {
                     alignItems: 'center',
                     gap: '6px'
                   }}>
-                    <span>🕐</span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><MdSchedule size={14} /> {new Date(item.report.createdAt).toLocaleDateString()}</span>
                     <span>{new Date(item.report.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
@@ -701,9 +704,9 @@ const PostReported = () => {
                     fontSize: '12px',
                     color: colors.textLight
                   }}>
-                    <span>👁️ {item.post.views || 0} views</span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><MdVisibility size={14} /> {item.post.views || 0} views</span>
                     <span>•</span>
-                    <span>💬 {item.post.repliesCount || 0} replies</span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><MdComment size={14} /> {item.post.repliesCount || 0} replies</span>
                   </div>
                   <span style={{
                     cursor: 'pointer',
@@ -849,7 +852,7 @@ const PostReported = () => {
                 animation: 'slideIn 0.5s ease 0.1s both'
               }}>
                 <h3 style={{ color: colors.text, margin: '0 0 16px 0', fontSize: '15px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span>📋</span>
+                  <MdArticle size={18} />
                   Report Information
                 </h3>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', fontSize: '13px' }}>
@@ -859,7 +862,7 @@ const PostReported = () => {
                     borderRadius: '10px',
                     border: `1px solid ${colors.accent}20`
                   }}>
-                    <span style={{ color: colors.textLight, fontWeight: '600', display: 'block', marginBottom: '6px' }}>📊 Status</span>
+                    <span style={{ color: colors.textLight, fontWeight: '600', display: 'block', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}><MdBarChart size={16} /> Status</span>
                     <div style={{ marginTop: '4px' }}>
                       <StatusBadge status={selectedReport.report.status} />
                     </div>
@@ -870,7 +873,7 @@ const PostReported = () => {
                     borderRadius: '10px',
                     border: `1px solid ${colors.accent}20`
                   }}>
-                    <span style={{ color: colors.textLight, fontWeight: '600', display: 'block', marginBottom: '6px' }}>👤 Reported By</span>
+                    <span style={{ color: colors.textLight, fontWeight: '600', display: 'block', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}><MdPerson size={16} /> Reported By</span>
                     <div style={{ marginTop: '4px', color: colors.text, fontWeight: '600' }}>
                       {selectedReport.reportedBy.name}
                     </div>
@@ -881,7 +884,7 @@ const PostReported = () => {
                     borderRadius: '10px',
                     border: `1px solid ${colors.accent}20`
                   }}>
-                    <span style={{ color: colors.textLight, fontWeight: '600', display: 'block', marginBottom: '6px' }}>📅 Report Date</span>
+                    <span style={{ color: colors.textLight, fontWeight: '600', display: 'block', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}><MdSchedule size={16} /> Report Date</span>
                     <div style={{ marginTop: '4px', color: colors.text }}>
                       {new Date(selectedReport.report.createdAt).toLocaleString()}
                     </div>
@@ -892,7 +895,7 @@ const PostReported = () => {
                     borderRadius: '10px',
                     border: `1px solid ${colors.accent}20`
                   }}>
-                    <span style={{ color: colors.textLight, fontWeight: '600', display: 'block', marginBottom: '6px' }}>🏷️ Reason</span>
+                    <span style={{ color: colors.textLight, fontWeight: '600', display: 'block', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}><MdLabel size={16} /> Reason</span>
                     <div style={{ marginTop: '4px', color: colors.text, fontWeight: '500' }}>
                       {selectedReport.report.reason}
                     </div>
@@ -940,7 +943,7 @@ const PostReported = () => {
                       backgroundColor: colors.secondary,
                       border: `1px solid ${colors.info}20`
                     }}>
-                      <span style={{ color: colors.textLight, fontWeight: '600', fontSize: '12px' }}>✍️ Author:</span>
+                      <span style={{ color: colors.textLight, fontWeight: '600', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}><MdPerson size={14} /> Author:</span>
                       <div style={{ marginTop: '6px', color: colors.text, fontWeight: '500' }}>
                         {selectedReport.author.name}
                       </div>
@@ -954,7 +957,7 @@ const PostReported = () => {
                       backgroundColor: colors.secondary,
                       border: `1px solid ${colors.info}20`
                     }}>
-                      <span style={{ color: colors.textLight, fontWeight: '600', fontSize: '12px' }}>🏷️ Category:</span>
+                      <span style={{ color: colors.textLight, fontWeight: '600', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}><MdLabel size={14} /> Category:</span>
                       <div style={{ marginTop: '6px', color: colors.text, fontWeight: '500' }}>
                         {selectedReport.post.category}
                       </div>
@@ -974,7 +977,7 @@ const PostReported = () => {
                       border: `1px solid ${colors.info}20`,
                       textAlign: 'center'
                     }}>
-                      <span style={{ color: colors.textLight }}>👁️ Views</span>
+                      <span style={{ color: colors.textLight, display: 'flex', alignItems: 'center', gap: '4px' }}><MdVisibility size={14} /> Views</span>
                       <div style={{ marginTop: '4px', color: colors.text, fontWeight: 'bold', fontSize: '14px' }}>
                         {selectedReport.post.views || 0}
                       </div>
@@ -986,7 +989,7 @@ const PostReported = () => {
                       border: `1px solid ${colors.info}20`,
                       textAlign: 'center'
                     }}>
-                      <span style={{ color: colors.textLight }}>💬 Replies</span>
+                      <span style={{ color: colors.textLight, display: 'flex', alignItems: 'center', gap: '4px' }}><MdComment size={14} /> Replies</span>
                       <div style={{ marginTop: '4px', color: colors.text, fontWeight: 'bold', fontSize: '14px' }}>
                         {selectedReport.post.repliesCount || 0}
                       </div>
@@ -1002,7 +1005,7 @@ const PostReported = () => {
                     overflowY: 'auto',
                     fontSize: '13px'
                   }}>
-                    <div style={{ color: colors.textLight, fontWeight: '600', marginBottom: '8px' }}>📄 Description:</div>
+                    <div style={{ color: colors.textLight, fontWeight: '600', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}><MdArticle size={16} /> Description:</div>
                     <p style={{ margin: 0, color: colors.text, lineHeight: '1.6', fontStyle: 'italic' }}>
                       {selectedReport.post.content || selectedReport.post.description || 'No description available'}
                     </p>
@@ -1019,7 +1022,7 @@ const PostReported = () => {
                 <textarea
                   value={adminNotes}
                   onChange={(e) => setAdminNotes(e.target.value)}
-                  placeholder="✏️ Add your notes before taking action..."
+                  placeholder="Add your notes before taking action..."
                   style={{
                     width: '100%',
                     padding: '14px',
@@ -1120,7 +1123,7 @@ const PostReported = () => {
                       }
                     }}
                   >
-                    <span>👀</span>
+                    <span><MdVisibility size={18} /></span>
                     <span>Mark Reviewed</span>
                   </button>
                 )}
@@ -1158,7 +1161,7 @@ const PostReported = () => {
                       }
                     }}
                   >
-                    <span>✅</span>
+                    <span><MdCheckCircle size={18} /></span>
                     <span>Dismiss Report</span>
                   </button>
                 )}
@@ -1196,7 +1199,7 @@ const PostReported = () => {
                       }
                     }}
                   >
-                    <span>🗑️</span>
+                    <span><MdDelete size={18} /></span>
                     <span>Delete Thread</span>
                   </button>
                 )}
@@ -1206,7 +1209,9 @@ const PostReported = () => {
         )}
       </div>
       </main>
-      <AdminFooter />
+      <div style={{ marginLeft: '280px' }}>
+        <AdminFooter />
+      </div>
     </div>
   );
 };

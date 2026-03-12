@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import AdminHeader from './AdminHeader';
 import AdminFooter from './AdminFooter';
+import LoadingScreen from './LoadingScreen';
 
 const AdminEditProfile = () => {
   const [formData, setFormData] = useState({
@@ -26,7 +27,7 @@ const AdminEditProfile = () => {
 
   const colors = {
     background: '#F8FAFC',
-    card: '#FFDBAC',
+    card: '#a8d5ba',
     text: '#0F172A',
     border: '#E2E8F0',
     primary: '#0F766E',
@@ -122,14 +123,15 @@ const AdminEditProfile = () => {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#475569' }}>
-        Loading...
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#1a5f52' }}>
+        <AdminHeader />
+        <LoadingScreen message="Loading Profile" subtitle="Preparing edit form..." />
       </div>
     );
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundImage: 'linear-gradient(135deg, rgba(13, 74, 47, 0.7), rgba(139, 111, 71, 0.6)), url(/media/BGadmin.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#1a5f52' }}>
       <AdminHeader />
       <main style={{ flex: 1, padding: '32px 20px', overflowY: 'auto', height: 'calc(100vh - 80px)' }}>
         <div style={{ width: '100%', maxWidth: '760px', margin: '0 auto', textAlign: 'center', background: colors.card, border: `1px solid ${colors.border}`, borderRadius: '16px', padding: '28px', boxShadow: '0 10px 24px rgba(15, 23, 42, 0.08)' }}>

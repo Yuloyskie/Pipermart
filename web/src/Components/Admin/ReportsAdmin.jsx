@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
   PieChart, Pie, BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  Tooltip, Legend, ResponsiveContainer, Cell
+  Tooltip, Legend, ResponsiveContainer, Cell, LineChart, Line
 } from 'recharts';
+import { MdBarChart, MdTrendingUp, MdDownload, MdGroup, MdLock, MdAnalytics, MdClear, MdAccessTime, MdArticle, MdCheckCircle } from 'react-icons/md';
 import logoImage from './logowalangbg.png';
-import AdminHeader from './AdminHeader';
+import AdminSidebar from './AdminSidebar';
 import AdminFooter from './AdminFooter';
 import ExportPdfModal from './ExportPdfModal';
 
@@ -35,17 +36,17 @@ const ReportsAdmin = () => {
   const colors = {
     primary: '#27AE60',
     primaryLight: '#52BE80',
-    secondary: '#FFDBAC',
+    secondary: '#a8d5ba',
     background: '#F0F9F4',
     backgroundHover: '#E8F6F0',
-    text: '#1B4D3E',
-    textLight: '#52866A',
-    border: '#D5EFDB',
-    accent: '#E67E22',
-    danger: '#E74C3C',
-    success: '#27AE60',
-    warning: '#F39C12',
-    info: '#3498DB'
+    text: '#FFFFFF',
+    textLight: '#E8F6F0',
+    border: '#2a8566',
+    accent: '#FFD700',
+    danger: '#FF6B6B',
+    success: '#51CF66',
+    warning: '#FFD43B',
+    info: '#74C0FC'
   };
 
   // Check authentication
@@ -170,13 +171,13 @@ const ReportsAdmin = () => {
       <div className="space-y-8">
         {/* Overview Cards */}
         <div>
-          <h2 style={{ color: colors.text, fontSize: '20px', fontWeight: 'bold', marginBottom: '16px' }}>📊 Overview</h2>
+          <h2 style={{ color: colors.text, fontSize: '20px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}><MdBarChart /> Overview</h2>
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <StatCard title="Total Analyses" value={overview.totalAnalyses} icon="📊" color={colors.primary} />
+            <StatCard title="Total Analyses" value={overview.totalAnalyses} icon={<MdBarChart size={24} />} color={colors.primary} />
             <StatCardWithLogo title="Bunga Analyses" value={overview.totalBungaAnalyses} logo={logoImage} color={colors.accent} />
-            <StatCard title="Leaf Analyses" value={overview.totalLeafAnalyses} icon="🍃" color={colors.info} />
-            <StatCard title="Users" value={overview.totalUsers} icon="👥" color={colors.primaryLight} />
-            <StatCard title="System Users" value={overview.systemUsers} icon="🔐" color={colors.warning} />
+            <StatCard title="Leaf Analyses" value={overview.totalLeafAnalyses} icon={<MdTrendingUp size={24} />} color={colors.info} />
+            <StatCard title="Users" value={overview.totalUsers} icon={<MdGroup size={24} />} color={colors.primaryLight} />
+            <StatCard title="System Users" value={overview.systemUsers} icon={<MdLock size={24} />} color={colors.warning} />
           </div>
         </div>
 
@@ -259,7 +260,7 @@ const ReportsAdmin = () => {
 
         {/* Latest Analyses */}
         <div>
-          <h2 style={{ color: colors.text, fontSize: '20px', fontWeight: 'bold', marginBottom: '16px' }}>⏱️ Recent Activity</h2>
+          <h2 style={{ color: colors.text, fontSize: '20px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}><MdAccessTime style={{}} size={20} /> Recent Activity</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Latest Bunga */}
             <div style={{
@@ -308,7 +309,7 @@ const ReportsAdmin = () => {
               boxShadow: '0 4px 12px rgba(52, 152, 219, 0.1)'
             }}>
               <h3 style={{ color: colors.text, fontSize: '16px', fontWeight: 'bold', marginBottom: '16px' }}>
-                🍃 Recent Leaf Analyses
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MdTrendingUp size={16} /> Recent Leaf Analyses</span>
               </h3>
               <div className="space-y-3">
                 {latestLeafAnalyses?.map((analysis) => (
@@ -348,7 +349,7 @@ const ReportsAdmin = () => {
       <div className="space-y-8">
         {/* Statistics Cards Grid */}
         <div>
-          <h2 style={{ color: colors.text, fontSize: '20px', fontWeight: 'bold', marginBottom: '16px' }}>📊 Detailed Statistics</h2>
+          <h2 style={{ color: colors.text, fontSize: '20px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}><MdAnalytics /> Detailed Statistics</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div style={{
               backgroundColor: colors.secondary,
@@ -358,7 +359,7 @@ const ReportsAdmin = () => {
               boxShadow: '0 4px 12px rgba(39, 174, 96, 0.1)'
             }}>
               <h3 style={{ color: colors.text, fontSize: '16px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center' }}>
-                <span style={{ fontSize: '20px', marginRight: '8px' }}>📊</span> Ripeness Distribution
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '0' }}><MdAnalytics size={20} /> Ripeness Distribution</span>
               </h3>
               <div className="space-y-3">
                 <StatItem label="🟢 Ripe" value={`${statistics.ripeness.Ripe}% (${statistics.ripeness.counts.Ripe})`} color={colors.success} />
@@ -379,9 +380,9 @@ const ReportsAdmin = () => {
               </h3>
               <div className="space-y-3">
                 <StatItem label="⭐ Premium" value={`${statistics.marketGrade.Premium}% (${statistics.marketGrade.counts.Premium})`} color={colors.success} />
-                <StatItem label="✅ Standard" value={`${statistics.marketGrade.Standard}% (${statistics.marketGrade.counts.Standard})`} color={colors.primary} />
+                <StatItem label={<span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MdCheckCircle size={16} /> Standard</span>} value={`${statistics.marketGrade.Standard}% (${statistics.marketGrade.counts.Standard})`} color={colors.primary} />
                 <StatItem label="📦 Commercial" value={`${statistics.marketGrade.Commercial}% (${statistics.marketGrade.counts.Commercial})`} color={colors.info} />
-                <StatItem label="❌ Reject" value={`${statistics.marketGrade.Reject}% (${statistics.marketGrade.counts.Reject})`} color={colors.danger} />
+                <StatItem label={<span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MdClear size={16} /> Reject</span>} value={`${statistics.marketGrade.Reject}% (${statistics.marketGrade.counts.Reject})`} color={colors.danger} />
               </div>
             </div>
 
@@ -411,12 +412,12 @@ const ReportsAdmin = () => {
               boxShadow: '0 4px 12px rgba(39, 174, 96, 0.1)'
             }}>
               <h3 style={{ color: colors.text, fontSize: '16px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center' }}>
-                <span style={{ fontSize: '20px', marginRight: '8px' }}>🎯</span> Performance Metrics
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '0' }}><MdTrendingUp size={20} /> Performance Metrics</span>
               </h3>
               <div className="space-y-3">
-                <StatItem label="📊 Average Confidence" value={`${statistics.confidence.average}%`} color={colors.primary} />
+                <StatItem label={<span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MdAnalytics size={16} /> Average Confidence</span>} value={`${statistics.confidence.average}%`} color={colors.primary} />
                 <StatItem label="⚡ Avg Processing Time" value={`${statistics.processingTime.average}s`} color={colors.info} />
-                <StatItem label="📈 Total Records" value={statistics.totalRecords} color={colors.text} />
+                <StatItem label={<span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MdTrendingUp size={16} /> Total Records</span>} value={statistics.totalRecords} color={colors.text} />
               </div>
             </div>
           </div>
@@ -445,7 +446,7 @@ const ReportsAdmin = () => {
       <div className="space-y-8">
         {/* Statistics */}
         <div>
-          <h2 style={{ color: colors.text, fontSize: '20px', fontWeight: 'bold', marginBottom: '16px' }}>📊 Leaf Analysis Statistics</h2>
+          <h2 style={{ color: colors.text, fontSize: '20px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}><MdAnalytics /> Leaf Analysis Statistics</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div style={{
               backgroundColor: colors.secondary,
@@ -455,7 +456,7 @@ const ReportsAdmin = () => {
               boxShadow: '0 4px 12px rgba(52, 152, 219, 0.1)'
             }}>
               <h3 style={{ color: colors.text, fontSize: '16px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center' }}>
-                <span style={{ fontSize: '20px', marginRight: '8px' }}>🍃</span> Disease Distribution
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '0' }}><MdTrendingUp size={20} /> Disease Distribution</span>
               </h3>
               <div className="space-y-2 max-h-80 overflow-y-auto">
                 {Object.entries(statistics.diseaseDistribution).map(([disease, stats]) => (
@@ -477,15 +478,15 @@ const ReportsAdmin = () => {
               boxShadow: '0 4px 12px rgba(39, 174, 96, 0.1)'
             }}>
               <h3 style={{ color: colors.text, fontSize: '16px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center' }}>
-                <span style={{ fontSize: '20px', marginRight: '8px' }}>📊</span> Analysis Metrics
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '0' }}><MdAnalytics size={20} /> Analysis Metrics</span>
               </h3>
               <div className="space-y-3">
                 <StatItem label="🥇 Most Common Disease" value={statistics.mostCommonDisease} color={colors.success} />
-                <StatItem label="📊 Avg Confidence" value={`${statistics.confidence.average}%`} color={colors.primary} />
-                <StatItem label="🎯 Total Detections" value={statistics.totalDetections} color={colors.info} />
-                <StatItem label="📈 Avg /Analysis" value={statistics.averageDetectionsPerAnalysis} color={colors.accent} />
+                <StatItem label={<span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MdAnalytics size={16} /> Avg Confidence</span>} value={`${statistics.confidence.average}%`} color={colors.primary} />
+                <StatItem label={<span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MdTrendingUp size={16} /> Total Detections</span>} value={statistics.totalDetections} color={colors.info} />
+                <StatItem label={<span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MdTrendingUp size={16} /> Avg /Analysis</span>} value={statistics.averageDetectionsPerAnalysis} color={colors.accent} />
                 <StatItem label="⚡ Avg Processing Time" value={`${statistics.processingTime.average}s`} color={colors.warning} />
-                <StatItem label="📋 Total Records" value={statistics.totalRecords} color={colors.text} />
+                <StatItem label={<span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MdArticle size={16} /> Total Records</span>} value={statistics.totalRecords} color={colors.text} />
               </div>
             </div>
           </div>
@@ -512,7 +513,10 @@ const ReportsAdmin = () => {
       bungaHealthClass: [],
       leafDisease: [],
       bungaConfidence: [],
-      leafConfidence: []
+      leafConfidence: [],
+      weeklyActivity: [],
+      analysisDistribution: [],
+      userGrowth: []
     });
 
     useEffect(() => {
@@ -558,13 +562,54 @@ const ReportsAdmin = () => {
           .filter(item => item.value > 0);
         setChartData(prev => ({ ...prev, leafDisease: diseaseData }));
       }
-    }, [bungaReports, leafReports]);
+
+      // Fetch weekly activity data
+      const fetchWeeklyActivity = async () => {
+        try {
+          const response = await axios.get(`${API_BASE_URL}/api/v1/dashboard/weekly-activity`);
+          if (response.data.success) {
+            setChartData(prev => ({ ...prev, weeklyActivity: response.data.data }));
+          }
+        } catch (err) {
+          console.error('Error fetching weekly activity:', err);
+        }
+      };
+
+      // Fetch analysis distribution data
+      const fetchAnalysisDistribution = async () => {
+        try {
+          const response = await axios.get(`${API_BASE_URL}/api/v1/dashboard/analysis-distribution`);
+          if (response.data.success) {
+            setChartData(prev => ({ ...prev, analysisDistribution: response.data.data }));
+          }
+        } catch (err) {
+          console.error('Error fetching analysis distribution:', err);
+        }
+      };
+
+      // Fetch user growth data
+      const fetchUserGrowth = async () => {
+        try {
+          const response = await axios.get(`${API_BASE_URL}/api/v1/dashboard/user-growth`);
+          if (response.data.success) {
+            setChartData(prev => ({ ...prev, userGrowth: response.data.data }));
+          }
+        } catch (err) {
+          console.error('Error fetching user growth:', err);
+        }
+      };
+
+      // Call fetch functions
+      fetchWeeklyActivity();
+      fetchAnalysisDistribution();
+      fetchUserGrowth();
+    }, [bungaReports, leafReports, API_BASE_URL]);
 
     const COLORS = ['#27AE60', '#F39C12', '#E74C3C', '#3498DB', '#9B59B6', '#1ABC9C', '#E67E22', '#16A085'];
 
     return (
       <div className="space-y-8">
-        <h2 style={{ color: colors.text, fontSize: '20px', fontWeight: 'bold', marginBottom: '16px' }}>📊 Visual Analytics</h2>
+        <h2 style={{ color: colors.text, fontSize: '20px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}><MdAnalytics /> Visual Analytics</h2>
         {/* Chart Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Bunga Ripeness - Pie Chart */}
@@ -699,6 +744,103 @@ const ReportsAdmin = () => {
               </div>
             )}
           </div>
+
+          {/* Weekly Activity - Bar Chart */}
+          <div style={{
+            backgroundColor: colors.secondary,
+            border: `2px solid ${colors.primary}`,
+            borderRadius: '12px',
+            padding: '24px',
+            boxShadow: '0 4px 12px rgba(39, 174, 96, 0.1)'
+          }}>
+            <h3 style={{ color: colors.text, fontSize: '16px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center' }}>
+              <MdBarChart size={18} /> Weekly Activity Summary
+            </h3>
+            {chartData.weeklyActivity && chartData.weeklyActivity.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={chartData.weeklyActivity}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={colors.border} />
+                  <XAxis dataKey="date" stroke={colors.text} />
+                  <YAxis stroke={colors.text} />
+                  <Tooltip contentStyle={{ backgroundColor: colors.secondary, border: `1px solid ${colors.border}` }} />
+                  <Legend />
+                  <Bar dataKey="bunga" fill="#27AE60" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="leaf" fill="#E67E22" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div style={{ height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: colors.textLight }}>
+                📭 No data available
+              </div>
+            )}
+          </div>
+
+          {/* Analysis Distribution - Pie Chart */}
+          <div style={{
+            backgroundColor: colors.secondary,
+            border: `2px solid ${colors.success}`,
+            borderRadius: '12px',
+            padding: '24px',
+            boxShadow: '0 4px 12px rgba(39, 174, 96, 0.1)'
+          }}>
+            <h3 style={{ color: colors.text, fontSize: '16px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center' }}>
+              <MdAnalytics size={18}/> Analysis Distribution
+            </h3>
+            {chartData.analysisDistribution && chartData.analysisDistribution.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={chartData.analysisDistribution}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, value, percentage }) => `${name}: ${value} (${percentage}%)`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {chartData.analysisDistribution.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => value.toLocaleString()} />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div style={{ height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: colors.textLight }}>
+                📭 No data available
+              </div>
+            )}
+          </div>
+
+          {/* User Growth - Line Chart */}
+          <div style={{
+            backgroundColor: colors.secondary,
+            border: `2px solid ${colors.primary}`,
+            borderRadius: '12px',
+            padding: '24px',
+            boxShadow: '0 4px 12px rgba(39, 174, 96, 0.1)',
+            gridColumn: '1 / -1'
+          }}>
+            <h3 style={{ color: colors.text, fontSize: '16px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center' }}>
+              <MdTrendingUp size={18} /> User Growth Trend
+            </h3>
+            {chartData.userGrowth && chartData.userGrowth.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={chartData.userGrowth}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={colors.border} />
+                  <XAxis dataKey="date" stroke={colors.text} />
+                  <YAxis stroke={colors.text} />
+                  <Tooltip contentStyle={{ backgroundColor: colors.secondary, border: `1px solid ${colors.border}` }} formatter={(value) => value.toLocaleString()} />
+                  <Line type="monotone" dataKey="users" stroke={colors.primary} strokeWidth={3} dot={{ fill: colors.primary, r: 5 }} activeDot={{ r: 7 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <div style={{ height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: colors.textLight }}>
+                📭 No data available
+              </div>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -709,18 +851,59 @@ const ReportsAdmin = () => {
       display: 'flex',
       flexDirection: 'column',
       minHeight: '100vh',
-      backgroundImage: 'linear-gradient(135deg, rgba(13, 74, 47, 0.7), rgba(139, 111, 71, 0.6)), url(/media/BGadmin.jpg)',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundAttachment: 'fixed'
+      backgroundColor: '#1a5f52',
+      position: 'relative',
+      overflow: 'hidden'
     }}>
-      <AdminHeader />
+      {/* Decorative Circle Opacity Background */}
+      <div style={{
+        position: 'fixed',
+        top: '-100px',
+        left: '-100px',
+        width: '300px',
+        height: '300px',
+        borderRadius: '50%',
+        backgroundColor: 'rgba(39, 174, 96, 0.15)',
+        pointerEvents: 'none',
+        zIndex: 0
+      }} />
+      <div style={{
+        position: 'fixed',
+        top: '50%',
+        right: '-150px',
+        width: '400px',
+        height: '400px',
+        borderRadius: '50%',
+        backgroundColor: 'rgba(52, 211, 153, 0.1)',
+        pointerEvents: 'none',
+        zIndex: 0
+      }} />
+      <div style={{
+        position: 'fixed',
+        bottom: '-120px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: '350px',
+        height: '350px',
+        borderRadius: '50%',
+        backgroundColor: 'rgba(16, 185, 129, 0.08)',
+        pointerEvents: 'none',
+        zIndex: 0
+      }} />
+      
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <AdminSidebar />
+      </div>
 
       <main style={{
         flex: 1,
         padding: '32px 20px',
+        marginLeft: '280px',
+        height: '100vh',
         overflowY: 'auto',
-        height: 'calc(100vh - 80px)'
+        height: 'calc(100vh - 80px)',
+        position: 'relative',
+        zIndex: 1
       }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
           {/* Error Alert */}
@@ -735,7 +918,7 @@ const ReportsAdmin = () => {
             borderLeft: `4px solid ${colors.danger}`,
             boxShadow: `0 4px 12px ${colors.danger}20`
           }}>
-            ❌ {error}
+            <MdClear size={20} /> {error}
           </div>
         )}
 
@@ -773,6 +956,7 @@ const ReportsAdmin = () => {
             }}
             title="Export current data as PDF"
           >
+            <MdDownload size={18} />
             Export PDF
           </button>
         </div>
@@ -821,9 +1005,9 @@ const ReportsAdmin = () => {
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 {tab === 'bunga' && <img src={logoImage} alt="bunga" style={{ height: '20px', objectFit: 'contain' }} />}
-                {tab === 'dashboard' && '📈'}
-                {tab === 'leaf' && '🍃'}
-                {tab === 'charts' && '📊'}
+                {tab === 'dashboard' && <MdTrendingUp size={20} />}
+                {tab === 'leaf' && <MdTrendingUp size={20} />}
+                {tab === 'charts' && <MdBarChart size={20} />}
                 <span>
                   {tab === 'dashboard' && 'Dashboard'}
                   {tab === 'bunga' && 'Bunga Analysis'}
@@ -862,7 +1046,9 @@ const ReportsAdmin = () => {
         API_BASE_URL={API_BASE_URL}
       />
 
-      <AdminFooter />
+      <div style={{ marginLeft: '280px' }}>
+        <AdminFooter />
+      </div>
     </div>
   );
 };

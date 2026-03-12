@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { LineChart, Line, PieChart, Pie, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
-import { MdPeople, MdBarChart, MdTrendingUp, MdNotifications, MdSettings } from 'react-icons/md';
-import AdminHeader from './AdminHeader';
+import { MdPeople, MdBarChart, MdTrendingUp, MdNotifications, MdSettings, MdRefresh, MdGroup, MdHealthAndSafety, MdAccessTime } from 'react-icons/md';
+import AdminSidebar from './AdminSidebar';
 import AdminFooter from './AdminFooter';
+import LoadingScreen from './LoadingScreen';
 import logoImage from '../Admin/logowalangbg.png';
 
 const AdminDashboard = () => {
@@ -30,7 +31,7 @@ const AdminDashboard = () => {
       if (!token) return navigate('/login');
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       
-      const [stats, growth, dist, diseases, activity, weekly, overview] = await Promise.all([
+      const responses = await Promise.all([
         axios.get(`${API_BASE_URL}/api/v1/dashboard/stats`),
         axios.get(`${API_BASE_URL}/api/v1/dashboard/user-growth`),
         axios.get(`${API_BASE_URL}/api/v1/dashboard/analysis-distribution`),
@@ -40,15 +41,38 @@ const AdminDashboard = () => {
         axios.get(`${API_BASE_URL}/api/v1/dashboard/user-overview`)
       ]);
       
-      if (stats.data.success) setDashboardData(stats.data.stats);
-      if (growth.data.success) setUserGrowth(growth.data.data);
-      if (dist.data.success) setAnalysisDistribution(dist.data.data);
-      if (diseases.data.success) setTopDiseases(diseases.data.data);
-      if (activity.data.success) setRecentActivity(activity.data.data);
-      if (weekly.data.success) setWeeklyActivity(weekly.data.data);
-      if (overview.data.success) setUserOverview(overview.data.data);
+      const [stats, growth, dist, diseases, activity, weekly, overview] = responses;
+      
+      if (stats.data.success) {
+        setDashboardData(stats.data.stats);
+        console.log('✅ Dashboard stats loaded:', stats.data.stats);
+      }
+      if (growth.data.success) {
+        setUserGrowth(growth.data.data);
+        console.log('✅ User growth loaded:', growth.data.data);
+      }
+      if (dist.data.success) {
+        setAnalysisDistribution(dist.data.data);
+        console.log('✅ Analysis distribution loaded:', dist.data.data);
+      }
+      if (diseases.data.success) {
+        setTopDiseases(diseases.data.data);
+        console.log('✅ Top diseases loaded:', diseases.data.data);
+      }
+      if (activity.data.success) {
+        setRecentActivity(activity.data.data);
+        console.log('✅ Recent activity loaded:', activity.data.data);
+      }
+      if (weekly.data.success) {
+        setWeeklyActivity(weekly.data.data);
+        console.log('✅ Weekly activity loaded:', weekly.data.data);
+      }
+      if (overview.data.success) {
+        setUserOverview(overview.data.data);
+        console.log('✅ User overview loaded:', overview.data.data);
+      }
     } catch (error) {
-      console.error('Refresh error:', error);
+      console.error('❌ Refresh error:', error);
     } finally {
       setRefreshing(false);
     }
@@ -66,53 +90,69 @@ const AdminDashboard = () => {
         const userRes = await axios.get(`${API_BASE_URL}/api/v1/users/me`);
         if (userRes.data.success) {
           setUser(userRes.data.user);
+          console.log('✅ User profile loaded:', userRes.data.user.name);
         }
 
         // Fetch dashboard stats
         const statsRes = await axios.get(`${API_BASE_URL}/api/v1/dashboard/stats`);
         if (statsRes.data.success) {
           setDashboardData(statsRes.data.stats);
+          console.log('✅ Dashboard stats loaded:', statsRes.data.stats);
         }
 
         // Fetch user growth
         const growthRes = await axios.get(`${API_BASE_URL}/api/v1/dashboard/user-growth`);
         if (growthRes.data.success) {
           setUserGrowth(growthRes.data.data);
+          console.log('✅ User growth data loaded:', growthRes.data.data.length, 'records');
         }
 
         // Fetch analysis distribution
         const distRes = await axios.get(`${API_BASE_URL}/api/v1/dashboard/analysis-distribution`);
         if (distRes.data.success) {
           setAnalysisDistribution(distRes.data.data);
+          console.log('✅ Analysis distribution loaded:', distRes.data.data);
         }
 
         // Fetch top diseases
         const diseasesRes = await axios.get(`${API_BASE_URL}/api/v1/dashboard/top-diseases`);
         if (diseasesRes.data.success) {
           setTopDiseases(diseasesRes.data.data);
+          console.log('✅ Top diseases loaded:', diseasesRes.data.data.length, 'records');
         }
 
         // Fetch recent activity
         const activityRes = await axios.get(`${API_BASE_URL}/api/v1/dashboard/recent-activity`);
         if (activityRes.data.success) {
           setRecentActivity(activityRes.data.data);
+          console.log('✅ Recent activity loaded:', activityRes.data.data.length, 'records');
         }
 
         // Fetch weekly activity
         const weeklyRes = await axios.get(`${API_BASE_URL}/api/v1/dashboard/weekly-activity`);
         if (weeklyRes.data.success) {
           setWeeklyActivity(weeklyRes.data.data);
+          console.log('✅ Weekly activity loaded:', weeklyRes.data.data.length, 'records');
         }
 
         // Fetch user overview
         const userOverRes = await axios.get(`${API_BASE_URL}/api/v1/dashboard/user-overview`);
         if (userOverRes.data.success) {
           setUserOverview(userOverRes.data.data);
+          console.log('✅ User overview loaded:', userOverRes.data.data);
+          console.log('  - Active Today:', userOverRes.data.data.activeToday);
+          console.log('  - New This Week:', userOverRes.data.data.newThisWeek);
+          console.log('  - Verified:', userOverRes.data.data.verified);
+          console.log('  - Unverified:', userOverRes.data.data.unverified);
+          console.log('  - Inactive (30d):', userOverRes.data.data.inactive);
         }
       } catch (error) {
-        console.error('Dashboard fetch error:', error);
-        localStorage.removeItem('token');
-        navigate('/login');
+        console.error('❌ Dashboard fetch error:', error.message);
+        if (error.response?.status === 401) {
+          console.error('❌ Unauthorized - Token may be invalid');
+          localStorage.removeItem('token');
+          navigate('/login');
+        }
       } finally {
         setLoading(false);
       }
@@ -123,14 +163,9 @@ const AdminDashboard = () => {
 
   if (loading) {
     return (
-      <div className="h-screen w-full bg-gradient-to-br from-purple-500 via-blue-500 to-cyan-500 flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block mb-6">
-            <div className="w-20 h-20 border-4 border-white border-t-purple-300 rounded-full animate-spin shadow-2xl drop-shadow-lg" />
-          </div>
-          <p className="text-white font-bold text-xl drop-shadow-lg">Loading Dashboard...</p>
-          <p className="text-white/70 text-sm mt-2">Preparing your analytics</p>
-        </div>
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#1a5f52' }}>
+        <AdminSidebar />
+        <LoadingScreen message="Loading Dashboard" subtitle="Preparing your analytics..." />
       </div>
     );
   }
@@ -141,15 +176,12 @@ const AdminDashboard = () => {
     <div style={{ 
       minHeight: '100vh', 
       width: '100%',
-      backgroundImage: 'linear-gradient(135deg, rgba(13, 74, 47, 0.7), rgba(139, 111, 71, 0.6)), url(/media/BGadmin.jpg)',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundAttachment: 'fixed'
+      backgroundColor: '#1a5f52'
     }}>
-      <AdminHeader />
+      <AdminSidebar />
       
       {/* Main Scrollable Content */}
-      <main style={{ overflowY: 'auto', height: 'calc(100vh - 80px)' }}>
+      <main style={{ overflowY: 'auto', height: '100vh', marginLeft: '280px' }}>
         <div style={{ width: '100%', padding: '40px 30px' }}>
           
           {/* Hero Section with Enhanced Styling */}
@@ -168,7 +200,7 @@ const AdminDashboard = () => {
               </h1>
             </div>
             <p style={{ fontSize: '18px', color: '#666', margin: '0 0 8px 0' }}>
-              Welcome back, <span style={{ fontWeight: 'bold', color: '#D4A574' }}>{user?.name || 'Admin'}</span> 👋
+              Welcome back, <span style={{ fontWeight: 'bold', color: '#D4A574' }}>{user?.name || 'Admin'}</span>
             </p>
             <p style={{ fontSize: '14px', color: '#999', margin: 0 }}>Monitor your PiperSmart analytics and insights</p>
           </div>
@@ -192,7 +224,7 @@ const AdminDashboard = () => {
               gradient="linear-gradient(135deg, #556B2F 0%, #6F8C3D 100%)"
               subtitle={`+${dashboardData?.analysesThisMonth || 0} this month`}
               percentageChange={`-10%`}
-              backgroundImage="/media/analysisadmin.webp"
+              backgroundImage="/media/analysisadmin.avif"
               overlayColor="rgba(40, 50, 20, 0.75)"
             />
             <PurpleStatCard
@@ -209,89 +241,115 @@ const AdminDashboard = () => {
 
           {/* Main Charts Section */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px', marginBottom: '40px' }}>
-            {/* Large Chart - 2 columns */}
-            <div style={{ gridColumn: '1 / -1' }}>
-              <PurpleChartCard 
-                title={<><MdBarChart style={{ marginRight: '8px', display: 'inline' }} />Visit And Analysis Statistics</>} 
-                onExpand={() => setFullscreenChart({ type: 'weekly', data: weeklyActivity })}
-              >
-                {weeklyActivity.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={weeklyActivity}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                      <XAxis dataKey="date" stroke="#6B7280" />
-                      <YAxis stroke="#6B7280" />
-                      <Tooltip 
-                        contentStyle={{ backgroundColor: '#FFF', border: '2px solid #8B6F47', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.15)' }}
-                        formatter={(value) => value.toLocaleString()}
-                      />
-                      <Legend />
-                      <Bar dataKey="bunga" fill="#8B6F47" radius={[8, 8, 0, 0]} />
-                      <Bar dataKey="leaf" fill="#556B2F" radius={[8, 8, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <p style={{ textAlign: 'center', color: '#999', padding: '60px 20px' }}>No data available</p>
-                )}
-              </PurpleChartCard>
+            {/* Weekly Summary Card */}
+            <div style={{
+              background: '#a8d5ba',
+              borderRadius: '16px',
+              border: '1px solid #e0e0e0',
+              padding: '32px',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.08)',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = '0 12px 35px rgba(139, 111, 71, 0.15)';
+              e.currentTarget.style.borderColor = '#8B6F47';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.08)';
+              e.currentTarget.style.borderColor = '#e0e0e0';
+            }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 'bold', background: 'linear-gradient(90deg, #8B6F47, #556B2F)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', margin: '0 0 24px 0', display: 'flex', alignItems: 'center', gap: '8px' }}><MdBarChart size={24} style={{ background: 'linear-gradient(90deg, #8B6F47, #556B2F)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }} /> Weekly Activity Summary</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'linear-gradient(90deg, #f5e6d3, #f0e4d0)', borderRadius: '8px', border: '1px solid #d4c5b0' }}>
+                  <span style={{ fontWeight: '600', color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}><MdHealthAndSafety size={16} color="#8B6F47" /> Bunga Analyses</span>
+                  <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#8B6F47' }}>{weeklyActivity.reduce((sum, item) => sum + (item.bunga || 0), 0)} total</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'linear-gradient(90deg, #f5e6d3, #f0e4d0)', borderRadius: '8px', border: '1px solid #d4c5b0' }}>
+                  <span style={{ fontWeight: '600', color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}><MdTrendingUp size={16} color="#556B2F" /> Leaf Analyses</span>
+                  <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#556B2F' }}>{weeklyActivity.reduce((sum, item) => sum + (item.leaf || 0), 0)} total</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'linear-gradient(90deg, #f5e6d3, #f0e4d0)', borderRadius: '8px', border: '1px solid #d4c5b0' }}>
+                  <span style={{ fontWeight: '600', color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}><MdTrendingUp size={16} color="#8B6F47" /> Combined Total</span>
+                  <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#8B6F47' }}>{weeklyActivity.reduce((sum, item) => sum + (item.bunga || 0) + (item.leaf || 0), 0)} analyses</span>
+                </div>
+              </div>
+              <p style={{ fontSize: '12px', color: '#999', marginTop: '16px', marginBottom: '0', fontStyle: 'italic' }}>View detailed charts in Reports & Analytics</p>
             </div>
 
-            {/* Analysis Distribution */}
-            <PurpleChartCard 
-              title={<><MdBarChart style={{ marginRight: '8px', display: 'inline' }} />Analysis Distribution</>} 
-              onExpand={() => setFullscreenChart({ type: 'distribution', data: analysisDistribution })}
-            >
-              {analysisDistribution.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={analysisDistribution}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ percentage }) => `${percentage}%`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {analysisDistribution.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip formatter={(value) => value.toLocaleString()} contentStyle={{ backgroundColor: '#FFF', border: '2px solid #8B6F47', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.15)' }} />
-                  </PieChart>
-                </ResponsiveContainer>
-              ) : (
-                <p style={{ textAlign: 'center', color: '#999', padding: '60px 20px' }}>No data</p>
-              )}
-            </PurpleChartCard>
+            {/* Analysis Distribution Summary */}
+            <div style={{
+              background: '#a8d5ba',
+              borderRadius: '16px',
+              border: '1px solid #e0e0e0',
+              padding: '32px',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.08)',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = '0 12px 35px rgba(139, 111, 71, 0.15)';
+              e.currentTarget.style.borderColor = '#8B6F47';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.08)';
+              e.currentTarget.style.borderColor = '#e0e0e0';
+            }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 'bold', background: 'linear-gradient(90deg, #8B6F47, #556B2F)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', margin: '0 0 24px 0', display: 'flex', alignItems: 'center', gap: '8px' }}><MdBarChart size={24} style={{ background: 'linear-gradient(90deg, #8B6F47, #556B2F)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }} /> Analysis Distribution</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {analysisDistribution.length > 0 ? analysisDistribution.map((item, idx) => (
+                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'linear-gradient(90deg, #f5e6d3, #f0e4d0)', borderRadius: '8px', border: '1px solid #d4c5b0' }}>
+                    <span style={{ fontWeight: '600', color: '#333' }}>{item.name}</span>
+                    <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#8B6F47' }}>{item.value} ({((item.value / analysisDistribution.reduce((sum, i) => sum + i.value, 0)) * 100).toFixed(1)}%)</span>
+                  </div>
+                )) : (
+                  <p style={{ color: '#999', textAlign: 'center' }}>No analysis data available</p>
+                )}
+              </div>
+              <p style={{ fontSize: '12px', color: '#999', marginTop: '16px', marginBottom: '0', fontStyle: 'italic' }}>View detailed breakdown in Reports & Analytics</p>
+            </div>
 
-            {/* User Growth */}
-            <PurpleChartCard 
-              title={<><MdTrendingUp style={{ marginRight: '8px', display: 'inline' }} />User Growth</>} 
-              onExpand={() => setFullscreenChart({ type: 'growth', data: userGrowth })}
-            >
-              {userGrowth.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={userGrowth}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                    <XAxis dataKey="date" stroke="#6B7280" />
-                    <YAxis stroke="#6B7280" />
-                    <Tooltip contentStyle={{ backgroundColor: '#FFF', border: '2px solid #8B6F47', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.15)' }} />
-                    <Line type="monotone" dataKey="users" stroke="#D4A574" strokeWidth={4} dot={{ fill: '#D4A574', r: 6 }} />
-                  </LineChart>
-                </ResponsiveContainer>
-              ) : (
-                <p style={{ textAlign: 'center', color: '#999', padding: '60px 20px' }}>No data available</p>
-              )}
-            </PurpleChartCard>
+            {/* User Growth Summary */}
+            <div style={{
+              background: '#a8d5ba',
+              borderRadius: '16px',
+              border: '1px solid #e0e0e0',
+              padding: '32px',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.08)',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = '0 12px 35px rgba(139, 111, 71, 0.15)';
+              e.currentTarget.style.borderColor = '#8B6F47';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.08)';
+              e.currentTarget.style.borderColor = '#e0e0e0';
+            }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 'bold', background: 'linear-gradient(90deg, #8B6F47, #556B2F)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', margin: '0 0 24px 0', display: 'flex', alignItems: 'center', gap: '8px' }}><MdTrendingUp size={24} style={{ background: 'linear-gradient(90deg, #8B6F47, #556B2F)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }} /> User Growth Insights</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'linear-gradient(90deg, #f5e6d3, #f0e4d0)', borderRadius: '8px', border: '1px solid #d4c5b0' }}>
+                  <span style={{ fontWeight: '600', color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}><MdBarChart size={16} color="#8B6F47" /> Current Total</span>
+                  <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#8B6F47' }}>{userGrowth.length > 0 ? userGrowth[userGrowth.length - 1].users : 0} users</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'linear-gradient(90deg, #f5e6d3, #f0e4d0)', borderRadius: '8px', border: '1px solid #d4c5b0' }}>
+                  <span style={{ fontWeight: '600', color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}><MdHealthAndSafety size={16} color="#8B6F47" /> 7 Days Ago</span>
+                  <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#8B6F47' }}>{userGrowth.length > 0 ? userGrowth[0].users : 0} users</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'linear-gradient(90deg, #f5e6d3, #f0e4d0)', borderRadius: '8px', border: '1px solid #d4c5b0' }}>
+                  <span style={{ fontWeight: '600', color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}><MdTrendingUp size={16} color="#8B6F47" /> Weekly Growth</span>
+                  <span style={{ fontSize: '16px', fontWeight: 'bold', color: userGrowth.length > 0 && (userGrowth[userGrowth.length - 1].users - userGrowth[0].users) > 0 ? '#059669' : '#ef4444' }}>
+                    +{userGrowth.length > 0 ? (userGrowth[userGrowth.length - 1].users - userGrowth[0].users) : 0} users
+                  </span>
+                </div>
+              </div>
+              <p style={{ fontSize: '12px', color: '#999', marginTop: '16px', marginBottom: '0', fontStyle: 'italic' }}>View detailed trends in Reports & Analytics</p>
+            </div>
           </div>
 
           {/* Bottom Section - User Metrics & Top Diseases */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '24px', marginBottom: '40px' }}>
             {/* User Metrics */}
             <div style={{
-              background: 'white',
+              background: '#a8d5ba',
               borderRadius: '16px',
               border: '1px solid #e0e0e0',
               padding: '32px',
@@ -315,7 +373,7 @@ const AdminDashboard = () => {
 
             {/* Top Diseases */}
             <div style={{
-              background: 'white',
+              background: '#a8d5ba',
               borderRadius: '16px',
               border: '1px solid #e0e0e0',
               padding: '32px',
@@ -364,7 +422,7 @@ const AdminDashboard = () => {
           {/* Recent Activity */}
           {recentActivity.length > 0 && (
             <div style={{
-              background: 'white',
+              background: '#a8d5ba',
               borderRadius: '16px',
               border: '1px solid #e0e0e0',
               padding: '32px',
@@ -411,7 +469,7 @@ const AdminDashboard = () => {
                         <div style={{ fontWeight: 'bold', color: '#1f2937', fontSize: '14px', marginBottom: '4px' }}>{activity.title}</div>
                         <div style={{ color: '#4b5563', fontSize: '12px', marginBottom: '4px' }}>{activity.description}</div>
                         <div style={{ color: '#999', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          ⏱️ {new Date(activity.timestamp).toLocaleString()}
+                          <MdAccessTime size={14} style={{ display: 'inline', marginRight: '4px' }} /> {new Date(activity.timestamp).toLocaleString()}
                         </div>
                       </div>
                     </div>
@@ -425,20 +483,20 @@ const AdminDashboard = () => {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', marginBottom: '40px' }}>
             <PurpleAction 
               label="Refresh Dashboard" 
-              icon="🔄" 
+              icon={<MdRefresh size={24} />} 
               onClick={handleRefresh} 
               gradient="linear-gradient(135deg, #8B6F47, #556B2F)"
               disabled={refreshing}
             />
             <PurpleAction 
               label="View All Users" 
-              icon="👥" 
+              icon={<MdGroup size={24} />} 
               onClick={() => navigate('/admin/profile')} 
               gradient="linear-gradient(135deg, #556B2F, #6F8C3D)"
             />
             <PurpleAction 
               label="View Reports" 
-              icon="📊" 
+              icon={<MdBarChart size={24} />} 
               onClick={() => navigate('/admin/reports')} 
               gradient="linear-gradient(135deg, #A0522D, #8B6F47)"
             />
@@ -461,7 +519,9 @@ const AdminDashboard = () => {
         />
       )}
 
-      <AdminFooter />
+      <div style={{ marginLeft: '280px' }}>
+        <AdminFooter />
+      </div>
 
       <style>{`
         @keyframes fadeIn {
@@ -559,7 +619,7 @@ const PurpleStatCard = ({ title, value, icon, gradient, subtitle, percentageChan
 
 const PurpleChartCard = ({ title, children, onExpand }) => (
   <div style={{
-    background: 'white',
+    background: '#a8d5ba',
     borderRadius: '16px',
     border: '1px solid #e0e0e0',
     padding: '32px',
@@ -640,7 +700,7 @@ const PurpleAction = ({ label, icon, onClick, gradient, disabled }) => (
     style={{
       position: 'relative',
       overflow: 'hidden',
-      background: 'white',
+      background: '#a8d5ba',
       borderRadius: '16px',
       border: '1px solid #e0e0e0',
       padding: '32px',
@@ -683,7 +743,7 @@ const FullscreenChartModal = ({ chart, onClose, chartColors }) => (
     animation: 'fadeIn 0.3s ease-in-out'
   }} onClick={onClose}>
     <div style={{
-      background: 'white',
+      background: '#a8d5ba',
       borderRadius: '20px',
       border: '2px solid #8B6F47',
       width: '100%',

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import AdminHeader from './AdminHeader';
+import AdminSidebar from './AdminSidebar';
 import AdminFooter from './AdminFooter';
+import LoadingScreen from './LoadingScreen';
 
 const AdminProfile = () => {
   const [user, setUser] = useState(null);
@@ -44,25 +45,26 @@ const AdminProfile = () => {
 
   const colors = {
     background: '#F8FAFC',
-    card: '#FFDBAC',
-    text: '#0F172A',
-    textLight: '#475569',
-    border: '#E2E8F0',
-    primary: '#0F766E'
+    card: '#a8d5ba',
+    text: '#FFFFFF',
+    textLight: '#E0E8F0',
+    border: '#2a8566',
+    primary: '#38D9A8'
   };
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#475569' }}>
-        Loading Admin Profile...
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#1a5f52' }}>
+        <AdminSidebar />
+        <LoadingScreen message="Loading Profile" subtitle="Fetching your information..." />
       </div>
     );
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundImage: 'linear-gradient(135deg, rgba(13, 74, 47, 0.7), rgba(139, 111, 71, 0.6)), url(/media/BGadmin.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
-      <AdminHeader />
-      <main style={{ flex: 1, padding: '32px 20px', overflowY: 'auto', height: 'calc(100vh - 80px)' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#1a5f52' }}>
+      <AdminSidebar />
+      <main style={{ flex: 1, padding: '32px 20px', overflowY: 'auto', height: '100vh', marginLeft: '280px' }}>
         <div style={{ maxWidth: '760px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', padding: '28px', border: `1px solid ${colors.border}`, borderRadius: '16px', background: colors.card, boxShadow: '0 10px 24px rgba(15, 23, 42, 0.08)' }}>
         {/* Avatar */}
@@ -98,7 +100,9 @@ const AdminProfile = () => {
       </div>
         </div>
       </main>
-      <AdminFooter />
+      <div style={{ marginLeft: '280px' }}>
+        <AdminFooter />
+      </div>
     </div>
   );
 };
