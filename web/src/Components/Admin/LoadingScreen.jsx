@@ -147,7 +147,7 @@ const LoadingScreen = ({ message = 'Loading', subtitle = 'Please wait...' }) => 
         {/* Subtitle */}
         <p style={{
           fontSize: '16px',
-          color: '#a8d5ba',
+          color: '#000000',
           margin: '0 0 24px 0',
           fontWeight: '500',
           letterSpacing: '0.3px',

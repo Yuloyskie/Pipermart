@@ -46,8 +46,8 @@ const AdminProfile = () => {
   const colors = {
     background: '#F8FAFC',
     card: '#a8d5ba',
-    text: '#FFFFFF',
-    textLight: '#E0E8F0',
+    text: '#000000',
+    textLight: '#333333',
     border: '#2a8566',
     primary: '#38D9A8'
   };

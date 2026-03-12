@@ -261,15 +261,15 @@ const AdminDashboard = () => {
               <h3 style={{ fontSize: '18px', fontWeight: 'bold', background: 'linear-gradient(90deg, #8B6F47, #556B2F)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', margin: '0 0 24px 0', display: 'flex', alignItems: 'center', gap: '8px' }}><MdBarChart size={24} style={{ background: 'linear-gradient(90deg, #8B6F47, #556B2F)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }} /> Weekly Activity Summary</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'linear-gradient(90deg, #f5e6d3, #f0e4d0)', borderRadius: '8px', border: '1px solid #d4c5b0' }}>
-                  <span style={{ fontWeight: '600', color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}><MdHealthAndSafety size={16} color="#8B6F47" /> Bunga Analyses</span>
+                  <span style={{ fontWeight: '600', color: '#000000', display: 'flex', alignItems: 'center', gap: '6px' }}><MdHealthAndSafety size={16} color="#8B6F47" /> Bunga Analyses</span>
                   <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#8B6F47' }}>{weeklyActivity.reduce((sum, item) => sum + (item.bunga || 0), 0)} total</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'linear-gradient(90deg, #f5e6d3, #f0e4d0)', borderRadius: '8px', border: '1px solid #d4c5b0' }}>
-                  <span style={{ fontWeight: '600', color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}><MdTrendingUp size={16} color="#556B2F" /> Leaf Analyses</span>
+                  <span style={{ fontWeight: '600', color: '#000000', display: 'flex', alignItems: 'center', gap: '6px' }}><MdTrendingUp size={16} color="#556B2F" /> Leaf Analyses</span>
                   <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#556B2F' }}>{weeklyActivity.reduce((sum, item) => sum + (item.leaf || 0), 0)} total</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'linear-gradient(90deg, #f5e6d3, #f0e4d0)', borderRadius: '8px', border: '1px solid #d4c5b0' }}>
-                  <span style={{ fontWeight: '600', color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}><MdTrendingUp size={16} color="#8B6F47" /> Combined Total</span>
+                  <span style={{ fontWeight: '600', color: '#000000', display: 'flex', alignItems: 'center', gap: '6px' }}><MdTrendingUp size={16} color="#8B6F47" /> Combined Total</span>
                   <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#8B6F47' }}>{weeklyActivity.reduce((sum, item) => sum + (item.bunga || 0) + (item.leaf || 0), 0)} analyses</span>
                 </div>
               </div>
@@ -297,7 +297,7 @@ const AdminDashboard = () => {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 {analysisDistribution.length > 0 ? analysisDistribution.map((item, idx) => (
                   <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'linear-gradient(90deg, #f5e6d3, #f0e4d0)', borderRadius: '8px', border: '1px solid #d4c5b0' }}>
-                    <span style={{ fontWeight: '600', color: '#333' }}>{item.name}</span>
+                    <span style={{ fontWeight: '600', color: '#000000' }}>{item.name}</span>
                     <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#8B6F47' }}>{item.value} ({((item.value / analysisDistribution.reduce((sum, i) => sum + i.value, 0)) * 100).toFixed(1)}%)</span>
                   </div>
                 )) : (
@@ -327,15 +327,15 @@ const AdminDashboard = () => {
               <h3 style={{ fontSize: '18px', fontWeight: 'bold', background: 'linear-gradient(90deg, #8B6F47, #556B2F)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', margin: '0 0 24px 0', display: 'flex', alignItems: 'center', gap: '8px' }}><MdTrendingUp size={24} style={{ background: 'linear-gradient(90deg, #8B6F47, #556B2F)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }} /> User Growth Insights</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'linear-gradient(90deg, #f5e6d3, #f0e4d0)', borderRadius: '8px', border: '1px solid #d4c5b0' }}>
-                  <span style={{ fontWeight: '600', color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}><MdBarChart size={16} color="#8B6F47" /> Current Total</span>
+                  <span style={{ fontWeight: '600', color: '#000000', display: 'flex', alignItems: 'center', gap: '6px' }}><MdBarChart size={16} color="#8B6F47" /> Current Total</span>
                   <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#8B6F47' }}>{userGrowth.length > 0 ? userGrowth[userGrowth.length - 1].users : 0} users</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'linear-gradient(90deg, #f5e6d3, #f0e4d0)', borderRadius: '8px', border: '1px solid #d4c5b0' }}>
-                  <span style={{ fontWeight: '600', color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}><MdHealthAndSafety size={16} color="#8B6F47" /> 7 Days Ago</span>
+                  <span style={{ fontWeight: '600', color: '#000000', display: 'flex', alignItems: 'center', gap: '6px' }}><MdHealthAndSafety size={16} color="#8B6F47" /> 7 Days Ago</span>
                   <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#8B6F47' }}>{userGrowth.length > 0 ? userGrowth[0].users : 0} users</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'linear-gradient(90deg, #f5e6d3, #f0e4d0)', borderRadius: '8px', border: '1px solid #d4c5b0' }}>
-                  <span style={{ fontWeight: '600', color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}><MdTrendingUp size={16} color="#8B6F47" /> Weekly Growth</span>
+                  <span style={{ fontWeight: '600', color: '#000000', display: 'flex', alignItems: 'center', gap: '6px' }}><MdTrendingUp size={16} color="#8B6F47" /> Weekly Growth</span>
                   <span style={{ fontSize: '16px', fontWeight: 'bold', color: userGrowth.length > 0 && (userGrowth[userGrowth.length - 1].users - userGrowth[0].users) > 0 ? '#059669' : '#ef4444' }}>
                     +{userGrowth.length > 0 ? (userGrowth[userGrowth.length - 1].users - userGrowth[0].users) : 0} users
                   </span>
@@ -411,7 +411,7 @@ const AdminDashboard = () => {
                       e.currentTarget.style.border = '1px solid #d4c5b0';
                       e.currentTarget.style.transform = 'translateX(0)';
                     }}>
-                    <span style={{ fontSize: '14px', color: '#333', fontWeight: '500' }}>#{disease.rank} {disease.disease}</span>
+                    <span style={{ fontSize: '14px', color: '#000000', fontWeight: '500' }}>#{disease.rank} {disease.disease}</span>
                     <span style={{ fontWeight: 'bold', color: 'white', background: '#8B6F47', padding: '6px 16px', borderRadius: '20px', fontSize: '13px' }}>{disease.count}</span>
                   </div>
                 ))}
@@ -466,8 +466,8 @@ const AdminDashboard = () => {
                         <div style={{ fontSize: '24px', flexShrink: 0, padding: '4px', background: 'white', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>{activity.icon}</div>
                       )}
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontWeight: 'bold', color: '#1f2937', fontSize: '14px', marginBottom: '4px' }}>{activity.title}</div>
-                        <div style={{ color: '#4b5563', fontSize: '12px', marginBottom: '4px' }}>{activity.description}</div>
+                        <div style={{ fontWeight: 'bold', color: '#000000', fontSize: '14px', marginBottom: '4px' }}>{activity.title}</div>
+                        <div style={{ color: '#333333', fontSize: '12px', marginBottom: '4px' }}>{activity.description}</div>
                         <div style={{ color: '#999', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                           <MdAccessTime size={14} style={{ display: 'inline', marginRight: '4px' }} /> {new Date(activity.timestamp).toLocaleString()}
                         </div>
@@ -688,7 +688,7 @@ const OverviewItemPurple = ({ label, value, color }) => (
     e.currentTarget.style.border = '1px solid #d4c5b0';
     e.currentTarget.style.transform = 'translateX(0)';
   }}>
-    <span style={{ color: '#4a3e35', fontWeight: '500', fontSize: '14px' }}>{label}</span>
+    <span style={{ color: '#000000', fontWeight: '500', fontSize: '14px' }}>{label}</span>
     <span style={{ fontSize: '20px', fontWeight: 'bold', padding: '8px 16px', borderRadius: '8px', color: 'white', backgroundColor: color }}>{value}</span>
   </div>
 );
@@ -724,7 +724,7 @@ const PurpleAction = ({ label, icon, onClick, gradient, disabled }) => (
     <div style={{ position: 'absolute', inset: 0, background: `${gradient}`, opacity: 0, transition: 'opacity 0.3s ease' }} />
     <div style={{ position: 'relative', zIndex: 10 }}>
       <div style={{ fontSize: '44px', marginBottom: '12px', transition: 'transform 0.3s ease' }}>{icon}</div>
-      <div style={{ fontWeight: 'bold', color: '#1f2937', fontSize: '14px', background: gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>{label}</div>
+      <div style={{ fontWeight: 'bold', color: '#000000', fontSize: '14px' }}>{label}</div>
     </div>
   </button>
 );
